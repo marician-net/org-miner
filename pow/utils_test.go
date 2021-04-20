@@ -1,6 +1,6 @@
 package pow
 
-import "github.com/berrydata/BerryMiner/db"
+import "github.com/zapdata/ZapMiner/db"
 
 func deleteFromDB(DB db.DB, keys []string) error {
 	for _, k := range keys {

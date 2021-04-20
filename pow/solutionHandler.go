@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/db"
-	"github.com/berrydata/BerryMiner/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	zapCommon "github.com/zapdata/ZapMiner/common"
+	"github.com/zapdata/ZapMiner/config"
+	"github.com/zapdata/ZapMiner/db"
+	"github.com/zapdata/ZapMiner/util"
 )
 
 /**
@@ -35,12 +35,12 @@ type SolutionHandler struct {
 	currentValue     *big.Int
 	currentValues    [5]*big.Int
 	lastSubmit       int64
-	submitter        berryCommon.TransactionSubmitter
+	submitter        zapCommon.TransactionSubmitter
 }
 
 func CreateSolutionHandler(
 	cfg *config.Config,
-	submitter berryCommon.TransactionSubmitter,
+	submitter zapCommon.TransactionSubmitter,
 	proxy db.DataServerProxy) *SolutionHandler {
 
 	//get address from config
@@ -208,7 +208,7 @@ func (s *SolutionHandler) Submit(ctx context.Context, result *Result) bool {
 	return true
 }
 
-func (s *SolutionHandler) submit(ctx context.Context, contract berryCommon.ContractInterface) (*types.Transaction, error) {
+func (s *SolutionHandler) submit(ctx context.Context, contract zapCommon.ContractInterface) (*types.Transaction, error) {
 
 	txn, err := contract.SubmitSolution(
 		s.currentNonce,
@@ -222,7 +222,7 @@ func (s *SolutionHandler) submit(ctx context.Context, contract berryCommon.Contr
 	return txn, err
 }
 
-func (s *SolutionHandler) newSubmit(ctx context.Context, contract berryCommon.ContractInterface) (*types.Transaction, error) {
+func (s *SolutionHandler) newSubmit(ctx context.Context, contract zapCommon.ContractInterface) (*types.Transaction, error) {
 
 	txn, err := contract.NewSubmitSolution(
 		s.currentNonce,

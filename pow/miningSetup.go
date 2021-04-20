@@ -2,7 +2,8 @@ package pow
 
 import (
 	"fmt"
-	"github.com/berrydata/BerryMiner/config"
+
+	"github.com/zapdata/ZapMiner/config"
 )
 
 func SetupMiningGroup(cfg *config.Config) (*MiningGroup, error) {

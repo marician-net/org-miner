@@ -10,8 +10,8 @@ import (
 
 	"fmt"
 
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/util"
+	"github.com/zapdata/ZapMiner/config"
+	"github.com/zapdata/ZapMiner/util"
 )
 
 type StratumPool struct {
@@ -126,10 +126,10 @@ func (p *StratumPool) GetWork(input chan *Work) (*Work,bool) {
 	// set receiver's stratumClient to euqal new client instance
 	p.stratumClient = stratumClient
 
-	// sends a request to subscribe the client to BerryStratum
+	// sends a request to subscribe the client to zapStratum
 	p.stratumClient.Request(
 		"mining.subscribe",
-		"BerryStratum/1.0.0")
+		"zapStratum/1.0.0")
 
 	subscribed := false
 	nonce1 := ""

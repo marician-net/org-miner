@@ -7,12 +7,13 @@ package pow
 
 import (
 	"fmt"
-	"github.com/charliehorse55/go-opencl/cl"
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/util"
 	"math/big"
 	"time"
 	"unsafe"
+
+	"github.com/charliehorse55/go-opencl/cl"
+	"github.com/zapdata/ZapMiner/config"
+	"github.com/zapdata/ZapMiner/util"
 )
 
 //the constant needs have a width of hash + divisor
@@ -105,7 +106,7 @@ func NewGpuMiner(device *cl.Device, config *config.GPUConfig, poolEnabled bool) 
 	if err := program.BuildProgram(nil, "-Werror"); err != nil {
 		return nil, fmt.Errorf("BuildProgram failed: %+v", err)
 	}
-	g.kernel, err = program.CreateKernel("berry")
+	g.kernel, err = program.CreateKernel("zap")
 	if err != nil {
 		return nil, fmt.Errorf("CreateKernel failed: %+v", err)
 	}

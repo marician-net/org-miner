@@ -13,10 +13,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/db"
-	"github.com/berrydata/BerryMiner/util"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/zapdata/ZapMiner/config"
+	"github.com/zapdata/ZapMiner/db"
+	"github.com/zapdata/ZapMiner/util"
 )
 
 const (

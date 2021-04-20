@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/berrydata/BerryMiner/config"
+	"github.com/zapdata/ZapMiner/config"
 
 	"github.com/ethereum/go-ethereum/common/math"
 )

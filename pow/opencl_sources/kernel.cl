@@ -1,6 +1,6 @@
 
 
-__kernel void berry(
+__kernel void zap(
     //challenge + public address
    constant uint64_t *prefix,
 
@@ -38,7 +38,7 @@ __kernel void berry(
             nonce[i*2 + 1] = hex[dat8[i] & 0xf];
         }
 
-        //run the berry hash algo
+        //run the zap hash algo
         keccak(prefix, (uint32_t*)nonce, (uint64_t*)hashResult);
         uint8_t ripe160Result[20];
         ripemd160_transform_vector((uint32_t*)hashResult, (uint32_t*)ripe160Result);

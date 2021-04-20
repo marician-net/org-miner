@@ -1,14 +1,14 @@
 package pow
 
 import (
-    "net";
-    "bufio";
-    "time";
-    "encoding/json"
-    "github.com/berrydata/BerryMiner/util"
+	"bufio"
+	"encoding/json"
+	"net"
+	"time"
 
-    // "strconv"
-    // "io/ioutil"
+	"github.com/zapdata/ZapMiner/util"
+	// "strconv"
+	// "io/ioutil"
 )
 
 type StratumRequest struct{
