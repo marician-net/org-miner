@@ -12,8 +12,8 @@ import (
 	"unsafe"
 
 	"github.com/charliehorse55/go-opencl/cl"
-	"github.com/zapdata/ZapMiner/config"
-	"github.com/zapdata/ZapMiner/util"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/util"
 )
 
 //the constant needs have a width of hash + divisor

@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/zapdata/ZapMiner/config"
+	"github.com/zapproject/zap-miner/config"
 )
 
 type HashSettings struct {

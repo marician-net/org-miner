@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/zapdata/ZapMiner/util"
+	"github.com/zapproject/zap-miner/util"
 	// "strconv"
 	// "io/ioutil"
 )

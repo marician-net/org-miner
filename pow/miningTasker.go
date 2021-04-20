@@ -14,9 +14,9 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/zapdata/ZapMiner/config"
-	"github.com/zapdata/ZapMiner/db"
-	"github.com/zapdata/ZapMiner/util"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/util"
 )
 
 const (

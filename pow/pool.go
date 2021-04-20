@@ -10,8 +10,8 @@ import (
 
 	"fmt"
 
-	"github.com/zapdata/ZapMiner/config"
-	"github.com/zapdata/ZapMiner/util"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/util"
 )
 
 type StratumPool struct {
