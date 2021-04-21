@@ -6,7 +6,7 @@ import "./ZapStorage.sol";
 
 /**
 * @title Zap Transfer
-* @dev Contais the methods related to transfers and ERC20. Berry.sol and BerryGetters.sol
+* @dev Contais the methods related to transfers and ERC20. Zap.sol and ZapGetters.sol
 * reference this library for function's logic.
 */
 library ZapTransfer {
