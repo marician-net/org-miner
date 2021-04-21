@@ -1,16 +1,16 @@
 pragma solidity >=0.5.0 <0.7.0;
 
-import "./BerryStorage.sol";
-import "./BerryTransfer.sol";
-import "./BerryDispute.sol";
+import "./ZapStorage.sol";
+import "./ZapTransfer.sol";
+import "./ZapDispute.sol";
 import "./Utilities.sol";
 /**
-* itle Berry Stake
-* @dev Contains the methods related to miners staking and unstaking. Berry.sol
+* itle Zap Stake
+* @dev Contains the methods related to miners staking and unstaking. Zap.sol
 * references this library for function's logic.
 */
 
-library BerryStake {
+library ZapStake {
     event NewStake(address indexed _sender); //Emits upon new staker
     event StakeWithdrawn(address indexed _sender); //Emits when a staker is now no longer staked
     event StakeWithdrawRequested(address indexed _sender); //Emits when a staker begins the 7 day withdraw period
@@ -19,12 +19,12 @@ library BerryStake {
 
     /**
     * @dev This function stakes the five initial miners, sets the supply and all the constant variables.
-    * This function is called by the constructor function on BerryMaster.sol
+    * This function is called by the constructor function on ZapMaster.sol
     */
-    function init(BerryStorage.BerryStorageStruct storage self) public {
+    function init(ZapStorage.ZapStorageStruct storage self) public {
         require(self.uintVars[keccak256("decimals")] == 0, "Too many decimals");
-        //Give this contract 6000 Berry Tributes so that it can stake the initial 6 miners
-        BerryTransfer.updateBalanceAtNow(self.balances[address(this)], 2**256 - 1 - 6000e18);
+        //Give this contract 6000 Zap Tributes so that it can stake the initial 6 miners
+        ZapTransfer.updateBalanceAtNow(self.balances[address(this)], 2**256 - 1 - 6000e18);
 
         // //the initial 5 miner addresses are specfied below
         // //changed payable[5] to 6
@@ -40,7 +40,7 @@ library BerryStake {
         for (uint256 i = 0; i < 6; i++) {
             //6th miner to allow for dispute
             //Miner balance is set at 1000e18 at the block that this function is ran
-            BerryTransfer.updateBalanceAtNow(self.balances[_initalMiners[i]], 1000e18);
+            ZapTransfer.updateBalanceAtNow(self.balances[_initalMiners[i]], 1000e18);
 
             newStake(self, _initalMiners[i]);
         }
@@ -62,8 +62,8 @@ library BerryStake {
     * once they lock for withdraw(stakes.currentStatus = 2) they are locked for 7 days before they
     * can withdraw the deposit
     */
-    function requestStakingWithdraw(BerryStorage.BerryStorageStruct storage self) public {
-        BerryStorage.StakeInfo storage stakes = self.stakerDetails[msg.sender];
+    function requestStakingWithdraw(ZapStorage.ZapStorageStruct storage self) public {
+        ZapStorage.StakeInfo storage stakes = self.stakerDetails[msg.sender];
         //Require that the miner is staked
         require(stakes.currentStatus == 1, "Miner is not staked");
 
@@ -78,15 +78,15 @@ library BerryStake {
         self.uintVars[keccak256("stakerCount")] -= 1;
 
         //Update the minimum dispute fee that is based on the number of stakers 
-        BerryDispute.updateMinDisputeFee(self);
+        ZapDispute.updateMinDisputeFee(self);
         emit StakeWithdrawRequested(msg.sender);
     }
 
     /**
     * @dev This function allows users to withdraw their stake after a 7 day waiting period from request
     */
-    function withdrawStake(BerryStorage.BerryStorageStruct storage self) public {
-        BerryStorage.StakeInfo storage stakes = self.stakerDetails[msg.sender];
+    function withdrawStake(ZapStorage.ZapStorageStruct storage self) public {
+        ZapStorage.StakeInfo storage stakes = self.stakerDetails[msg.sender];
         //Require the staker has locked for withdraw(currentStatus ==2) and that 7 days have
         //passed by since they locked for withdraw
         require(now - (now % 86400) - stakes.startDate >= 7 days, "7 days didn't pass");
@@ -98,10 +98,10 @@ library BerryStake {
     /**
     * @dev This function allows miners to deposit their stake.
     */
-    function depositStake(BerryStorage.BerryStorageStruct storage self) public {
+    function depositStake(ZapStorage.ZapStorageStruct storage self) public {
         newStake(self, msg.sender);
         //self adjusting disputeFee
-        BerryDispute.updateMinDisputeFee(self);
+        ZapDispute.updateMinDisputeFee(self);
     }
 
     /**
@@ -109,13 +109,13 @@ library BerryStake {
     * The function updates their status/state and status start date so they are locked it so they can't withdraw
     * and updates the number of stakers in the system.
     */
-    function newStake(BerryStorage.BerryStorageStruct storage self, address staker) internal {
-        require(BerryTransfer.balanceOf(self, staker) >= self.uintVars[keccak256("stakeAmount")], "Balance is lower than stake amount");
+    function newStake(ZapStorage.ZapStorageStruct storage self, address staker) internal {
+        require(ZapTransfer.balanceOf(self, staker) >= self.uintVars[keccak256("stakeAmount")], "Balance is lower than stake amount");
         //Ensure they can only stake if they are not currrently staked or if their stake time frame has ended
         //and they are currently locked for witdhraw
         require(self.stakerDetails[staker].currentStatus == 0 || self.stakerDetails[staker].currentStatus == 2, "Miner is in the wrong state");
         self.uintVars[keccak256("stakerCount")] += 1;
-        self.stakerDetails[staker] = BerryStorage.StakeInfo({
+        self.stakerDetails[staker] = ZapStorage.StakeInfo({
             currentStatus: 1, //this resets their stake start date to today
             startDate: now - (now % 86400)
         });
@@ -126,7 +126,7 @@ library BerryStake {
     * @dev Getter function for the requestId being mined 
     * variables for the current minin event: Challenge, 5 RequestId, difficulty and Totaltips
     */
-    function getNewCurrentVariables(BerryStorage.BerryStorageStruct storage self) internal view returns(bytes32 _challenge,uint[5] memory _requestIds,uint256 _difficutly, uint256 _tip){
+    function getNewCurrentVariables(ZapStorage.ZapStorageStruct storage self) internal view returns(bytes32 _challenge,uint[5] memory _requestIds,uint256 _difficutly, uint256 _tip){
         for(uint i=0;i<5;i++){
             _requestIds[i] =  self.currentMiners[i].value;
         }
@@ -137,7 +137,7 @@ library BerryStake {
     * @dev Getter function for next requestId on queue/request with highest payout at time the function is called
     * onDeck/info on top 5 requests(highest payout)-- RequestId, Totaltips
     */
-    function getNewVariablesOnDeck(BerryStorage.BerryStorageStruct storage self) internal view returns (uint256[5] memory idsOnDeck, uint256[5] memory tipsOnDeck) {
+    function getNewVariablesOnDeck(ZapStorage.ZapStorageStruct storage self) internal view returns (uint256[5] memory idsOnDeck, uint256[5] memory tipsOnDeck) {
         idsOnDeck = getTopRequestIDs(self);
         for(uint i = 0;i<5;i++){
             tipsOnDeck[i] = self.requestDetails[idsOnDeck[i]].apiUintVars[keccak256("totalTip")];
@@ -148,7 +148,7 @@ library BerryStake {
     * @dev Getter function for the top 5 requests with highest payouts. This function is used within the getNewVariablesOnDeck function
     * uint256[5] is an array with the top 5(highest payout) _requestIds at the time the function is called
     */
-    function getTopRequestIDs(BerryStorage.BerryStorageStruct storage self) internal view returns (uint256[5] memory _requestIds) {
+    function getTopRequestIDs(ZapStorage.ZapStorageStruct storage self) internal view returns (uint256[5] memory _requestIds) {
         uint256[5] memory _max;
         uint256[5] memory _index;
         (_max, _index) = Utilities.getMax5(self.requestQ);
