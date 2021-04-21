@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/zapproject/zap-miner/issues"
   },
-  "homepage": "https://github.com/zapproject/zap-miner#readme"
+  "homepage": "https://github.com/zapproject/zap-miner#readme",
+  "devDependencies": {
+    "hardhat": "^2.2.0"
+  }
 }
