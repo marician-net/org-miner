@@ -1,22 +1,25 @@
-require("@nomiclabs/hardhat-waffle");
+import { HardhatUserConfig } from "hardhat/types";
+import "hardhat-typechain";
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async () => {
-  const accounts = await ethers.getSigners();
 
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
+const config: HardhatUserConfig = {
 
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+  solidity: {
+    compilers: [{ version: "0.4.24", settings: {} }, { version: "0.5.1", settings: {} }],
+  },
+  networks: {
+    localhost: {
+      url: "http://127.0.0.1:8545/",
 
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
-module.exports = {
-  solidity: "0.7.3",
+    },
+    hardhat: {
+
+    },
+    coverage: {
+      url: "http://127.0.0.1:8555", // Coverage launches its own ganache-cli client
+    },
+  },
+
 };
 
+export default config
