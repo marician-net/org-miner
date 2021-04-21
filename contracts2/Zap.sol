@@ -1,33 +1,33 @@
 pragma solidity >=0.5.0 <0.7.0;
 
 import "./libraries/SafeMath.sol";
-import "./libraries/BerryStorage.sol";
-import "./libraries/BerryTransfer.sol";
-import "./libraries/BerryDispute.sol";
-import "./libraries/BerryStake.sol";
-import "./libraries/BerryLibrary.sol";
+import "./libraries/ZapStorage.sol";
+import "./libraries/ZapTransfer.sol";
+import "./libraries/ZapDispute.sol";
+import "./libraries/ZapStake.sol";
+import "./libraries/ZapLibrary.sol";
 
 /**
- * @title Berry Oracle System
+ * @title Zap Oracle System
  * @dev Oracle contract where miners can submit the proof of work along with the value.
- * The logic for this contract is in BerryLibrary.sol, BerryDispute.sol, BerryStake.sol,
- * and BerryTransfer.sol
+ * The logic for this contract is in ZapLibrary.sol, ZapDispute.sol, ZapStake.sol,
+ * and ZapTransfer.sol
  */
-contract Berry {
+contract Zap {
     using SafeMath for uint256;
 
-    using BerryDispute for BerryStorage.BerryStorageStruct;
-    using BerryLibrary for BerryStorage.BerryStorageStruct;
-    using BerryStake for BerryStorage.BerryStorageStruct;
-    using BerryTransfer for BerryStorage.BerryStorageStruct;
+    using ZapDispute for ZapStorage.ZapStorageStruct;
+    using ZapLibrary for ZapStorage.ZapStorageStruct;
+    using ZapStake for ZapStorage.ZapStorageStruct;
+    using ZapTransfer for ZapStorage.ZapStorageStruct;
 
-    BerryStorage.BerryStorageStruct berry;
+    ZapStorage.ZapStorageStruct zap;
 
     /*Functions*/
 
     /**
     * @dev Helps initialize a dispute by assigning it a disputeId
-    * when a miner returns a false on the validate array(in Berry.ProofOfWork) it sends the
+    * when a miner returns a false on the validate array(in Zap.ProofOfWork) it sends the
     * invalidated value information to POS voting
     * @param _requestId being disputed
     * @param _timestamp being disputed
@@ -35,7 +35,7 @@ contract Berry {
     * requires 5 miners to submit a value.
     */
     function beginDispute(uint256 _requestId, uint256 _timestamp, uint256 _minerIndex) external {
-        berry.beginDispute(_requestId, _timestamp, _minerIndex);
+        zap.beginDispute(_requestId, _timestamp, _minerIndex);
     }
 
     /**
@@ -44,7 +44,7 @@ contract Berry {
     * @param _supportsDispute is the vote (true=the dispute has basis false = vote against dispute)
     */
     function vote(uint256 _disputeId, bool _supportsDispute) external {
-        berry.vote(_disputeId, _supportsDispute);
+        zap.vote(_disputeId, _supportsDispute);
     }
 
     /**
@@ -52,15 +52,15 @@ contract Berry {
     * @param _disputeId is the dispute id
     */
     function tallyVotes(uint256 _disputeId) external {
-        berry.tallyVotes(_disputeId);
+        zap.tallyVotes(_disputeId);
     }
 
     /**
     * @dev Allows for a fork to be proposed
-    * @param _propNewBerryAddress address for new proposed Berry
+    * @param _propNewZapAddress address for new proposed Zap
     */
-    function proposeFork(address _propNewBerryAddress) external {
-        berry.proposeFork(_propNewBerryAddress);
+    function proposeFork(address _propNewZapAddress) external {
+        zap.proposeFork(_propNewZapAddress);
     }
 
     /**
@@ -70,7 +70,7 @@ contract Berry {
     * mine the onDeckQueryHash, or the api with the highest payout pool
     */
     function addTip(uint256 _requestId, uint256 _tip) external {
-        berry.addTip(_requestId, _tip);
+        zap.addTip(_requestId, _tip);
     }
 
 
@@ -82,7 +82,7 @@ contract Berry {
     * OLD!!!!!!!!!!!
     */
     function submitMiningSolution(string calldata _nonce, uint256 _requestId, uint256 _value) external {
-        berry.submitMiningSolution(_nonce, _requestId, _value);
+        zap.submitMiningSolution(_nonce, _requestId, _value);
     }
 
     /**
@@ -92,7 +92,7 @@ contract Berry {
     * @param _value is an array of 5 values
     */
     function submitMiningSolution(string calldata _nonce,uint256[5] calldata _requestId, uint256[5] calldata _value) external {
-        berry.submitMiningSolution(_nonce,_requestId, _value);
+        zap.submitMiningSolution(_nonce,_requestId, _value);
     }
 
 
@@ -103,21 +103,21 @@ contract Berry {
     * @param _pendingOwner The address to transfer ownership to.
     */
     function proposeOwnership(address payable _pendingOwner) external {
-        berry.proposeOwnership(_pendingOwner);
+        zap.proposeOwnership(_pendingOwner);
     }
 
     /**
     * @dev Allows the new owner to claim control of the contract
     */
     function claimOwnership() external {
-        berry.claimOwnership();
+        zap.claimOwnership();
     }
 
     /**
     * @dev This function allows miners to deposit their stake.
     */
     function depositStake() external {
-        berry.depositStake();
+        zap.depositStake();
     }
 
     /**
@@ -126,14 +126,14 @@ contract Berry {
     * can withdraw the stake
     */
     function requestStakingWithdraw() external {
-        berry.requestStakingWithdraw();
+        zap.requestStakingWithdraw();
     }
 
     /**
     * @dev This function allows users to withdraw their stake after a 7 day waiting period from request
     */
     function withdrawStake() external {
-        berry.withdrawStake();
+        zap.withdrawStake();
     }
 
     /**
@@ -143,7 +143,7 @@ contract Berry {
     * true if spender appproved successfully
     */
     function approve(address _spender, uint256 _amount) external returns (bool) {
-        return berry.approve(_spender, _amount);
+        return zap.approve(_spender, _amount);
     }
 
     /**
@@ -153,7 +153,7 @@ contract Berry {
     * true if transfer is successful
     */
     function transfer(address _to, uint256 _amount) external returns (bool) {
-        return berry.transfer(_to, _amount);
+        return zap.transfer(_to, _amount);
     }
 
     /**
@@ -165,14 +165,14 @@ contract Berry {
     * True if the transfer was successful
     */
     function transferFrom(address _from, address _to, uint256 _amount) external returns (bool) {
-        return berry.transferFrom(_from, _to, _amount);
+        return zap.transferFrom(_from, _to, _amount);
     }
 
     /**
     * @dev Allows users to access the token's name
     */
     function name() external pure returns (string memory) {
-        return "Berry Tributes";
+        return "Zap Tributes";
     }
 
     /**
@@ -194,7 +194,7 @@ contract Berry {
     * the challenge, 5 requestsId, difficulty and tip
     */
     function getNewCurrentVariables() external view returns(bytes32 _challenge,uint[5] memory _requestIds,uint256 _difficulty, uint256 _tip){
-        return berry.getNewCurrentVariables();
+        return zap.getNewCurrentVariables();
     }
 
     /**
@@ -202,21 +202,21 @@ contract Berry {
     * the 5 requestsId
     */
     function getTopRequestIDs() external view returns(uint256[5] memory _requestIds){
-        return berry.getTopRequestIDs();
+        return zap.getTopRequestIDs();
     }
 
 
     function getNewVariablesOnDeck() external view returns (uint256[5] memory idsOnDeck, uint256[5] memory tipsOnDeck) {
-        return berry.getNewVariablesOnDeck();
+        return zap.getNewVariablesOnDeck();
     }
 
     /**
-    * @dev Updates the Berry address after a proposed fork has 
+    * @dev Updates the Zap address after a proposed fork has 
     * passed the vote and day has gone by without a dispute
     * @param _disputeId the disputeId for the proposed fork
     */
-     function updateBerry(uint _disputeId) external{
-        return berry.updateBerry(_disputeId);
+     function updateZap(uint _disputeId) external{
+        return zap.updateZap(_disputeId);
     }
 
     /**
@@ -224,21 +224,21 @@ contract Berry {
     * @param _disputeId to unlock fee from
     */
      function unlockDisputeFee (uint _disputeId) external{
-        return berry.unlockDisputeFee(_disputeId);
+        return zap.unlockDisputeFee(_disputeId);
     }
 
     /*******************TEST Functions NOT INCLUDED ON PRODUCTION/MAINNET/RINKEBY******/
         /*This is a cheat for demo purposes, will delete upon actual launch*/
     function theLazyCoon(address _address, uint _amount) external {
-        berry.theLazyCoon(_address,_amount);
+        zap.theLazyCoon(_address,_amount);
     }
 
     function testSubmitMiningSolution(string calldata _nonce, uint256 _requestId, uint256 _value) external {
-        berry.testSubmitMiningSolution(_nonce, _requestId, _value);
+        zap.testSubmitMiningSolution(_nonce, _requestId, _value);
     }
 
     function testSubmitMiningSolution(string calldata _nonce,uint256[5] calldata _requestId, uint256[5] calldata _value) external {
-        berry.testSubmitMiningSolution(_nonce,_requestId, _value);
+        zap.testSubmitMiningSolution(_nonce,_requestId, _value);
     }
     /***************END TEST Functions NOT INCLUDED ON PRODUCTION/MAINNET/RINKEBY******/
  }
