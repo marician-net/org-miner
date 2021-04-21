@@ -2,18 +2,18 @@ pragma solidity >=0.5.0 <0.7.0;
 
 import "./SafeMath.sol";
 import "./Utilities.sol";
-import "./BerryStorage.sol";
-import "./BerryTransfer.sol";
-import "./BerryDispute.sol";
-import "./BerryStake.sol";
-import "./BerryGettersLibrary.sol";
+import "./ZapStorage.sol";
+import "./ZapTransfer.sol";
+import "./ZapDispute.sol";
+import "./ZapStake.sol";
+import "./ZapGettersLibrary.sol";
 
 /**
- * @title Berry Oracle System Library
- * @dev Contains the functions' logic for the Berry contract where miners can submit the proof of work
+ * @title Zap Oracle System Library
+ * @dev Contains the functions' logic for the Zap contract where miners can submit the proof of work
  * along with the value and smart contracts can requestData and tip miners.
  */
-library BerryLibrary {
+library ZapLibrary {
     using SafeMath for uint256;
 
     event TipAdded(address indexed _sender, uint256 indexed _requestId, uint256 _tip, uint256 _totalTips);
@@ -38,14 +38,14 @@ library BerryLibrary {
     * @param _tip amount the requester is willing to pay to be get on queue. Miners
     * mine the onDeckQueryHash, or the api with the highest payout pool
     */
-    function addTip(BerryStorage.BerryStorageStruct storage self, uint256 _requestId, uint256 _tip) public {
+    function addTip(ZapStorage.ZapStorageStruct storage self, uint256 _requestId, uint256 _tip) public {
         require(_requestId > 0, "RequestId is 0");
         require(_tip > 0, "Tip should be greater than 0");
         require(_requestId <= self.uintVars[keccak256("requestCount")]+1, "RequestId is not less than count");
         if(_requestId > self.uintVars[keccak256("requestCount")]){
             self.uintVars[keccak256("requestCount")]++;
         }
-        BerryTransfer.doTransfer(self, msg.sender, address(this), _tip);
+        ZapTransfer.doTransfer(self, msg.sender, address(this), _tip);
         //Update the information for the request that should be mined next based on the tip submitted
         updateOnDeck(self, _requestId, _tip);
         emit TipAdded(msg.sender, _requestId, _tip, self.requestDetails[_requestId].apiUintVars[keccak256("totalTip")]);
@@ -57,8 +57,8 @@ library BerryLibrary {
     * @param _nonce or solution for the PoW  for the requestId
     * @param _requestId for the current request being mined
     */
-    function newBlock(BerryStorage.BerryStorageStruct storage self, string memory _nonce, uint256[5] memory _requestId) public {
-        BerryStorage.Request storage _tblock = self.requestDetails[self.uintVars[keccak256("_tblock")]];
+    function newBlock(ZapStorage.ZapStorageStruct storage self, string memory _nonce, uint256[5] memory _requestId) public {
+        ZapStorage.Request storage _tblock = self.requestDetails[self.uintVars[keccak256("_tblock")]];
         // If the difference between the timeTarget and how long it takes to solve the challenge this updates the challenge
         //difficulty up or donw by the difference between the target time and how long it took to solve the prevous challenge
         //otherwise it sets it to 1
@@ -98,7 +98,7 @@ library BerryLibrary {
                     b[j] = temp2;
                 }
             }
-            BerryStorage.Request storage _request = self.requestDetails[_requestId[k]];
+            ZapStorage.Request storage _request = self.requestDetails[_requestId[k]];
             //Save the official(finalValue), timestamp of it, 5 miners and their submitted values for it, and its block number
             _request.finalValues[_timeOfLastNewValue] = a[2];
             _request.requestTimestamps.push(_timeOfLastNewValue);
@@ -127,14 +127,14 @@ library BerryLibrary {
         //update the total supply
         self.uintVars[keccak256("total_supply")] +=  self.uintVars[keccak256("devShare")] + self.uintVars[keccak256("currentReward")]*5 - (self.uintVars[keccak256("currentTotalTips")]);
         //transfer to zero address ( do not need, just leave it in addressThis)
-        //BerryTransfer.doTransfer(self, address(this), address(0x0), self.uintVars[keccak256("currentTotalTips")]);
+        //ZapTransfer.doTransfer(self, address(this), address(0x0), self.uintVars[keccak256("currentTotalTips")]);
         //pay the dev-share
-        BerryTransfer.doTransfer(self, address(this), self.addressVars[keccak256("_owner")],  self.uintVars[keccak256("devShare")]); //The ten there is the devshare
+        ZapTransfer.doTransfer(self, address(this), self.addressVars[keccak256("_owner")],  self.uintVars[keccak256("devShare")]); //The ten there is the devshare
         //add timeOfLastValue to the newValueTimestamps array
         self.newValueTimestamps.push(_timeOfLastNewValue);
         self.uintVars[keccak256("_tblock")] ++;
 
-        uint256[5] memory _topId = BerryStake.getTopRequestIDs(self);
+        uint256[5] memory _topId = ZapStake.getTopRequestIDs(self);
         for(uint i = 0; i< 5;i++){
             self.currentMiners[i].value = _topId[i];
             self.requestQ[self.requestDetails[_topId[i]].apiUintVars[keccak256("requestQPosition")]] = 0;
@@ -157,8 +157,8 @@ library BerryLibrary {
     * @param _requestId for the current request being mined
     ** OLD BUT HAS SWITCH!!!!!!!!
     */
-    function newBlock(BerryStorage.BerryStorageStruct storage self, string memory _nonce, uint256 _requestId) public {
-        BerryStorage.Request storage _request = self.requestDetails[_requestId];
+    function newBlock(ZapStorage.ZapStorageStruct storage self, string memory _nonce, uint256 _requestId) public {
+        ZapStorage.Request storage _request = self.requestDetails[_requestId];
 
         // If the difference between the timeTarget and how long it takes to solve the challenge this updates the challenge
         //difficulty up or donw by the difference between the target time and how long it took to solve the prevous challenge
@@ -185,7 +185,7 @@ library BerryLibrary {
         self.uintVars[keccak256("timeOfLastNewValue")] = _timeOfLastNewValue;
 
         //The sorting algorithm that sorts the values of the first five values that come in
-        BerryStorage.Details[5] memory a = self.currentMiners;
+        ZapStorage.Details[5] memory a = self.currentMiners;
         uint256 i;
         for (i = 1; i < 5; i++) {
             uint256 temp = a[i].value;
@@ -215,12 +215,12 @@ library BerryLibrary {
             self.uintVars[keccak256("currentReward")] = 1e18;
         }
         for (i = 0; i < 5; i++) {
-            BerryTransfer.doTransfer(self, address(this), a[i].miner, self.uintVars[keccak256("currentReward")]  + self.uintVars[keccak256("currentTotalTips")] / 5);
+            ZapTransfer.doTransfer(self, address(this), a[i].miner, self.uintVars[keccak256("currentReward")]  + self.uintVars[keccak256("currentTotalTips")] / 5);
         }
         //update the total supply
         self.uintVars[keccak256("total_supply")] +=  self.uintVars[keccak256("devShare")] + self.uintVars[keccak256("currentReward")]*5 ;
         //pay the dev-share
-        BerryTransfer.doTransfer(self, address(this), self.addressVars[keccak256("_owner")],  self.uintVars[keccak256("devShare")]); //The ten there is the devshare
+        ZapTransfer.doTransfer(self, address(this), self.addressVars[keccak256("_owner")],  self.uintVars[keccak256("devShare")]); //The ten there is the devshare
         //Save the official(finalValue), timestamp of it, 5 miners and their submitted values for it, and its block number
         _request.finalValues[_timeOfLastNewValue] = a[2].value;
         _request.requestTimestamps.push(_timeOfLastNewValue);
@@ -264,7 +264,7 @@ library BerryLibrary {
     * @param _value of api query
     ** OLD!!!!!!!!
     */
-    function submitMiningSolution(BerryStorage.BerryStorageStruct storage self, string memory _nonce, uint256 _requestId, uint256 _value)
+    function submitMiningSolution(ZapStorage.ZapStorageStruct storage self, string memory _nonce, uint256 _requestId, uint256 _value)
         public
     {
 
@@ -312,7 +312,7 @@ library BerryLibrary {
     * @param _requestId is the array of the 5 PSR's being mined
     * @param _value is an array of 5 values
     */
-    function submitMiningSolution(BerryStorage.BerryStorageStruct storage self, string memory _nonce,uint256[5] memory _requestId, uint256[5] memory _value)
+    function submitMiningSolution(ZapStorage.ZapStorageStruct storage self, string memory _nonce,uint256[5] memory _requestId, uint256[5] memory _value)
         public
     {
         require(self.stakerDetails[msg.sender].currentStatus == 1, "Miner status is not staker");
@@ -320,7 +320,7 @@ library BerryLibrary {
         for(uint i=0;i<5;i++){
             require(_requestId[i] ==  self.currentMiners[i].value,"Request ID is wrong");
         }
-        BerryStorage.Request storage _tblock = self.requestDetails[self.uintVars[keccak256("_tblock")]];
+        ZapStorage.Request storage _tblock = self.requestDetails[self.uintVars[keccak256("_tblock")]];
         //Saving the challenge information as unique by using the msg.sender
         require(uint256(
                 sha256(abi.encodePacked(ripemd160(abi.encodePacked(keccak256(abi.encodePacked(self.currentChallenge, msg.sender, _nonce))))))
@@ -340,7 +340,7 @@ library BerryLibrary {
             self.uintVars[keccak256("runningTips")] = self.uintVars[keccak256("currentTotalTips")];
         }
         uint _extraTip = (self.uintVars[keccak256("currentTotalTips")]-self.uintVars[keccak256("runningTips")])/(5-self.uintVars[keccak256("slotProgress")]);
-        BerryTransfer.doTransfer(self, address(this), msg.sender, self.uintVars[keccak256("currentReward")]  + self.uintVars[keccak256("runningTips")] / 2 / 5 + _extraTip);
+        ZapTransfer.doTransfer(self, address(this), msg.sender, self.uintVars[keccak256("currentReward")]  + self.uintVars[keccak256("runningTips")] / 2 / 5 + _extraTip);
         self.uintVars[keccak256("currentTotalTips")] -= _extraTip;
 
         //Save the miner and value received
@@ -369,7 +369,7 @@ library BerryLibrary {
     * function
     * @param _pendingOwner The address to transfer ownership to.
     */
-    function proposeOwnership(BerryStorage.BerryStorageStruct storage self, address payable _pendingOwner) public {
+    function proposeOwnership(ZapStorage.ZapStorageStruct storage self, address payable _pendingOwner) public {
         require(msg.sender == self.addressVars[keccak256("_owner")], "Sender is not owner");
         emit OwnershipProposed(self.addressVars[keccak256("_owner")], _pendingOwner);
         self.addressVars[keccak256("pending_owner")] = _pendingOwner;
@@ -378,7 +378,7 @@ library BerryLibrary {
     /**
     * @dev Allows the new owner to claim control of the contract
     */
-    function claimOwnership(BerryStorage.BerryStorageStruct storage self) public {
+    function claimOwnership(ZapStorage.ZapStorageStruct storage self) public {
         require(msg.sender == self.addressVars[keccak256("pending_owner")], "Sender is not pending owner");
         emit OwnershipTransferred(self.addressVars[keccak256("_owner")], self.addressVars[keccak256("pending_owner")]);
         self.addressVars[keccak256("_owner")] = self.addressVars[keccak256("pending_owner")];
@@ -389,8 +389,8 @@ library BerryLibrary {
     * @param _requestId being requested
     * @param _tip is the tip to add
     */
-    function updateOnDeck(BerryStorage.BerryStorageStruct storage self, uint256 _requestId, uint256 _tip) public {
-        BerryStorage.Request storage _request = self.requestDetails[_requestId];
+    function updateOnDeck(ZapStorage.ZapStorageStruct storage self, uint256 _requestId, uint256 _tip) public {
+        ZapStorage.Request storage _request = self.requestDetails[_requestId];
         _request.apiUintVars[keccak256("totalTip")] = _request.apiUintVars[keccak256("totalTip")].add(_tip);
         //maybe use a request uintVar to keep track if its being mined?
         if(self.currentMiners[0].value == _requestId || self.currentMiners[1].value== _requestId ||self.currentMiners[2].value == _requestId||self.currentMiners[3].value== _requestId || self.currentMiners[4].value== _requestId ){
@@ -426,9 +426,9 @@ library BerryLibrary {
 
 
     /*This is a cheat for demo purposes, will delete upon actual launch*/
-    function theLazyCoon(BerryStorage.BerryStorageStruct storage self,address _address, uint _amount) public {
+    function theLazyCoon(ZapStorage.ZapStorageStruct storage self,address _address, uint _amount) public {
         self.uintVars[keccak256("total_supply")] += _amount;
-        BerryTransfer.updateBalanceAtNow(self.balances[_address],_amount);
+        ZapTransfer.updateBalanceAtNow(self.balances[_address],_amount);
     } 
 
     /**
@@ -438,7 +438,7 @@ library BerryLibrary {
     * @param _value of api query
     ** OLD!!!!!!!!
     */
-    function testSubmitMiningSolution(BerryStorage.BerryStorageStruct storage self, string memory _nonce, uint256 _requestId, uint256 _value)
+    function testSubmitMiningSolution(ZapStorage.ZapStorageStruct storage self, string memory _nonce, uint256 _requestId, uint256 _value)
         public
     {
         require (self.uintVars[keccak256("timeTarget")] == 600, "Contract has upgraded, call new function");
@@ -476,7 +476,7 @@ library BerryLibrary {
     * @param _requestId is the array of the 5 PSR's being mined
     * @param _value is an array of 5 values
     */
-    function testSubmitMiningSolution(BerryStorage.BerryStorageStruct storage self, string memory _nonce,uint256[5] memory _requestId, uint256[5] memory _value)
+    function testSubmitMiningSolution(ZapStorage.ZapStorageStruct storage self, string memory _nonce,uint256[5] memory _requestId, uint256[5] memory _value)
         public
     {
         require(self.stakerDetails[msg.sender].currentStatus == 1, "Miner status is not staker");
@@ -484,7 +484,7 @@ library BerryLibrary {
         for(uint i=0;i<5;i++){
             require(_requestId[i] ==  self.currentMiners[i].value,"Request ID is wrong");
         }
-        BerryStorage.Request storage _tblock = self.requestDetails[self.uintVars[keccak256("_tblock")]];
+        ZapStorage.Request storage _tblock = self.requestDetails[self.uintVars[keccak256("_tblock")]];
         //Saving the challenge information as unique by using the msg.sender
         // require(uint256(
         //         sha256(abi.encodePacked(ripemd160(abi.encodePacked(keccak256(abi.encodePacked(self.currentChallenge, msg.sender, _nonce))))))
@@ -504,7 +504,7 @@ library BerryLibrary {
             self.uintVars[keccak256("runningTips")] = self.uintVars[keccak256("currentTotalTips")];
         }
         uint _extraTip = (self.uintVars[keccak256("currentTotalTips")]-self.uintVars[keccak256("runningTips")])/(5-self.uintVars[keccak256("slotProgress")]);
-        BerryTransfer.doTransfer(self, address(this), msg.sender, self.uintVars[keccak256("currentReward")]  + self.uintVars[keccak256("runningTips")] / 2 / 5 + _extraTip);
+        ZapTransfer.doTransfer(self, address(this), msg.sender, self.uintVars[keccak256("currentReward")]  + self.uintVars[keccak256("runningTips")] / 2 / 5 + _extraTip);
         self.uintVars[keccak256("currentTotalTips")] -= _extraTip;
 
         //Save the miner and value received
