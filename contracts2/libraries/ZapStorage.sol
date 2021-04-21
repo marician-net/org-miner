@@ -1,11 +1,11 @@
 pragma solidity >=0.5.0;
 
 /**
- * @title Berry Oracle Storage Library
- * @dev Contains all the variables/structs used by Berry
+ * @title Zap Oracle Storage Library
+ * @dev Contains all the variables/structs used by Zap
  */
 
-library BerryStorage {
+library ZapStorage {
     //Internal struct for use in proof-of-work submission
     struct Details {
         uint256 value;
@@ -23,7 +23,7 @@ library BerryStorage {
         address proposedForkAddress; //new fork address (if fork proposal)
         mapping(bytes32 => uint256) disputeUintVars;
         //Each of the variables below is saved in the mapping disputeUintVars for each disputeID
-        //e.g. BerryStorageStruct.DisputeById[disputeID].disputeUintVars[keccak256("requestId")]
+        //e.g. ZapStorageStruct.DisputeById[disputeID].disputeUintVars[keccak256("requestId")]
         //These are the variables saved in this mapping:
         // uint keccak256("requestId");//apiID of disputed value
         // uint keccak256("timestamp");//timestamp of distputed value
@@ -67,20 +67,20 @@ library BerryStorage {
         mapping(uint256 => uint256[5]) valuesByTimestamp;
     }
 
-    struct BerryStorageStruct {
+    struct ZapStorageStruct {
         bytes32 currentChallenge; //current challenge to be solved
         uint256[51] requestQ; //uint50 array of the top50 requests by payment amount
         uint256[] newValueTimestamps; //array of all timestamps requested
         Details[5] currentMiners; //This struct is for organizing the five mined values to find the median
         mapping(bytes32 => address) addressVars;
-        //Address fields in the Berry contract are saved the addressVars mapping
-        //e.g. addressVars[keccak256("berryContract")] = address
+        //Address fields in the Zap contract are saved the addressVars mapping
+        //e.g. addressVars[keccak256("zapContract")] = address
         //These are the variables saved in this mapping:
-        // address keccak256("berryContract");//Berry address
-        // address  keccak256("_owner");//Berry Owner address
-        // address  keccak256("_deity");//Berry Owner that can do things at will
+        // address keccak256("zapContract");//Zap address
+        // address  keccak256("_owner");//Zap Owner address
+        // address  keccak256("_deity");//Zap Owner that can do things at will
         mapping(bytes32 => uint256) uintVars;
-        //uint fields in the Berry contract are saved the uintVars mapping
+        //uint fields in the Zap contract are saved the uintVars mapping
         //e.g. uintVars[keccak256("decimals")] = uint
         //These are the variables saved in this mapping:
         // keccak256("decimals");    //18 decimal standard ERC20

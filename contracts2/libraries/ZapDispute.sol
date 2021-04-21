@@ -1,15 +1,15 @@
 // pragma solidity >=0.5.0 <0.7.0;
 pragma solidity >=0.7.0
-import "./BerryStorage.sol";
-import "./BerryTransfer.sol";
+import "./ZapStorage.sol";
+import "./ZapTransfer.sol";
 
 
 /**
-* @title Berry Dispute
-* @dev Contains the methods related to disputes. Berry.sol references this library for function's logic.
+* @title Zap Dispute
+* @dev Contains the methods related to disputes. Zap.sol references this library for function's logic.
 */
 
-library BerryDispute {
+library ZapDispute {
     using SafeMath for uint256;
     using SafeMath for int256;
 
@@ -19,21 +19,21 @@ library BerryDispute {
     event Voted(uint256 indexed _disputeID, bool _position, address indexed _voter);
     //emitted upon dispute tally
     event DisputeVoteTallied(uint256 indexed _disputeID, int256 _result, address indexed _reportedMiner, address _reportingParty, bool _active);
-    event NewBerryAddress(address _newBerry); //emmited when a proposed fork is voted true
+    event NewZapAddress(address _newZap); //emmited when a proposed fork is voted true
 
     /*Functions*/
 
     /**
     * @dev Helps initialize a dispute by assigning it a disputeId
-    * when a miner returns a false on the validate array(in Berry.ProofOfWork) it sends the
+    * when a miner returns a false on the validate array(in Zap.ProofOfWork) it sends the
     * invalidated value information to POS voting
     * @param _requestId being disputed
     * @param _timestamp being disputed
     * @param _minerIndex the index of the miner that submitted the value being disputed. Since each official value
     * requires 5 miners to submit a value.
     */
-    function beginDispute(BerryStorage.BerryStorageStruct storage self, uint256 _requestId, uint256 _timestamp, uint256 _minerIndex) public {
-        BerryStorage.Request storage _request = self.requestDetails[_requestId];
+    function beginDispute(ZapStorage.ZapStorageStruct storage self, uint256 _requestId, uint256 _timestamp, uint256 _minerIndex) public {
+        ZapStorage.Request storage _request = self.requestDetails[_requestId];
         //require that no more than a day( (24 hours * 60 minutes)/10minutes=144 blocks) has gone by since the value was "mined"
         //require(now - _timestamp <= 1 days, "The value was mined more than a day ago");
         require(_request.minedBlockNum[_timestamp] > 0, "Mined block is 0");
@@ -76,7 +76,7 @@ library BerryDispute {
         //maps the dispute hash to the disputeId
 
         //maps the dispute to the Dispute struct
-        self.disputesById[disputeId] = BerryStorage.Dispute({
+        self.disputesById[disputeId] = ZapStorage.Dispute({
             hash: _hash,
             isPropFork: false,
             reportedMiner: _miner,
@@ -96,7 +96,7 @@ library BerryDispute {
         self.disputesById[disputeId].disputeUintVars[keccak256("minerSlot")] = _minerIndex;
         self.disputesById[disputeId].disputeUintVars[keccak256("fee")] = _fee;
   
-        BerryTransfer.doTransfer(self, msg.sender, address(this),_fee);
+        ZapTransfer.doTransfer(self, msg.sender, address(this),_fee);
 
         //Values are sorted as they come in and the official value is the median of the first five
         //So the "official value" miner is always minerIndex==2. If the official value is being
@@ -116,11 +116,11 @@ library BerryDispute {
     * @param _disputeId is the dispute id
     * @param _supportsDispute is the vote (true=the dispute has basis false = vote against dispute)
     */
-    function vote(BerryStorage.BerryStorageStruct storage self, uint256 _disputeId, bool _supportsDispute) public {
-        BerryStorage.Dispute storage disp = self.disputesById[_disputeId];
+    function vote(ZapStorage.ZapStorageStruct storage self, uint256 _disputeId, bool _supportsDispute) public {
+        ZapStorage.Dispute storage disp = self.disputesById[_disputeId];
 
         //Get the voteWeight or the balance of the user at the time/blockNumber the disupte began
-        uint256 voteWeight = BerryTransfer.balanceOfAt(self, msg.sender, disp.disputeUintVars[keccak256("blockNumber")]);
+        uint256 voteWeight = ZapTransfer.balanceOfAt(self, msg.sender, disp.disputeUintVars[keccak256("blockNumber")]);
 
         //Require that the msg.sender has not voted
         require(disp.voted[msg.sender] != true, "Sender has already voted");
@@ -153,8 +153,8 @@ library BerryDispute {
     * @dev tallies the votes.
     * @param _disputeId is the dispute id
     */
-    function tallyVotes(BerryStorage.BerryStorageStruct storage self, uint256 _disputeId) public {
-        BerryStorage.Dispute storage disp = self.disputesById[_disputeId];
+    function tallyVotes(ZapStorage.ZapStorageStruct storage self, uint256 _disputeId) public {
+        ZapStorage.Dispute storage disp = self.disputesById[_disputeId];
 
         //Ensure this has not already been executed/tallied
         require(disp.executed == false, "Dispute has been already executed");
@@ -163,7 +163,7 @@ library BerryDispute {
         //If the vote is not a proposed fork
         if (disp.isPropFork == false) {
                 //Ensure the time for voting has elapsed
-                    BerryStorage.StakeInfo storage stakes = self.stakerDetails[disp.reportedMiner];
+                    ZapStorage.StakeInfo storage stakes = self.stakerDetails[disp.reportedMiner];
                     //If the vote for disputing a value is succesful(disp.tally >0) then unstake the reported
                     // miner and transfer the stakeAmount and dispute fee to the reporting party
                     if (disp.tally > 0) {
@@ -176,7 +176,7 @@ library BerryDispute {
         } else {
             if (disp.tally > 0 && uint(disp.tally) >= ((self.uintVars[keccak256("total_supply")] * 10) / 100)) {
                 disp.disputeVotePassed = true;
-                emit NewBerryAddress(disp.proposedForkAddress);
+                emit NewZapAddress(disp.proposedForkAddress);
             }
         }
         disp.disputeUintVars[keccak256("tallyDate")] = now;
@@ -186,11 +186,11 @@ library BerryDispute {
 
     /**
     * @dev Allows for a fork to be proposed
-    * @param _propNewBerryAddress address for new proposed Berry
+    * @param _propNewZapAddress address for new proposed Zap
     */
-    function proposeFork(BerryStorage.BerryStorageStruct storage self, address _propNewBerryAddress) public {
-        bytes32 _hash = keccak256(abi.encodePacked(_propNewBerryAddress));
-        BerryTransfer.doTransfer(self, msg.sender, address(this), 100e18); //This is the fork fee (just 100 tokens flat, no refunds)
+    function proposeFork(ZapStorage.ZapStorageStruct storage self, address _propNewZapAddress) public {
+        bytes32 _hash = keccak256(abi.encodePacked(_propNewZapAddress));
+        ZapTransfer.doTransfer(self, msg.sender, address(this), 100e18); //This is the fork fee (just 100 tokens flat, no refunds)
         self.uintVars[keccak256("disputeCount")]++;
         uint256 disputeId = self.uintVars[keccak256("disputeCount")];
         if(self.disputeIdByDisputeHash[_hash] > 0){
@@ -210,12 +210,12 @@ library BerryDispute {
                 require(now - self.disputesById[lastID].disputeUintVars[keccak256("tallyDate")] <= 1 days, "Time for voting haven't elapsed");
             }
         }
-        self.disputesById[disputeId] = BerryStorage.Dispute({
+        self.disputesById[disputeId] = ZapStorage.Dispute({
             hash: _hash,
             isPropFork: true,
             reportedMiner: msg.sender,
             reportingParty: msg.sender,
-            proposedForkAddress: _propNewBerryAddress,
+            proposedForkAddress: _propNewZapAddress,
             executed: false,
             disputeVotePassed: false,
             tally: 0
@@ -225,39 +225,39 @@ library BerryDispute {
     }
 
     /**
-    * @dev Updates the Berry address after a proposed fork has 
+    * @dev Updates the Zap address after a proposed fork has 
     * passed the vote and day has gone by without a dispute
     * @param _disputeId the disputeId for the proposed fork
     */
-    function updateBerry(BerryStorage.BerryStorageStruct storage self, uint _disputeId) public {
+    function updateZap(ZapStorage.ZapStorageStruct storage self, uint _disputeId) public {
         bytes32 _hash = self.disputesById[_disputeId].hash;
         uint256 origID = self.disputeIdByDisputeHash[_hash];
         uint256 lastID =  self.disputesById[origID].disputeUintVars[keccak256(abi.encodePacked(self.disputesById[origID].disputeUintVars[keccak256("disputeRounds")]))];
-        BerryStorage.Dispute storage disp = self.disputesById[lastID];
+        ZapStorage.Dispute storage disp = self.disputesById[lastID];
         require(disp.disputeVotePassed == true, "vote needs to pass");
         require(now - disp.disputeUintVars[keccak256("tallyDate")] > 1 days, "Time for voting for further disputes has not passed");
-        self.addressVars[keccak256("berryContract")] = disp.proposedForkAddress;
+        self.addressVars[keccak256("zapContract")] = disp.proposedForkAddress;
     }
 
     /**
     * @dev Allows disputer to unlock the dispute fee
     * @param _disputeId to unlock fee from
     */
-    function unlockDisputeFee (BerryStorage.BerryStorageStruct storage self, uint _disputeId) public {
+    function unlockDisputeFee (ZapStorage.ZapStorageStruct storage self, uint _disputeId) public {
         bytes32 _hash = self.disputesById[_disputeId].hash;
         uint256 origID = self.disputeIdByDisputeHash[_hash];
         uint256 lastID =  self.disputesById[origID].disputeUintVars[keccak256(abi.encodePacked(self.disputesById[origID].disputeUintVars[keccak256("disputeRounds")]))];
         if(lastID == 0){
             lastID = origID;
         }
-        BerryStorage.Dispute storage disp = self.disputesById[origID];
-        BerryStorage.Dispute storage last = self.disputesById[lastID];
+        ZapStorage.Dispute storage disp = self.disputesById[origID];
+        ZapStorage.Dispute storage last = self.disputesById[lastID];
                 if(disp.disputeUintVars[keccak256("disputeRounds")] == 0){
                   disp.disputeUintVars[keccak256("disputeRounds")] = 1;  
                 }
         require(disp.disputeUintVars[keccak256("paid")] == 0,"already paid out");
         require(now - last.disputeUintVars[keccak256("tallyDate")] > 1 days, "Time for voting haven't elapsed");
-        BerryStorage.StakeInfo storage stakes = self.stakerDetails[disp.reportedMiner];
+        ZapStorage.StakeInfo storage stakes = self.stakerDetails[disp.reportedMiner];
         disp.disputeUintVars[keccak256("paid")] = 1;
         if (last.disputeVotePassed == true){
                 //Changing the currentStatus and startDate unstakes the reported miner and transfers the stakeAmount
@@ -270,7 +270,7 @@ library BerryDispute {
                 updateMinDisputeFee(self);
                 //Decreases the stakerCount since the miner's stake is being slashed
                 if(stakes.currentStatus == 4){
-                    BerryTransfer.doTransfer(self,disp.reportedMiner,disp.reportingParty,self.uintVars[keccak256("stakeAmount")]);
+                    ZapTransfer.doTransfer(self,disp.reportedMiner,disp.reportingParty,self.uintVars[keccak256("stakeAmount")]);
                     stakes.currentStatus =0 ;
                 }
                 for(uint i = 0; i < disp.disputeUintVars[keccak256("disputeRounds")];i++){
@@ -278,13 +278,13 @@ library BerryDispute {
                     if(_id == 0){
                         _id = origID;
                     }
-                    BerryStorage.Dispute storage disp2 = self.disputesById[_id];
-                    BerryTransfer.doTransfer(self,address(this),disp2.reportingParty,disp2.disputeUintVars[keccak256("fee")]);
+                    ZapStorage.Dispute storage disp2 = self.disputesById[_id];
+                    ZapTransfer.doTransfer(self,address(this),disp2.reportingParty,disp2.disputeUintVars[keccak256("fee")]);
                 }
             }
             else {
                 stakes.currentStatus = 1;
-                BerryStorage.Request storage _request = self.requestDetails[disp.disputeUintVars[keccak256("requestId")]];
+                ZapStorage.Request storage _request = self.requestDetails[disp.disputeUintVars[keccak256("requestId")]];
                 if(disp.disputeUintVars[keccak256("minerSlot")] == 2) {
                     //note we still don't put timestamp back into array (is this an issue? (shouldn't be))
                   _request.finalValues[disp.disputeUintVars[keccak256("timestamp")]] = disp.disputeUintVars[keccak256("value")];
@@ -297,7 +297,7 @@ library BerryDispute {
                     if(_id != 0){
                         last = self.disputesById[_id];//handling if happens during an upgrade
                     }
-                    BerryTransfer.doTransfer(self,address(this),last.reportedMiner,self.disputesById[_id].disputeUintVars[keccak256("fee")]);
+                    ZapTransfer.doTransfer(self,address(this),last.reportedMiner,self.disputesById[_id].disputeUintVars[keccak256("fee")]);
                 }
             }
     }
@@ -306,7 +306,7 @@ library BerryDispute {
     * @dev This function upates the minimun dispute fee as a function of the amount
     * of staked miners
     */
-    function updateMinDisputeFee(BerryStorage.BerryStorageStruct storage self) public {
+    function updateMinDisputeFee(ZapStorage.ZapStorageStruct storage self) public {
         self.uintVars[keccak256("disputeFee")] = SafeMath.max(15e18,
                 (self.uintVars[keccak256("stakeAmount")]-
                 (self.uintVars[keccak256("stakeAmount")]* 
