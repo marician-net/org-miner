@@ -20,7 +20,7 @@ library ZapGettersLibrary{
     //Only needs to be in library
     /**
     * @dev This function allows us to set a new Deity (or remove it) 
-    * @param _newDeity address of the new Deity of the berry system 
+    * @param _newDeity address of the new Deity of the zap system 
     */
     function changeDeity(ZapStorage.ZapStorageStruct storage self, address _newDeity) internal{
         require(self.addressVars[keccak256("_deity")] == msg.sender);
@@ -31,12 +31,12 @@ library ZapGettersLibrary{
     //Only needs to be in library
     /**
     * @dev This function allows the deity to upgrade the Zap System
-    * @param _berryContract address of new updated ZapCore contract
+    * @param _zapContract address of new updated ZapCore contract
     */
-    function changeZapContract(ZapStorage.ZapStorageStruct storage self,address _berryContract) internal{
+    function changeZapContract(ZapStorage.ZapStorageStruct storage self,address _zapContract) internal{
         require(self.addressVars[keccak256("_deity")] == msg.sender);
-        self.addressVars[keccak256("berryContract")]= _berryContract;
-        emit NewZapAddress(_berryContract);
+        self.addressVars[keccak256("zapContract")]= _zapContract;
+        emit NewZapAddress(_zapContract);
     }
 
 
@@ -69,7 +69,7 @@ library ZapGettersLibrary{
     * @param _data is the keccak256("variable_name") of the variable that is being accessed. 
     * These are examples of how the variables are saved within other functions:
     * addressVars[keccak256("_owner")]
-    * addressVars[keccak256("berryContract")]
+    * addressVars[keccak256("zapContract")]
     */
     function getAddressVars(ZapStorage.ZapStorageStruct storage self, bytes32 _data) view internal returns(address){
         return self.addressVars[_data];

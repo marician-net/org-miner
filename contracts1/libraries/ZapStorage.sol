@@ -74,9 +74,9 @@ library ZapStorage {
         Details[5]  currentMiners; //This struct is for organizing the five mined values to find the median
         mapping(bytes32 => address) addressVars;
         //Address fields in the Zap contract are saved the addressVars mapping
-        //e.g. addressVars[keccak256("berryContract")] = address
+        //e.g. addressVars[keccak256("zapContract")] = address
         //These are the variables saved in this mapping:
-            // address keccak256("berryContract");//Zap address
+            // address keccak256("zapContract");//Zap address
             // address  keccak256("_owner");//Zap Owner address
             // address  keccak256("_deity");//Zap Owner that can do things at will
         mapping(bytes32 => uint) uintVars; 
