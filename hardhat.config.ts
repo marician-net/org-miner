@@ -1,5 +1,7 @@
 import { HardhatUserConfig } from "hardhat/types";
 import "hardhat-typechain";
+import "hardhat-deploy";
+import "@nomiclabs/hardhat-ethers";
 
 
 const config: HardhatUserConfig = {
