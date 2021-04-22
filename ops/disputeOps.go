@@ -47,7 +47,7 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 	}
 
 	if balance.Cmp(disputeCost) < 0 {
-		return fmt.Errorf("insufficient balance (%s BRY) disputes require (%s BRY)",
+		return fmt.Errorf("insufficient balance (%s ZAP) disputes require (%s ZAP)",
 			util.FormatERC20Balance(balance),
 			util.FormatERC20Balance(disputeCost))
 	}
@@ -240,7 +240,7 @@ func List(ctx context.Context) error {
 		fmt.Printf("    Accused Party: %s\n", reportedAddr.Hex())
 		fmt.Printf("    Disputed by: %s\n", reportingMiner.Hex())
 		fmt.Printf("    Created on:  %s\n", createdTime.Format("3:04 PM January 02, 2006 MST"))
-		fmt.Printf("    Fee: %s BRY\n", util.FormatERC20Balance(uintVars[8]))
+		fmt.Printf("    Fee: %s ZAP\n", util.FormatERC20Balance(uintVars[8]))
 		fmt.Printf("    \n")
 		fmt.Printf("    Value disputed for requestID %d:\n", dispute.RequestId.Uint64())
 
@@ -269,7 +269,7 @@ func List(ctx context.Context) error {
 		currQuorum, _ := tmp.Float64()
 		currTallyFloat += currQuorum
 		currTallyRatio := currTallyFloat / 2 * currQuorum
-		fmt.Printf("    Currently %.0f%% of %s BRY support this dispute (%s votes)\n", currTallyRatio*100, util.FormatERC20Balance(uintVars[7]), uintVars[4])
+		fmt.Printf("    Currently %.0f%% of %s ZAP support this dispute (%s votes)\n", currTallyRatio*100, util.FormatERC20Balance(uintVars[7]), uintVars[4])
 
 		result := tracker.CheckValueAtTime(dispute.RequestId.Uint64(), uintVars[2], disputedValTime)
 		if result == nil || len(result.Datapoints) < 0 {

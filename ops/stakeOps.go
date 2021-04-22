@@ -50,7 +50,7 @@ func Deposit(ctx context.Context) error {
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	balance, err := tmaster.BalanceOf(nil, publicAddress)
 	if err != nil {
-		return fmt.Errorf("couldn't get BRY balance: %s", err.Error())
+		return fmt.Errorf("couldn't get ZAP balance: %s", err.Error())
 	}
 
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
@@ -72,7 +72,7 @@ func Deposit(ctx context.Context) error {
 	}
 
 	if balance.Cmp(stakeAmt) < 0 {
-		return fmt.Errorf("insufficient balance (%s), mining stake requires %s BRY",
+		return fmt.Errorf("insufficient balance (%s), mining stake requires %s ZAP",
 			util.FormatERC20Balance(balance),
 			util.FormatERC20Balance(stakeAmt))
 	}

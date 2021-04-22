@@ -29,7 +29,7 @@ func prepareTransfer(amt *big.Int, ctx context.Context) (*bind.TransactOpts, err
 	}
 	fmt.Println("My balance", util.FormatERC20Balance(balance))
 	if balance.Cmp(amt) < 0 {
-		return nil, fmt.Errorf("insufficent balance (%s BRY), requested %s BRY",
+		return nil, fmt.Errorf("insufficent balance (%s ZAP), requested %s ZAP",
 			util.FormatERC20Balance(balance),
 			util.FormatERC20Balance(amt))
 	}
@@ -86,6 +86,6 @@ func Balance(ctx context.Context, addr common.Address) error {
 	}
 	fmt.Printf("%s\n", addr.String())
 	fmt.Printf("%10s ETH\n", util.FormatERC20Balance(ethBalance))
-	fmt.Printf("%10s BRY\n", util.FormatERC20Balance(trbBalance))
+	fmt.Printf("%10s ZAP\n", util.FormatERC20Balance(trbBalance))
 	return nil
 }
