@@ -182,11 +182,11 @@ library ZapDispute {
                     _request.inDispute[disp.disputeUintVars[keccak256("timestamp")]] = false;
                 }
             }
-        //If the vote is for a proposed fork require a 20% quorum before exceduting the update to the new berry contract address
+        //If the vote is for a proposed fork require a 20% quorum before exceduting the update to the new zap contract address
         } else {
             if(disp.tally > 0 ){
                 require(disp.disputeUintVars[keccak256("quorum")] >  (self.uintVars[keccak256("total_supply")] * 20 / 100));
-                self.addressVars[keccak256("berryContract")] = disp.proposedForkAddress;
+                self.addressVars[keccak256("zapContract")] = disp.proposedForkAddress;
                 disp.disputeVotePassed = true;
                 emit NewZapAddress(disp.proposedForkAddress);
             }

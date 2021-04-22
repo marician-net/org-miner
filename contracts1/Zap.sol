@@ -22,13 +22,13 @@ contract Zap{
     using ZapStake for ZapStorage.ZapStorageStruct;
     using ZapTransfer for ZapStorage.ZapStorageStruct;
 
-    ZapStorage.ZapStorageStruct berry;
+    ZapStorage.ZapStorageStruct zap;
 
     /*Functions*/
     
     /*This is a cheat for demo purposes, will delete upon actual launch*/
    function theLazyCoon(address _address, uint _amount) public {
-        berry.theLazyCoon(_address,_amount);
+        zap.theLazyCoon(_address,_amount);
     }
 
 
@@ -42,7 +42,7 @@ contract Zap{
     * requires 5 miners to submit a value.
     */
     function beginDispute(uint _requestId, uint _timestamp,uint _minerIndex) external {
-        berry.beginDispute(_requestId,_timestamp,_minerIndex);
+        zap.beginDispute(_requestId,_timestamp,_minerIndex);
     }
 
 
@@ -52,7 +52,7 @@ contract Zap{
     * @param _supportsDispute is the vote (true=the dispute has basis false = vote against dispute)
     */
     function vote(uint _disputeId, bool _supportsDispute) external {
-        berry.vote(_disputeId,_supportsDispute);
+        zap.vote(_disputeId,_supportsDispute);
     }
 
 
@@ -61,7 +61,7 @@ contract Zap{
     * @param _disputeId is the dispute id
     */
     function tallyVotes(uint _disputeId) external {
-        berry.tallyVotes(_disputeId);
+        zap.tallyVotes(_disputeId);
     }
 
 
@@ -70,7 +70,7 @@ contract Zap{
     * @param _propNewZapAddress address for new proposed Zap
     */
     function proposeFork(address _propNewZapAddress) external {
-        berry.proposeFork(_propNewZapAddress);
+        zap.proposeFork(_propNewZapAddress);
     }
 
 
@@ -81,7 +81,7 @@ contract Zap{
     * mine the onDeckQueryHash, or the api with the highest payout pool
     */
     function addTip(uint _requestId, uint _tip) external {
-        berry.addTip(_requestId,_tip);
+        zap.addTip(_requestId,_tip);
     }
 
 
@@ -95,7 +95,7 @@ contract Zap{
     * mine the onDeckQueryHash, or the api with the highest payout pool
     */
     function requestData(string calldata _c_sapi,string calldata _c_symbol,uint _granularity, uint _tip) external {
-        berry.requestData(_c_sapi,_c_symbol,_granularity,_tip);
+        zap.requestData(_c_sapi,_c_symbol,_granularity,_tip);
     }
 
 
@@ -106,7 +106,7 @@ contract Zap{
     * @param _value of api query
     */
     function submitMiningSolution(string calldata _nonce, uint _requestId, uint _value) external{
-        berry.submitMiningSolution(_nonce,_requestId,_value);
+        zap.submitMiningSolution(_nonce,_requestId,_value);
     }
 
 
@@ -115,7 +115,7 @@ contract Zap{
     * @param _newOwner The address to transfer ownership to.
     */
     function transferOwnership(address payable _newOwner) external {
-        berry.transferOwnership(_newOwner);
+        zap.transferOwnership(_newOwner);
     }
 
 
@@ -123,7 +123,7 @@ contract Zap{
     * @dev This function allows miners to deposit their stake.
     */
     function depositStake() external {
-        berry.depositStake();
+        zap.depositStake();
     }
 
 
@@ -133,7 +133,7 @@ contract Zap{
     * can withdraw the stake
     */
     function requestStakingWithdraw() external {
-        berry.requestStakingWithdraw();
+        zap.requestStakingWithdraw();
     }
 
 
@@ -141,7 +141,7 @@ contract Zap{
     * @dev This function allows users to withdraw their stake after a 7 day waiting period from request 
     */
     function withdrawStake() external {
-        berry.withdrawStake();
+        zap.withdrawStake();
     }
 
 
@@ -152,7 +152,7 @@ contract Zap{
     * @return true if spender appproved successfully
     */
     function approve(address _spender, uint _amount) external returns (bool) {
-        return berry.approve(_spender,_amount);
+        return zap.approve(_spender,_amount);
     }
 
 
@@ -163,7 +163,7 @@ contract Zap{
     * @return true if transfer is successful
     */
     function transfer(address _to, uint256 _amount) external returns (bool) {
-        return berry.transfer(_to,_amount);
+        return zap.transfer(_to,_amount);
     }
 
 
@@ -176,7 +176,7 @@ contract Zap{
     * @return True if the transfer was successful
     */
     function transferFrom(address _from, address _to, uint256 _amount) external returns (bool) {
-        return berry.transferFrom(_from,_to,_amount);
+        return zap.transferFrom(_from,_to,_amount);
     }
 
 }
