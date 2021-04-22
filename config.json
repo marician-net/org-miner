@@ -1,8 +1,8 @@
 {
-    "contractAddress": "0xf859Bf77cBe8699013d6Dbc7C2b926Aaf307F830",
-    "nodeURL": "https://bsc-dataseed1.binance.org",
-    "publicAddress": "your_account_address_no_prefix_0x",
-    "privateKey": "your_account_private_key_no_prefix_0x",
+    "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+    "nodeURL": "http://127.0.0.1:8545/",
+    "publicAddress": "f39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "privateKey": "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
     "serverHost": "localhost",
     "serverPort": 5001,
     "ethClientTimeout": 3000,
