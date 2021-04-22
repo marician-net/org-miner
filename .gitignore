@@ -46,6 +46,7 @@ pkg/darwin_amd64
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+config.json
 /myconfig.json
 */myconfig.json
 /myconfig2.json
