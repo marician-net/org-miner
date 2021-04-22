@@ -15,8 +15,17 @@ import (
 	"github.com/zapproject/zap-miner/rpc"
 )
 
+func setup() error {
+	err := config.ParseConfig("../config.json")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func TestDataServerOps(t *testing.T) {
 	exitCh := make(chan os.Signal)
+	setup()
 	cfg := config.GetConfig()
 
 	if len(cfg.DBFile) == 0 {
@@ -36,10 +45,15 @@ func TestDataServerOps(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Problem creating zap master instance: %v\n", err)
 	}
+	proxy, err := db.OpenRemoteDB(DB)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	ctx := context.WithValue(context.Background(), zapCommon.DBContextKey, DB)
 	ctx = context.WithValue(ctx, zapCommon.ClientContextKey, client)
 	ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
+	ctx = context.WithValue(ctx, zapCommon.DataProxyKey, proxy)
 
 	ops, err := CreateDataServerOps(ctx, exitCh)
 	if err != nil {
