@@ -3,18 +3,17 @@ package ops
 import (
 	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	berry "github.com/berrydata/BerryMiner/contracts"
-	berry1 "github.com/berrydata/BerryMiner/contracts1"
-	"github.com/berrydata/BerryMiner/util"
 	"math/big"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/util"
 )
 
 /**
- * This is the operational deposit component. Its purpose is to deposit Berry Tokens so you can mine
+ * This is the operational deposit component. Its purpose is to deposit zap Tokens so you can mine
  */
 
 func printStakeStatus(bigStatus *big.Int, started *big.Int) {
@@ -44,9 +43,9 @@ func printStakeStatus(bigStatus *big.Int, started *big.Int) {
 
 func Deposit(ctx context.Context) error {
 
-	tmaster := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
 
-	publicAddress := ctx.Value(berryCommon.PublicAddress).(common.Address)
+	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	balance, err := tmaster.BalanceOf(nil, publicAddress)
 	if err != nil {
 		return fmt.Errorf("couldn't get BRY balance: %s", err.Error())
@@ -76,7 +75,7 @@ func Deposit(ctx context.Context) error {
 			util.FormatERC20Balance(stakeAmt))
 	}
 
-	instance2 := ctx.Value(berryCommon.TransactorContractContextKey).(*berry1.BerryTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
 	auth, err := PrepareEthTransaction(ctx)
 	if err != nil {
 		return fmt.Errorf("couldn't prepare ethereum transaction: %s", err.Error())
@@ -92,9 +91,9 @@ func Deposit(ctx context.Context) error {
 }
 
 func ShowStatus(ctx context.Context) error {
-	tmaster := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
 
-	publicAddress := ctx.Value(berryCommon.PublicAddress).(common.Address)
+	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
 		return fmt.Errorf("failed to get stake status: %s", err.Error())
@@ -106,8 +105,8 @@ func ShowStatus(ctx context.Context) error {
 
 func RequestStakingWithdraw(ctx context.Context) error {
 
-	tmaster := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
-	publicAddress := ctx.Value(berryCommon.PublicAddress).(common.Address)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
 		return fmt.Errorf("failed to get stake status: %s", err.Error())
@@ -122,7 +121,7 @@ func RequestStakingWithdraw(ctx context.Context) error {
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(berryCommon.TransactorContractContextKey).(*berry1.BerryTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
 	tx, err := instance2.RequestStakingWithdraw(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -134,8 +133,8 @@ func RequestStakingWithdraw(ctx context.Context) error {
 
 func WithdrawStake(ctx context.Context) error {
 
-	tmaster := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
-	publicAddress := ctx.Value(berryCommon.PublicAddress).(common.Address)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
 		return fmt.Errorf("failed to get stake status: %s", err.Error())
@@ -151,7 +150,7 @@ func WithdrawStake(ctx context.Context) error {
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(berryCommon.TransactorContractContextKey).(*berry1.BerryTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
 	tx, err := instance2.WithdrawStake(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())

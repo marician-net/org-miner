@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/contracts"
-	"github.com/berrydata/BerryMiner/db"
-	"github.com/berrydata/BerryMiner/rpc"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/contracts"
+	"github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/rpc"
 )
 
 func TestDataServerOps(t *testing.T) {
@@ -32,14 +32,14 @@ func TestDataServerOps(t *testing.T) {
 		log.Fatal(err)
 	}
 	contractAddress := common.HexToAddress(cfg.ContractAddress)
-	masterInstance, err := contracts.NewBerryMaster(contractAddress, client)
+	masterInstance, err := contracts.NewzapMaster(contractAddress, client)
 	if err != nil {
-		t.Fatalf("Problem creating berry master instance: %v\n", err)
+		t.Fatalf("Problem creating zap master instance: %v\n", err)
 	}
 
-	ctx := context.WithValue(context.Background(), berryCommon.DBContextKey, DB)
-	ctx = context.WithValue(ctx, berryCommon.ClientContextKey, client)
-	ctx = context.WithValue(ctx, berryCommon.MasterContractContextKey, masterInstance)
+	ctx := context.WithValue(context.Background(), zapCommon.DBContextKey, DB)
+	ctx = context.WithValue(ctx, zapCommon.ClientContextKey, client)
+	ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
 
 	ops, err := CreateDataServerOps(ctx, exitCh)
 	if err != nil {

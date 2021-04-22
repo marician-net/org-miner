@@ -4,18 +4,19 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"fmt"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/rpc"
-	"math/big"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/rpc"
 )
 
 func PrepareEthTransaction(ctx context.Context) (*bind.TransactOpts, error) {
 
-	client := ctx.Value(berryCommon.ClientContextKey).(rpc.ETHClient)
+	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
 
-	publicAddress := ctx.Value(berryCommon.PublicAddress).(common.Address)
+	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 
 	nonce, err := client.PendingNonceAt(context.Background(), publicAddress)
 	if err != nil {
@@ -38,7 +39,7 @@ func PrepareEthTransaction(ctx context.Context) (*bind.TransactOpts, error) {
 		return nil, fmt.Errorf("insufficient ethereum to send a transaction: %v < %v", ethBalance, cost)
 	}
 
-	privateKey := ctx.Value(berryCommon.PrivateKey).(*ecdsa.PrivateKey)
+	privateKey := ctx.Value(zapCommon.PrivateKey).(*ecdsa.PrivateKey)
 	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)      // in wei

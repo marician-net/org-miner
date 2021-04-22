@@ -3,9 +3,9 @@ package ops
 import (
 	"context"
 
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/rpc"
-	"github.com/berrydata/BerryMiner/db"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/rpc"
 )
 
 //TxnSubmitter just concrete type for txn submitter
@@ -18,6 +18,6 @@ func NewSubmitter() TxnSubmitter {
 }
 
 //PrepareTransaction relies on rpc package to prepare and submit transactions
-func (s TxnSubmitter) PrepareTransaction(ctx context.Context,proxy db.DataServerProxy, ctxName string, callback berryCommon.TransactionGeneratorFN) error {
-	return rpc.PrepareContractTxn(ctx,proxy, ctxName, callback)
+func (s TxnSubmitter) PrepareTransaction(ctx context.Context, proxy db.DataServerProxy, ctxName string, callback zapCommon.TransactionGeneratorFN) error {
+	return rpc.PrepareContractTxn(ctx, proxy, ctxName, callback)
 }

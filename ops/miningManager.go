@@ -6,15 +6,15 @@ import (
 	"os"
 	"time"
 
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/db"
-	"github.com/berrydata/BerryMiner/pow"
-	"github.com/berrydata/BerryMiner/util"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/pow"
+	"github.com/zapproject/zap-miner/util"
 )
 
 type WorkSource interface {
-	GetWork(input chan *pow.Work) (*pow.Work,bool)
+	GetWork(input chan *pow.Work) (*pow.Work, bool)
 }
 
 type SolutionSink interface {
@@ -39,7 +39,7 @@ type MiningMgr struct {
 }
 
 //CreateMiningManager creates a new manager that mananges mining and data requests
-func CreateMiningManager(ctx context.Context, exitCh chan os.Signal, submitter berryCommon.TransactionSubmitter) (*MiningMgr, error) {
+func CreateMiningManager(ctx context.Context, exitCh chan os.Signal, submitter zapCommon.TransactionSubmitter) (*MiningMgr, error) {
 	cfg := config.GetConfig()
 
 	group, err := pow.SetupMiningGroup(cfg)
@@ -53,7 +53,7 @@ func CreateMiningManager(ctx context.Context, exitCh chan os.Signal, submitter b
 		Running:    false,
 		group:      group,
 		tasker:     nil,
-		solution: 	nil,
+		solution:   nil,
 		solHandler: nil,
 	}
 
@@ -62,7 +62,7 @@ func CreateMiningManager(ctx context.Context, exitCh chan os.Signal, submitter b
 		mng.tasker = pool
 		mng.solHandler = pool
 	} else {
-		proxy := ctx.Value(berryCommon.DataProxyKey).(db.DataServerProxy)
+		proxy := ctx.Value(zapCommon.DataProxyKey).(db.DataServerProxy)
 		mng.tasker = pow.CreateTasker(cfg, proxy)
 		mng.solHandler = pow.CreateSolutionHandler(cfg, submitter, proxy)
 		if cfg.RequestData > 0 {
@@ -96,28 +96,28 @@ func (mgr *MiningMgr) Start(ctx context.Context) {
 			if cfg.EnablePoolWorker {
 				mgr.tasker.GetWork(input)
 			} else {
-				work,instantSubmit := mgr.tasker.GetWork(input)
-				if instantSubmit{
+				work, instantSubmit := mgr.tasker.GetWork(input)
+				if instantSubmit {
 					if mgr.solution == nil {
 						fmt.Println("Instant Submit Called! ")
-						mgr.solution = &pow.Result{Work:work, Nonce:"1"}
-					} else{
+						mgr.solution = &pow.Result{Work: work, Nonce: "1"}
+					} else {
 						fmt.Println("Trying Resubmit...")
 					}
-				}else if work != nil {
+				} else if work != nil {
 					mgr.solution = nil
 					input <- work
 				}
-				if mgr.solution != nil{
-					goodSubmit := mgr.solHandler.Submit(ctx,mgr.solution)
+				if mgr.solution != nil {
+					goodSubmit := mgr.solHandler.Submit(ctx, mgr.solution)
 					if goodSubmit {
 						mgr.solution = nil
 					}
-				} 
+				}
 			}
 		}
 		//send the initial challenge
-		sendWork()	
+		sendWork()
 		for {
 			select {
 			//boss wants us to quit for the day
@@ -132,7 +132,7 @@ func (mgr *MiningMgr) Start(ctx context.Context) {
 					return
 				}
 				mgr.solution = result
-				goodSubmit := mgr.solHandler.Submit(ctx,mgr.solution)
+				goodSubmit := mgr.solHandler.Submit(ctx, mgr.solution)
 				if goodSubmit {
 					mgr.solution = nil
 				}

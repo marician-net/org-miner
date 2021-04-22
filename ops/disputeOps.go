@@ -3,22 +3,21 @@ package ops
 import (
 	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/berrydata/BerryMiner/apiOracle"
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/config"
-	berry "github.com/berrydata/BerryMiner/contracts"
-	berry1 "github.com/berrydata/BerryMiner/contracts1"
-	"github.com/berrydata/BerryMiner/rpc"
-	"github.com/berrydata/BerryMiner/tracker"
-	"github.com/berrydata/BerryMiner/util"
 	"math"
 	"math/big"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/zapproject/zap-miner/apiOracle"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/rpc"
+	"github.com/zapproject/zap-miner/tracker"
+	"github.com/zapproject/zap-miner/util"
 )
 
 /**
@@ -31,16 +30,16 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 		return fmt.Errorf("miner index should be between 0 and 4 (got %s)", minerIndex.Text(10))
 	}
 
-	instance := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
-	addr := ctx.Value(berryCommon.PublicAddress).(common.Address)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	addr := ctx.Value(zapCommon.PublicAddress).(common.Address)
 
 	balance, err := instance.BalanceOf(nil, addr)
 	if err != nil {
 		return fmt.Errorf("failed to fetch balance: %s", err.Error())
 	}
 	var asBytes32 [32]byte
-	copy(asBytes32[:],"0x8b75eb45d88e80f0e4ec77d23936268694c0e7ac2e0c9085c5c6bdfcfbc49239") //keccak256(disputeFee)
-	disputeCost, err := instance.GetUintVar(nil,asBytes32)
+	copy(asBytes32[:], "0x8b75eb45d88e80f0e4ec77d23936268694c0e7ac2e0c9085c5c6bdfcfbc49239") //keccak256(disputeFee)
+	disputeCost, err := instance.GetUintVar(nil, asBytes32)
 	if err != nil {
 		return fmt.Errorf("failed to get dispute cost: %s", err)
 	}
@@ -56,8 +55,8 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(berryCommon.TransactorContractContextKey).(*berry1.BerryTransactor)
-	tx, err := instance2.BeginDispute(auth,requestId,timestamp,minerIndex)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	tx, err := instance2.BeginDispute(auth, requestId, timestamp, minerIndex)
 	if err != nil {
 		return fmt.Errorf("failed to send dispute txn: %s", err.Error())
 	}
@@ -67,8 +66,8 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 
 func Vote(_disputeId *big.Int, _supportsDispute bool, ctx context.Context) error {
 
-	instance := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
-	addr := ctx.Value(berryCommon.PublicAddress).(common.Address)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	addr := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	voted, err := instance.DidVote(nil, _disputeId, addr)
 	if err != nil {
 		return fmt.Errorf("failed to check if you've already voted: %v", err)
@@ -78,13 +77,13 @@ func Vote(_disputeId *big.Int, _supportsDispute bool, ctx context.Context) error
 		return nil
 	}
 
-	instance2 := ctx.Value(berryCommon.TransactorContractContextKey).(*berry1.BerryTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
 
 	auth, err := PrepareEthTransaction(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
-	tx, err := instance2.Vote(auth,_disputeId,_supportsDispute)
+	tx, err := instance2.Vote(auth, _disputeId, _supportsDispute)
 	if err != nil {
 		return fmt.Errorf("failed to submit vote transaction: %s", err.Error())
 	}
@@ -93,18 +92,17 @@ func Vote(_disputeId *big.Int, _supportsDispute bool, ctx context.Context) error
 	return nil
 }
 
-func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *berry1.BerryDisputeNewDispute) ([]*apiOracle.PriceStamp, error) {
-	instance := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
-	tokenAbi, err := abi.JSON(strings.NewReader(berry1.BerryLibraryABI))
+func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1.zapDisputeNewDispute) ([]*apiOracle.PriceStamp, error) {
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tokenAbi, err := abi.JSON(strings.NewReader(zap1.zapLibraryABI))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse abi: %v", err)
 	}
-	contractAddress := ctx.Value(berryCommon.ContractAddress).(common.Address)
-	client := ctx.Value(berryCommon.ClientContextKey).(rpc.ETHClient)
+	contractAddress := ctx.Value(zapCommon.ContractAddress).(common.Address)
+	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
 
 	//just use nil for most of the variables, only using this object to call UnpackLog which only uses the abi
 	bar := bind.NewBoundContract(contractAddress, tokenAbi, nil, nil, nil)
-
 
 	allVals, err := instance.GetSubmissionsByTimestamp(nil, dispute.RequestId, dispute.Timestamp)
 	if err != nil {
@@ -127,7 +125,7 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *berr
 			FromBlock: big.NewInt(low),
 			ToBlock:   big.NewInt(high),
 			Addresses: []common.Address{contractAddress},
-			Topics: [][]common.Hash{{nonceSubmitID}},
+			Topics:    [][]common.Hash{{nonceSubmitID}},
 		}
 
 		logs, err := client.FilterLogs(ctx, query)
@@ -135,9 +133,9 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *berr
 			return nil, fmt.Errorf("failed to get nonce logs: %v", err)
 		}
 
-		for _,l := range logs {
-			nonceSubmit := berry1.BerryLibraryNonceSubmitted{}
-			err := bar.UnpackLog(&nonceSubmit,"NonceSubmitted", l)
+		for _, l := range logs {
+			nonceSubmit := zap1.zapLibraryNonceSubmitted{}
+			err := bar.UnpackLog(&nonceSubmit, "NonceSubmitted", l)
 			if err != nil {
 				return nil, fmt.Errorf("failed to unpack into object: %v", err)
 			}
@@ -154,8 +152,8 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *berr
 					f, _ := bigF.Float64()
 
 					timedValues[i] = &apiOracle.PriceStamp{
-						Created: valTime,
-						PriceInfo: apiOracle.PriceInfo{Price:f},
+						Created:   valTime,
+						PriceInfo: apiOracle.PriceInfo{Price: f},
 					}
 					found++
 					break
@@ -176,12 +174,12 @@ func List(ctx context.Context) error {
 	//	return fmt.Errorf("failed to read request info: %v\n", err)
 	//}
 
-	tokenAbi, err := abi.JSON(strings.NewReader(berry1.BerryDisputeABI))
+	tokenAbi, err := abi.JSON(strings.NewReader(zap1.zapDisputeABI))
 	if err != nil {
 		return fmt.Errorf("failed to parse abi: %v", err)
 	}
-	contractAddress := ctx.Value(berryCommon.ContractAddress).(common.Address)
-	client := ctx.Value(berryCommon.ClientContextKey).(rpc.ETHClient)
+	contractAddress := ctx.Value(zapCommon.ContractAddress).(common.Address)
+	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
 
 	////just use nil for most of the variables, only using this object to call UnpackLog which only uses the abi
 	bar := bind.NewBoundContract(contractAddress, tokenAbi, nil, nil, nil)
@@ -198,7 +196,7 @@ func List(ctx context.Context) error {
 		FromBlock: startBlock,
 		ToBlock:   nil,
 		Addresses: []common.Address{contractAddress},
-		Topics: [][]common.Hash{{newDisputeID}},
+		Topics:    [][]common.Hash{{newDisputeID}},
 	}
 
 	logs, err := client.FilterLogs(ctx, query)
@@ -206,13 +204,13 @@ func List(ctx context.Context) error {
 		return fmt.Errorf("failed to filter eth logs: %v", err)
 	}
 
-	instance := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
 
 	fmt.Printf("There are currently %d open disputes\n", len(logs))
 	fmt.Printf("-------------------------------------\n")
-	for _,rawDispute := range logs {
-		dispute := berry1.BerryDisputeNewDispute{}
-		err := bar.UnpackLog(&dispute,"NewDispute", rawDispute)
+	for _, rawDispute := range logs {
+		dispute := zap1.zapDisputeNewDispute{}
+		err := bar.UnpackLog(&dispute, "NewDispute", rawDispute)
 		if err != nil {
 			return fmt.Errorf("failed to unpack dispute event from logs: %v", err)
 		}
@@ -250,7 +248,7 @@ func List(ctx context.Context) error {
 		}
 		disputedValTime := allSubmitted[uintVars[6].Uint64()].Created
 
-		for i := len(allSubmitted)-1; i >= 0; i-- {
+		for i := len(allSubmitted) - 1; i >= 0; i-- {
 			sub := allSubmitted[i]
 			valStr := fmt.Sprintf("%f\n", sub.Price)
 			var pointerStr string
@@ -287,7 +285,7 @@ func List(ctx context.Context) error {
 			len(result.Datapoints), cfg.DisputeTimeDelta.Duration.Minutes(), numToShow)
 		minTotalDelta := time.Duration(math.MaxInt64)
 		index := 0
-		for i := 0; i < len(result.Datapoints) - numToShow; i++ {
+		for i := 0; i < len(result.Datapoints)-numToShow; i++ {
 			totalDelta := time.Duration(0)
 			for j := 0; j < numToShow; j++ {
 				delta := result.Times[i+j].Sub(disputedValTime)
@@ -301,9 +299,9 @@ func List(ctx context.Context) error {
 				index = i
 			}
 		}
-		for i := 0 ; i < numToShow; i++ {
-			dp := result.Datapoints[index + i]
-			t := result.Times[index + i]
+		for i := 0; i < numToShow; i++ {
+			dp := result.Datapoints[index+i]
+			t := result.Times[index+i]
 			fmt.Printf("        %f, ", dp)
 			delta := disputedValTime.Sub(t)
 			if delta > 0 {

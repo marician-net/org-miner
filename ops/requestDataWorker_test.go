@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/db"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/db"
 )
 
 var ctx context.Context
@@ -42,11 +42,11 @@ func (t testContract) DidMine(challenge [32]byte) (bool, error) {
 }
 
 type testSubmit struct {
-	contract  *berryCommon.ContractInterface
-	submitter *berryCommon.TransactionSubmitter
+	contract  *zapCommon.ContractInterface
+	submitter *zapCommon.TransactionSubmitter
 }
 
-func (t testSubmit) PrepareTransaction(ctx context.Context, ctxName string, fn berryCommon.TransactionGeneratorFN) error {
+func (t testSubmit) PrepareTransaction(ctx context.Context, ctxName string, fn zapCommon.TransactionGeneratorFN) error {
 	_, err := fn(ctx, *t.contract)
 	return err
 }
@@ -65,8 +65,8 @@ func TestRequestDataOps(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	ctx := context.WithValue(context.Background(), berryCommon.DBContextKey, DB)
-	proxy := ctx.Value(berryCommon.DataProxyKey).(db.DataServerProxy)
+	ctx := context.WithValue(context.Background(), zapCommon.DBContextKey, DB)
+	proxy := ctx.Value(zapCommon.DataProxyKey).(db.DataServerProxy)
 	reqData := CreateDataRequester(exitCh, submitter, 2, proxy)
 
 	//it should not request data if not configured to do it

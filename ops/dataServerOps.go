@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/berrydata/BerryMiner/dataServer"
-	"github.com/berrydata/BerryMiner/util"
+	"github.com/zapproject/zap-miner/dataServer"
+	"github.com/zapproject/zap-miner/util"
 )
 
 /**

@@ -8,10 +8,10 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	"github.com/berrydata/BerryMiner/config"
-	"github.com/berrydata/BerryMiner/db"
-	"github.com/berrydata/BerryMiner/util"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/util"
 )
 
 //DataRequester responsible for submitting tips to request data periodically if configured to do so
@@ -21,7 +21,7 @@ type DataRequester struct {
 	log                *util.Logger
 	checkInterval      time.Duration
 	proxy              db.DataServerProxy
-	submitter          berryCommon.TransactionSubmitter
+	submitter          zapCommon.TransactionSubmitter
 }
 
 const (
@@ -31,7 +31,7 @@ const (
 )
 
 //CreateDataRequester creates a requester instance
-func CreateDataRequester(exitCh chan os.Signal, submitter berryCommon.TransactionSubmitter, checkIntervalSeconds time.Duration, proxy db.DataServerProxy) *DataRequester {
+func CreateDataRequester(exitCh chan os.Signal, submitter zapCommon.TransactionSubmitter, checkIntervalSeconds time.Duration, proxy db.DataServerProxy) *DataRequester {
 	if checkIntervalSeconds == 0 {
 		checkIntervalSeconds = 30
 	}
@@ -74,7 +74,7 @@ func (r *DataRequester) IsRunning() bool {
 	return r.submittingRequests
 }
 
-func (r *DataRequester) reqDataCallback(ctx context.Context, contract berryCommon.ContractInterface) (*types.Transaction, error) {
+func (r *DataRequester) reqDataCallback(ctx context.Context, contract zapCommon.ContractInterface) (*types.Transaction, error) {
 	cfg := config.GetConfig()
 
 	//if we're not configured to request anything.

@@ -3,31 +3,30 @@ package ops
 import (
 	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	berryCommon "github.com/berrydata/BerryMiner/common"
-	berry "github.com/berrydata/BerryMiner/contracts"
-	berry1 "github.com/berrydata/BerryMiner/contracts1"
-	"github.com/berrydata/BerryMiner/rpc"
-	"github.com/berrydata/BerryMiner/util"
 	"log"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	zapCommon "github.com/zapproject/zap-miner/common"
+	"github.com/zapproject/zap-miner/rpc"
+	"github.com/zapproject/zap-miner/util"
 )
 
 /**
- * This is the operational transfer component. Its purpose is to transfer berry tokens
+ * This is the operational transfer component. Its purpose is to transfer zap tokens
  */
 
-func prepareTransfer(amt *big.Int,ctx context.Context) (*bind.TransactOpts, error) {
-	instance := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
-	senderPubAddr := ctx.Value(berryCommon.PublicAddress).(common.Address)
+func prepareTransfer(amt *big.Int, ctx context.Context) (*bind.TransactOpts, error) {
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	senderPubAddr := ctx.Value(zapCommon.PublicAddress).(common.Address)
 
 	balance, err := instance.BalanceOf(nil, senderPubAddr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get balance: %v", err)
 	}
 	fmt.Println("My balance", util.FormatERC20Balance(balance))
-	if balance.Cmp(amt) < 0{
+	if balance.Cmp(amt) < 0 {
 		return nil, fmt.Errorf("insufficent balance (%s BRY), requested %s BRY",
 			util.FormatERC20Balance(balance),
 			util.FormatERC20Balance(amt))
@@ -39,13 +38,13 @@ func prepareTransfer(amt *big.Int,ctx context.Context) (*bind.TransactOpts, erro
 	return auth, nil
 }
 
-func Transfer(toAddress common.Address, amt *big.Int,ctx context.Context) error {
+func Transfer(toAddress common.Address, amt *big.Int, ctx context.Context) error {
 	auth, err := prepareTransfer(amt, ctx)
 	if err != nil {
 		return err
 	}
 
-	instance2 := ctx.Value(berryCommon.TransactorContractContextKey).(*berry1.BerryTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
 	tx, err := instance2.Transfer(auth, toAddress, amt)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -54,14 +53,14 @@ func Transfer(toAddress common.Address, amt *big.Int,ctx context.Context) error 
 	return nil
 }
 
-func Approve(_spender common.Address, amt *big.Int,ctx context.Context) error {
+func Approve(_spender common.Address, amt *big.Int, ctx context.Context) error {
 	auth, err := prepareTransfer(amt, ctx)
 	if err != nil {
 		return err
 	}
 
-	instance2 := ctx.Value(berryCommon.TransactorContractContextKey).(*berry1.BerryTransactor)
-	tx, err := instance2.Approve(auth,_spender,amt)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	tx, err := instance2.Approve(auth, _spender, amt)
 	if err != nil {
 		return err
 	}
@@ -69,23 +68,22 @@ func Approve(_spender common.Address, amt *big.Int,ctx context.Context) error {
 	return nil
 }
 
-
 func Balance(ctx context.Context, addr common.Address) error {
-	client := ctx.Value(berryCommon.ClientContextKey).(rpc.ETHClient)
+	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
 
 	ethBalance, err := client.BalanceAt(context.Background(), addr, nil)
 	if err != nil {
 		return fmt.Errorf("problem getting balance: %+v", err)
 	}
 
-	instance := ctx.Value(berryCommon.MasterContractContextKey).(*berry.BerryMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
 	trbBalance, err := instance.BalanceOf(nil, addr)
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 	fmt.Printf("%s\n", addr.String())
-	fmt.Printf("%10s ETH\n",util.FormatERC20Balance(ethBalance))
-	fmt.Printf("%10s BRY\n",util.FormatERC20Balance(trbBalance))
+	fmt.Printf("%10s ETH\n", util.FormatERC20Balance(ethBalance))
+	fmt.Printf("%10s BRY\n", util.FormatERC20Balance(trbBalance))
 	return nil
 }
