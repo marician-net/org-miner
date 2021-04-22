@@ -179,7 +179,7 @@ contract Zap {
     * @dev Allows users to access the token's symbol
     */
     function symbol() external pure returns (string memory) {
-        return "BRY";
+        return "ZAP";
     }
 
     /**
