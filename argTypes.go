@@ -8,11 +8,11 @@ import (
 	"github.com/zapproject/zap-miner/util"
 )
 
-type BRYAmount struct {
+type ZAPAmount struct {
 	*big.Int
 }
 
-func (a *BRYAmount) Set(v string) error {
+func (a *ZAPAmount) Set(v string) error {
 	f, _, err := big.ParseFloat(v, 10, 256, 0)
 	if err != nil {
 		return err
@@ -23,11 +23,11 @@ func (a *BRYAmount) Set(v string) error {
 	return nil
 }
 
-func (a *BRYAmount) String() string {
+func (a *ZAPAmount) String() string {
 	return util.FormatERC20Balance(a.Int)
 }
 
-func (a *BRYAmount) IsDefault() bool {
+func (a *ZAPAmount) IsDefault() bool {
 	return true
 }
 

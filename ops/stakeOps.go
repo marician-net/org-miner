@@ -9,6 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	zapCommon "github.com/zapproject/zap-miner/common"
+	zap "github.com/zapproject/zap-miner/contracts"
+	zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/util"
 )
 
@@ -43,7 +45,7 @@ func printStakeStatus(bigStatus *big.Int, started *big.Int) {
 
 func Deposit(ctx context.Context) error {
 
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	balance, err := tmaster.BalanceOf(nil, publicAddress)
@@ -75,7 +77,7 @@ func Deposit(ctx context.Context) error {
 			util.FormatERC20Balance(stakeAmt))
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	auth, err := PrepareEthTransaction(ctx)
 	if err != nil {
 		return fmt.Errorf("couldn't prepare ethereum transaction: %s", err.Error())
@@ -91,7 +93,7 @@ func Deposit(ctx context.Context) error {
 }
 
 func ShowStatus(ctx context.Context) error {
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
@@ -105,7 +107,7 @@ func ShowStatus(ctx context.Context) error {
 
 func RequestStakingWithdraw(ctx context.Context) error {
 
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
@@ -121,7 +123,7 @@ func RequestStakingWithdraw(ctx context.Context) error {
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	tx, err := instance2.RequestStakingWithdraw(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -133,7 +135,7 @@ func RequestStakingWithdraw(ctx context.Context) error {
 
 func WithdrawStake(ctx context.Context) error {
 
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
@@ -150,7 +152,7 @@ func WithdrawStake(ctx context.Context) error {
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	tx, err := instance2.WithdrawStake(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())

@@ -9,6 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	zapCommon "github.com/zapproject/zap-miner/common"
+	zap "github.com/zapproject/zap-miner/contracts"
+	zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/rpc"
 	"github.com/zapproject/zap-miner/util"
 )
@@ -18,7 +20,7 @@ import (
  */
 
 func prepareTransfer(amt *big.Int, ctx context.Context) (*bind.TransactOpts, error) {
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	senderPubAddr := ctx.Value(zapCommon.PublicAddress).(common.Address)
 
 	balance, err := instance.BalanceOf(nil, senderPubAddr)
@@ -44,7 +46,7 @@ func Transfer(toAddress common.Address, amt *big.Int, ctx context.Context) error
 		return err
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	tx, err := instance2.Transfer(auth, toAddress, amt)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -59,7 +61,7 @@ func Approve(_spender common.Address, amt *big.Int, ctx context.Context) error {
 		return err
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	tx, err := instance2.Approve(auth, _spender, amt)
 	if err != nil {
 		return err
@@ -76,7 +78,7 @@ func Balance(ctx context.Context, addr common.Address) error {
 		return fmt.Errorf("problem getting balance: %+v", err)
 	}
 
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	trbBalance, err := instance.BalanceOf(nil, addr)
 	if err != nil {
 		log.Fatal(err)
