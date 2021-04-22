@@ -12,6 +12,10 @@ import (
 )
 
 func setup() (DataServerProxy, DB, error) {
+	err := config.ParseConfig("../config.json")
+	if err != nil {
+		return nil, nil, err
+	}
 	DB, err := Open("/tmp/test_remoteRequest")
 	if err != nil {
 		DB.Close()
