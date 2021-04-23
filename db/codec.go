@@ -6,10 +6,14 @@ import (
 	"io"
 )
 
+// Write data in the interface `any` to a given `buf`.
+// Data is writted in a specified byte order; `binary.BigEndian`
 func encode(buf *bytes.Buffer, any interface{}) error {
 	return binary.Write(buf, binary.BigEndian, any)
 }
 
+// Read data from the address of `buf` to a given interface.
+// Data is read in a specified byte order; `binary.BigEndian`
 func decode(buf io.Reader, any interface{}) error {
 	return binary.Read(buf, binary.BigEndian, any)
 }
