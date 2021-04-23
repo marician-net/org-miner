@@ -172,7 +172,7 @@ contract Zap {
     * @dev Allows users to access the token's name
     */
     function name() external pure returns (string memory) {
-        return "Zap Tributes";
+        return "Zap Tokens";
     }
 
     /**

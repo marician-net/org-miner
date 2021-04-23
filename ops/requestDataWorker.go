@@ -85,7 +85,7 @@ func (r *DataRequester) reqDataCallback(ctx context.Context, contract zapCommon.
 
 	keys := []string{
 		db.RequestIdKey,
-		db.TributeBalanceKey,
+		db.TokenBalanceKey,
 	}
 
 	m, err := r.proxy.BatchGet(keys)
@@ -99,7 +99,7 @@ func (r *DataRequester) reqDataCallback(ctx context.Context, contract zapCommon.
 	if stat == statusWaitNext || stat == statusFailure {
 		return nil, nil
 	}
-	trbBalance, stat := r.getInt(m[db.TributeBalanceKey])
+	trbBalance, stat := r.getInt(m[db.TokenBalanceKey])
 	if stat == statusWaitNext || stat == statusFailure {
 		return nil, nil
 	}
@@ -108,7 +108,7 @@ func (r *DataRequester) reqDataCallback(ctx context.Context, contract zapCommon.
 	c := big.NewInt(0).Sub(trbBalance, b)
 
 	if c.Cmp(big.NewInt(cfg.RequestTips)) < 0 {
-		r.log.Info("Not enough tributes to requestData with this tip")
+		r.log.Info("Not enough tokens to requestData with this tip")
 		return nil, nil
 	}
 	if reqID.Cmp(big.NewInt(0)) != 0 {

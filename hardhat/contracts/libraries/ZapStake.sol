@@ -28,12 +28,14 @@ library ZapStake {
 
         // //the initial 5 miner addresses are specfied below
         // //changed payable[5] to 6
-        address payable[6] memory _initalMiners = [address(0xE037EC8EC9ec423826750853899394dE7F024fee),
-        address(0xcdd8FA31AF8475574B8909F135d510579a8087d3),
-        address(0xb9dD5AfD86547Df817DA2d0Fb89334A6F8eDd891),
-        address(0x230570cD052f40E14C14a81038c6f3aa685d712B),
-        address(0x3233afA02644CCd048587F8ba6e99b3C00A34DcC),
-        address(0xe010aC6e0248790e08F42d5F697160DEDf97E024)];
+        address payable[6] memory _initalMiners = [
+            address(0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097),
+            address(0xcd3B766CCDd6AE721141F452C550Ca635964ce71),
+            address(0x2546BcD3c84621e976D8185a91A922aE77ECEc30),
+            address(0xbDA5747bFD65F08deb54cb465eB87D40e51B197E),
+            address(0xdD2FD4581271e230360230F9337D5c0430Bf44C0),
+            address(0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199)
+        ];
         //Stake each of the 5 miners specified above
         for(uint i=0;i<6;i++){//6th miner to allow for dispute
             //Miner balance is set at 1000e18 at the block that this function is ran

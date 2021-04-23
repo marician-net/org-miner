@@ -26,9 +26,9 @@ func TestCreateTracker(t *testing.T) {
 		t.Fatalf("Expected GasTracker but got %s", gasTracker[0].String())
 	}
 
-	tributeBalanceTracker, _ := createTracker("tributeBalance")
-	if tributeBalanceTracker[0].String() != "TributeTracker" {
-		t.Fatalf("Expected TributeTracker but got %s", tributeBalanceTracker[0].String())
+	tokenBalanceTracker, _ := createTracker("tokenBalance")
+	if tokenBalanceTracker[0].String() != "TokenTracker" {
+		t.Fatalf("Expected TokenTracker but got %s", tokenBalanceTracker[0].String())
 	}
 
 	indexersTracker, err := createTracker("indexers")
