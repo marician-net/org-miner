@@ -47,7 +47,7 @@ func buildContext() error {
 		//create an instance of the Zap master contract for on-chain interactions
 		contractAddress := common.HexToAddress(cfg.ContractAddress)
 		masterInstance, err := contracts.NewZapMaster(contractAddress, client)
-		traZaporInstance, err := contracts1.NewZapTransactor(contractAddress, client)
+		transactorInstance, err := contracts1.NewZapTransactor(contractAddress, client)
 		newZapInstance, err := contracts2.NewZap(contractAddress, client)
 		newTransactorInstance, err := contracts2.NewZapTransactor(contractAddress, client)
 		if err != nil {
@@ -57,7 +57,7 @@ func buildContext() error {
 		ctx = context.WithValue(context.Background(), ZapCommon.ClientContextKey, client)
 		ctx = context.WithValue(ctx, ZapCommon.ContractAddress, contractAddress)
 		ctx = context.WithValue(ctx, ZapCommon.MasterContractContextKey, masterInstance)
-		ctx = context.WithValue(ctx, ZapCommon.TransactorContractContextKey, traZaporInstance)
+		ctx = context.WithValue(ctx, ZapCommon.TransactorContractContextKey, transactorInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewZapContractContextKey, newZapInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewTransactorContractContextKey, newTransactorInstance)
 
