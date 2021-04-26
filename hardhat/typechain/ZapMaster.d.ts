@@ -21,6 +21,9 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ZapMasterInterface extends ethers.utils.Interface {
   functions: {
+    "mintingFinished()": FunctionFragment;
+    "name()": FunctionFragment;
+    "approve(address,uint256)": FunctionFragment;
     "getRequestIdByTimestamp(uint256)": FunctionFragment;
     "getSubmissionsByTimestamp(uint256,uint256)": FunctionFragment;
     "getAddressVars(bytes32)": FunctionFragment;
@@ -28,35 +31,56 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     "getName()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "getVariablesOnDeck()": FunctionFragment;
+    "totalTokenSupply()": FunctionFragment;
     "getRequestIdByQueryHash(bytes32)": FunctionFragment;
+    "transferFrom(address,address,uint256)": FunctionFragment;
+    "decimals()": FunctionFragment;
     "getLastNewValueById(uint256)": FunctionFragment;
     "isInDispute(uint256,uint256)": FunctionFragment;
+    "mint(address,uint256)": FunctionFragment;
     "getNewValueCountbyRequestId(uint256)": FunctionFragment;
     "changeDeity(address)": FunctionFragment;
     "balanceOfAt(address,uint256)": FunctionFragment;
     "getUintVar(bytes32)": FunctionFragment;
     "getRequestIdByRequestQIndex(uint256)": FunctionFragment;
     "didMine(bytes32,address)": FunctionFragment;
+    "decreaseApproval(address,uint256)": FunctionFragment;
     "getMinersByRequestIdAndTimestamp(uint256,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "getStakerInfo(address)": FunctionFragment;
     "getTimestampbyRequestIDandIndex(uint256,uint256)": FunctionFragment;
+    "finishMinting()": FunctionFragment;
     "getDisputeUintVars(uint256,bytes32)": FunctionFragment;
+    "owner()": FunctionFragment;
     "retrieveData(uint256,uint256)": FunctionFragment;
+    "symbol()": FunctionFragment;
     "allowedToTrade(address,uint256)": FunctionFragment;
     "getCurrentVariables()": FunctionFragment;
     "didVote(uint256,address)": FunctionFragment;
+    "transfer(address,uint256)": FunctionFragment;
     "getAllDisputeVars(uint256)": FunctionFragment;
     "getRequestQ()": FunctionFragment;
+    "allocate(address,uint256)": FunctionFragment;
     "getMinedBlockNum(uint256,uint256)": FunctionFragment;
+    "increaseApproval(address,uint256)": FunctionFragment;
     "getDisputeIdByDisputeHash(bytes32)": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "getRequestUintVars(uint256,bytes32)": FunctionFragment;
     "getRequestVars(uint256)": FunctionFragment;
     "changeZapContract(address)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
     "getLastNewValue()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "mintingFinished",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "approve",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "getRequestIdByTimestamp",
     values: [BigNumberish]
@@ -80,9 +104,18 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "totalTokenSupply",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getRequestIdByQueryHash",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "transferFrom",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getLastNewValueById",
     values: [BigNumberish]
@@ -90,6 +123,10 @@ interface ZapMasterInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "isInDispute",
     values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mint",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getNewValueCountbyRequestId",
@@ -113,6 +150,10 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "decreaseApproval",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getMinersByRequestIdAndTimestamp",
     values: [BigNumberish, BigNumberish]
   ): string;
@@ -126,13 +167,19 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "finishMinting",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getDisputeUintVars",
     values: [BigNumberish, BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "retrieveData",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "allowedToTrade",
     values: [string, BigNumberish]
@@ -146,6 +193,10 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "transfer",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getAllDisputeVars",
     values: [BigNumberish]
   ): string;
@@ -154,8 +205,16 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "allocate",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getMinedBlockNum",
     values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "increaseApproval",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getDisputeIdByDisputeHash",
@@ -178,10 +237,20 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getLastNewValue",
     values?: undefined
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "mintingFinished",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRequestIdByTimestamp",
     data: BytesLike
@@ -205,9 +274,18 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "totalTokenSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getRequestIdByQueryHash",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getLastNewValueById",
     data: BytesLike
@@ -216,6 +294,7 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     functionFragment: "isInDispute",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getNewValueCountbyRequestId",
     data: BytesLike
@@ -235,6 +314,10 @@ interface ZapMasterInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "didMine", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "decreaseApproval",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getMinersByRequestIdAndTimestamp",
     data: BytesLike
   ): Result;
@@ -248,13 +331,19 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "finishMinting",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getDisputeUintVars",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "retrieveData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "allowedToTrade",
     data: BytesLike
@@ -264,6 +353,7 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "didVote", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getAllDisputeVars",
     data: BytesLike
@@ -272,8 +362,13 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     functionFragment: "getRequestQ",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "allocate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getMinedBlockNum",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "increaseApproval",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -294,15 +389,29 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getLastNewValue",
     data: BytesLike
   ): Result;
 
   events: {
     "NewZapAddress(address)": EventFragment;
+    "Mint(address,uint256)": EventFragment;
+    "MintFinished()": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+    "Approval(address,address,uint256)": EventFragment;
+    "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "NewZapAddress"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MintFinished"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
 export class ZapMaster extends Contract {
@@ -349,6 +458,26 @@ export class ZapMaster extends Contract {
   interface: ZapMasterInterface;
 
   functions: {
+    mintingFinished(overrides?: CallOverrides): Promise<[boolean]>;
+
+    "mintingFinished()"(overrides?: CallOverrides): Promise<[boolean]>;
+
+    name(overrides?: CallOverrides): Promise<[string]>;
+
+    "name()"(overrides?: CallOverrides): Promise<[string]>;
+
+    approve(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "approve(address,uint256)"(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     getRequestIdByTimestamp(
       _timestamp: BigNumberish,
       overrides?: CallOverrides
@@ -401,6 +530,10 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, string]>;
 
+    totalTokenSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "totalTokenSupply()"(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     getRequestIdByQueryHash(
       _request: BytesLike,
       overrides?: CallOverrides
@@ -410,6 +543,24 @@ export class ZapMaster extends Contract {
       _request: BytesLike,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    transferFrom(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "transferFrom(address,address,uint256)"(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    decimals(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getLastNewValueById(
       _requestId: BigNumberish,
@@ -432,6 +583,18 @@ export class ZapMaster extends Contract {
       _timestamp: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getNewValueCountbyRequestId(
       _requestId: BigNumberish,
@@ -497,6 +660,18 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     getMinersByRequestIdAndTimestamp(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -538,6 +713,14 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    finishMinting(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "finishMinting()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     getDisputeUintVars(
       _disputeId: BigNumberish,
       _data: BytesLike,
@@ -550,6 +733,10 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
+    "owner()"(overrides?: CallOverrides): Promise<[string]>;
+
     retrieveData(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -561,6 +748,10 @@ export class ZapMaster extends Contract {
       _timestamp: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    symbol(overrides?: CallOverrides): Promise<[string]>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<[string]>;
 
     allowedToTrade(
       _user: string,
@@ -593,6 +784,18 @@ export class ZapMaster extends Contract {
       _address: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    transfer(
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "transfer(address,uint256)"(
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getAllDisputeVars(
       _disputeId: BigNumberish,
@@ -768,6 +971,18 @@ export class ZapMaster extends Contract {
       ]
     >;
 
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     getMinedBlockNum(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -779,6 +994,18 @@ export class ZapMaster extends Contract {
       _timestamp: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getDisputeIdByDisputeHash(
       _hash: BytesLike,
@@ -834,12 +1061,42 @@ export class ZapMaster extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     getLastNewValue(overrides?: CallOverrides): Promise<[BigNumber, boolean]>;
 
     "getLastNewValue()"(
       overrides?: CallOverrides
     ): Promise<[BigNumber, boolean]>;
   };
+
+  mintingFinished(overrides?: CallOverrides): Promise<boolean>;
+
+  "mintingFinished()"(overrides?: CallOverrides): Promise<boolean>;
+
+  name(overrides?: CallOverrides): Promise<string>;
+
+  "name()"(overrides?: CallOverrides): Promise<string>;
+
+  approve(
+    _spender: string,
+    _value: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "approve(address,uint256)"(
+    _spender: string,
+    _value: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getRequestIdByTimestamp(
     _timestamp: BigNumberish,
@@ -890,6 +1147,10 @@ export class ZapMaster extends Contract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber, string]>;
 
+  totalTokenSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "totalTokenSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
+
   getRequestIdByQueryHash(
     _request: BytesLike,
     overrides?: CallOverrides
@@ -899,6 +1160,24 @@ export class ZapMaster extends Contract {
     _request: BytesLike,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  transferFrom(
+    _from: string,
+    _to: string,
+    _value: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "transferFrom(address,address,uint256)"(
+    _from: string,
+    _to: string,
+    _value: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   getLastNewValueById(
     _requestId: BigNumberish,
@@ -921,6 +1200,18 @@ export class ZapMaster extends Contract {
     _timestamp: BigNumberish,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  mint(
+    _to: string,
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "mint(address,uint256)"(
+    _to: string,
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getNewValueCountbyRequestId(
     _requestId: BigNumberish,
@@ -983,6 +1274,18 @@ export class ZapMaster extends Contract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  decreaseApproval(
+    _spender: string,
+    _subtractedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "decreaseApproval(address,uint256)"(
+    _spender: string,
+    _subtractedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   getMinersByRequestIdAndTimestamp(
     _requestId: BigNumberish,
     _timestamp: BigNumberish,
@@ -1024,6 +1327,14 @@ export class ZapMaster extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  finishMinting(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "finishMinting()"(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   getDisputeUintVars(
     _disputeId: BigNumberish,
     _data: BytesLike,
@@ -1036,6 +1347,10 @@ export class ZapMaster extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  "owner()"(overrides?: CallOverrides): Promise<string>;
+
   retrieveData(
     _requestId: BigNumberish,
     _timestamp: BigNumberish,
@@ -1047,6 +1362,10 @@ export class ZapMaster extends Contract {
     _timestamp: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  symbol(overrides?: CallOverrides): Promise<string>;
+
+  "symbol()"(overrides?: CallOverrides): Promise<string>;
 
   allowedToTrade(
     _user: string,
@@ -1079,6 +1398,18 @@ export class ZapMaster extends Contract {
     _address: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  transfer(
+    _to: string,
+    _value: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "transfer(address,uint256)"(
+    _to: string,
+    _value: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getAllDisputeVars(
     _disputeId: BigNumberish,
@@ -1250,6 +1581,18 @@ export class ZapMaster extends Contract {
     ]
   >;
 
+  allocate(
+    to: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "allocate(address,uint256)"(
+    to: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   getMinedBlockNum(
     _requestId: BigNumberish,
     _timestamp: BigNumberish,
@@ -1261,6 +1604,18 @@ export class ZapMaster extends Contract {
     _timestamp: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  increaseApproval(
+    _spender: string,
+    _addedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "increaseApproval(address,uint256)"(
+    _spender: string,
+    _addedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getDisputeIdByDisputeHash(
     _hash: BytesLike,
@@ -1316,11 +1671,41 @@ export class ZapMaster extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "transferOwnership(address)"(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   getLastNewValue(overrides?: CallOverrides): Promise<[BigNumber, boolean]>;
 
   "getLastNewValue()"(overrides?: CallOverrides): Promise<[BigNumber, boolean]>;
 
   callStatic: {
+    mintingFinished(overrides?: CallOverrides): Promise<boolean>;
+
+    "mintingFinished()"(overrides?: CallOverrides): Promise<boolean>;
+
+    name(overrides?: CallOverrides): Promise<string>;
+
+    "name()"(overrides?: CallOverrides): Promise<string>;
+
+    approve(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "approve(address,uint256)"(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     getRequestIdByTimestamp(
       _timestamp: BigNumberish,
       overrides?: CallOverrides
@@ -1373,6 +1758,10 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber, string]>;
 
+    totalTokenSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "totalTokenSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     getRequestIdByQueryHash(
       _request: BytesLike,
       overrides?: CallOverrides
@@ -1382,6 +1771,24 @@ export class ZapMaster extends Contract {
       _request: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    transferFrom(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "transferFrom(address,address,uint256)"(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     getLastNewValueById(
       _requestId: BigNumberish,
@@ -1402,6 +1809,18 @@ export class ZapMaster extends Contract {
     "isInDispute(uint256,uint256)"(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -1463,6 +1882,18 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     getMinersByRequestIdAndTimestamp(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -1504,6 +1935,10 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    finishMinting(overrides?: CallOverrides): Promise<boolean>;
+
+    "finishMinting()"(overrides?: CallOverrides): Promise<boolean>;
+
     getDisputeUintVars(
       _disputeId: BigNumberish,
       _data: BytesLike,
@@ -1516,6 +1951,10 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    owner(overrides?: CallOverrides): Promise<string>;
+
+    "owner()"(overrides?: CallOverrides): Promise<string>;
+
     retrieveData(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -1527,6 +1966,10 @@ export class ZapMaster extends Contract {
       _timestamp: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    symbol(overrides?: CallOverrides): Promise<string>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<string>;
 
     allowedToTrade(
       _user: string,
@@ -1557,6 +2000,18 @@ export class ZapMaster extends Contract {
     "didVote(uint256,address)"(
       _disputeId: BigNumberish,
       _address: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    transfer(
+      _to: string,
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "transfer(address,uint256)"(
+      _to: string,
+      _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -1730,6 +2185,18 @@ export class ZapMaster extends Contract {
       ]
     >;
 
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     getMinedBlockNum(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -1741,6 +2208,18 @@ export class ZapMaster extends Contract {
       _timestamp: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     getDisputeIdByDisputeHash(
       _hash: BytesLike,
@@ -1796,6 +2275,16 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     getLastNewValue(overrides?: CallOverrides): Promise<[BigNumber, boolean]>;
 
     "getLastNewValue()"(
@@ -1807,9 +2296,62 @@ export class ZapMaster extends Contract {
     NewZapAddress(
       _newZap: null
     ): TypedEventFilter<[string], { _newZap: string }>;
+
+    Mint(
+      to: string | null,
+      amount: null
+    ): TypedEventFilter<[string, BigNumber], { to: string; amount: BigNumber }>;
+
+    MintFinished(): TypedEventFilter<[], {}>;
+
+    OwnershipTransferred(
+      previousOwner: string | null,
+      newOwner: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    Approval(
+      owner: string | null,
+      spender: string | null,
+      value: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; spender: string; value: BigNumber }
+    >;
+
+    Transfer(
+      from: string | null,
+      to: string | null,
+      value: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; value: BigNumber }
+    >;
   };
 
   estimateGas: {
+    mintingFinished(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "mintingFinished()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    name(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "name()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    approve(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "approve(address,uint256)"(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     getRequestIdByTimestamp(
       _timestamp: BigNumberish,
       overrides?: CallOverrides
@@ -1858,6 +2400,10 @@ export class ZapMaster extends Contract {
 
     "getVariablesOnDeck()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    totalTokenSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "totalTokenSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     getRequestIdByQueryHash(
       _request: BytesLike,
       overrides?: CallOverrides
@@ -1867,6 +2413,24 @@ export class ZapMaster extends Contract {
       _request: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    transferFrom(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "transferFrom(address,address,uint256)"(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     getLastNewValueById(
       _requestId: BigNumberish,
@@ -1888,6 +2452,18 @@ export class ZapMaster extends Contract {
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getNewValueCountbyRequestId(
@@ -1951,6 +2527,18 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     getMinersByRequestIdAndTimestamp(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -1992,6 +2580,14 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    finishMinting(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "finishMinting()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     getDisputeUintVars(
       _disputeId: BigNumberish,
       _data: BytesLike,
@@ -2004,6 +2600,10 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "owner()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     retrieveData(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -2015,6 +2615,10 @@ export class ZapMaster extends Contract {
       _timestamp: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    symbol(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowedToTrade(
       _user: string,
@@ -2044,6 +2648,18 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    transfer(
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "transfer(address,uint256)"(
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     getAllDisputeVars(
       _disputeId: BigNumberish,
       overrides?: CallOverrides
@@ -2058,6 +2674,18 @@ export class ZapMaster extends Contract {
 
     "getRequestQ()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     getMinedBlockNum(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -2068,6 +2696,18 @@ export class ZapMaster extends Contract {
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getDisputeIdByDisputeHash(
@@ -2124,12 +2764,44 @@ export class ZapMaster extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     getLastNewValue(overrides?: CallOverrides): Promise<BigNumber>;
 
     "getLastNewValue()"(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    mintingFinished(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "mintingFinished()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "name()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    approve(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "approve(address,uint256)"(
+      _spender: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     getRequestIdByTimestamp(
       _timestamp: BigNumberish,
       overrides?: CallOverrides
@@ -2182,6 +2854,12 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    totalTokenSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "totalTokenSupply()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getRequestIdByQueryHash(
       _request: BytesLike,
       overrides?: CallOverrides
@@ -2191,6 +2869,24 @@ export class ZapMaster extends Contract {
       _request: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    transferFrom(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "transferFrom(address,address,uint256)"(
+      _from: string,
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getLastNewValueById(
       _requestId: BigNumberish,
@@ -2212,6 +2908,18 @@ export class ZapMaster extends Contract {
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getNewValueCountbyRequestId(
@@ -2278,6 +2986,18 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     getMinersByRequestIdAndTimestamp(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -2322,6 +3042,14 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    finishMinting(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "finishMinting()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     getDisputeUintVars(
       _disputeId: BigNumberish,
       _data: BytesLike,
@@ -2334,6 +3062,10 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     retrieveData(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -2345,6 +3077,10 @@ export class ZapMaster extends Contract {
       _timestamp: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     allowedToTrade(
       _user: string,
@@ -2378,6 +3114,18 @@ export class ZapMaster extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    transfer(
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "transfer(address,uint256)"(
+      _to: string,
+      _value: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     getAllDisputeVars(
       _disputeId: BigNumberish,
       overrides?: CallOverrides
@@ -2392,6 +3140,18 @@ export class ZapMaster extends Contract {
 
     "getRequestQ()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     getMinedBlockNum(
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
@@ -2402,6 +3162,18 @@ export class ZapMaster extends Contract {
       _requestId: BigNumberish,
       _timestamp: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getDisputeIdByDisputeHash(
@@ -2455,6 +3227,16 @@ export class ZapMaster extends Contract {
 
     "changeZapContract(address)"(
       _zapContract: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "transferOwnership(address)"(
+      newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

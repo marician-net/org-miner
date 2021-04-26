@@ -3,7 +3,6 @@ pragma solidity ^0.5.1;
 import "./SafeMath.sol";
 import "./ZapStorage.sol";
 
-
 /**
 * @title Zap Transfer
 * @dev Contais the methods related to transfers and ERC20. Zap.sol and ZapGetters.sol
@@ -66,6 +65,7 @@ library ZapTransfer {
     * @return Returns the remaining allowance of tokens granted to the _spender from the _user
     */
     function allowance(ZapStorage.ZapStorageStruct storage self,address _user, address _spender) public view returns (uint) {
+       
        return self.allowed[_user][_spender]; 
     }
 

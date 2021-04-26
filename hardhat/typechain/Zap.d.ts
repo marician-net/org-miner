@@ -21,29 +21,51 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ZapInterface extends ethers.utils.Interface {
   functions: {
+    "mintingFinished()": FunctionFragment;
+    "name()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "depositStake()": FunctionFragment;
+    "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "proposeFork(address)": FunctionFragment;
     "requestStakingWithdraw()": FunctionFragment;
+    "decimals()": FunctionFragment;
     "requestData(string,string,uint256,uint256)": FunctionFragment;
+    "mint(address,uint256)": FunctionFragment;
     "tallyVotes(uint256)": FunctionFragment;
+    "decreaseApproval(address,uint256)": FunctionFragment;
     "submitMiningSolution(string,uint256,uint256)": FunctionFragment;
+    "balanceOf(address)": FunctionFragment;
     "addTip(uint256,uint256)": FunctionFragment;
+    "finishMinting()": FunctionFragment;
     "beginDispute(uint256,uint256,uint256)": FunctionFragment;
+    "owner()": FunctionFragment;
+    "symbol()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "theLazyCoon(address,uint256)": FunctionFragment;
+    "allocate(address,uint256)": FunctionFragment;
     "withdrawStake()": FunctionFragment;
     "vote(uint256,bool)": FunctionFragment;
+    "increaseApproval(address,uint256)": FunctionFragment;
+    "allowance(address,address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "mintingFinished",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositStake",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -55,32 +77,52 @@ interface ZapInterface extends ethers.utils.Interface {
     functionFragment: "requestStakingWithdraw",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "requestData",
     values: [string, string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mint",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "tallyVotes",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "decreaseApproval",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "submitMiningSolution",
     values: [string, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(
     functionFragment: "addTip",
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "finishMinting",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "beginDispute",
     values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transfer",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "theLazyCoon",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "allocate",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -92,13 +134,30 @@ interface ZapInterface extends ethers.utils.Interface {
     values: [BigNumberish, boolean]
   ): string;
   encodeFunctionData(
+    functionFragment: "increaseApproval",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "allowance",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "mintingFinished",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "depositStake",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -113,36 +172,67 @@ interface ZapInterface extends ethers.utils.Interface {
     functionFragment: "requestStakingWithdraw",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "requestData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tallyVotes", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "decreaseApproval",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "submitMiningSolution",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "addTip", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "finishMinting",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "beginDispute",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "theLazyCoon",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "allocate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "withdrawStake",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "vote", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "increaseApproval",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "Mint(address,uint256)": EventFragment;
+    "MintFinished()": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+    "Approval(address,address,uint256)": EventFragment;
+    "Transfer(address,address,uint256)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MintFinished"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
 export class Zap extends Contract {
@@ -189,6 +279,14 @@ export class Zap extends Contract {
   interface: ZapInterface;
 
   functions: {
+    mintingFinished(overrides?: CallOverrides): Promise<[boolean]>;
+
+    "mintingFinished()"(overrides?: CallOverrides): Promise<[boolean]>;
+
+    name(overrides?: CallOverrides): Promise<[string]>;
+
+    "name()"(overrides?: CallOverrides): Promise<[string]>;
+
     approve(
       _spender: string,
       _amount: BigNumberish,
@@ -208,6 +306,10 @@ export class Zap extends Contract {
     "depositStake()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "totalSupply()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
       _from: string,
@@ -241,6 +343,10 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    decimals(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     requestData(
       _c_sapi: string,
       _c_symbol: string,
@@ -257,6 +363,18 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     tallyVotes(
       _disputeId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -264,6 +382,18 @@ export class Zap extends Contract {
 
     "tallyVotes(uint256)"(
       _disputeId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -281,6 +411,16 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    balanceOf(
+      _user: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { balance: BigNumber }>;
+
+    "balanceOf(address)"(
+      _user: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { balance: BigNumber }>;
+
     addTip(
       _requestId: BigNumberish,
       _tip: BigNumberish,
@@ -290,6 +430,14 @@ export class Zap extends Contract {
     "addTip(uint256,uint256)"(
       _requestId: BigNumberish,
       _tip: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    finishMinting(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "finishMinting()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -306,6 +454,14 @@ export class Zap extends Contract {
       _minerIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
+    "owner()"(overrides?: CallOverrides): Promise<[string]>;
+
+    symbol(overrides?: CallOverrides): Promise<[string]>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<[string]>;
 
     transfer(
       _to: string,
@@ -331,6 +487,18 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     withdrawStake(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -351,6 +519,30 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    allowance(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { remaining: BigNumber }>;
+
+    "allowance(address,address)"(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { remaining: BigNumber }>;
+
     transferOwnership(
       _newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -361,6 +553,14 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  mintingFinished(overrides?: CallOverrides): Promise<boolean>;
+
+  "mintingFinished()"(overrides?: CallOverrides): Promise<boolean>;
+
+  name(overrides?: CallOverrides): Promise<string>;
+
+  "name()"(overrides?: CallOverrides): Promise<string>;
 
   approve(
     _spender: string,
@@ -381,6 +581,10 @@ export class Zap extends Contract {
   "depositStake()"(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
     _from: string,
@@ -414,6 +618,10 @@ export class Zap extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
+
   requestData(
     _c_sapi: string,
     _c_symbol: string,
@@ -430,6 +638,18 @@ export class Zap extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  mint(
+    _to: string,
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "mint(address,uint256)"(
+    _to: string,
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   tallyVotes(
     _disputeId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -437,6 +657,18 @@ export class Zap extends Contract {
 
   "tallyVotes(uint256)"(
     _disputeId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  decreaseApproval(
+    _spender: string,
+    _subtractedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "decreaseApproval(address,uint256)"(
+    _spender: string,
+    _subtractedValue: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -454,6 +686,13 @@ export class Zap extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  balanceOf(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  "balanceOf(address)"(
+    _user: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   addTip(
     _requestId: BigNumberish,
     _tip: BigNumberish,
@@ -463,6 +702,14 @@ export class Zap extends Contract {
   "addTip(uint256,uint256)"(
     _requestId: BigNumberish,
     _tip: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  finishMinting(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "finishMinting()"(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -479,6 +726,14 @@ export class Zap extends Contract {
     _minerIndex: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  "owner()"(overrides?: CallOverrides): Promise<string>;
+
+  symbol(overrides?: CallOverrides): Promise<string>;
+
+  "symbol()"(overrides?: CallOverrides): Promise<string>;
 
   transfer(
     _to: string,
@@ -504,6 +759,18 @@ export class Zap extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  allocate(
+    to: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "allocate(address,uint256)"(
+    to: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   withdrawStake(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -524,6 +791,30 @@ export class Zap extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  increaseApproval(
+    _spender: string,
+    _addedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "increaseApproval(address,uint256)"(
+    _spender: string,
+    _addedValue: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  allowance(
+    _owner: string,
+    _spender: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "allowance(address,address)"(
+    _owner: string,
+    _spender: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   transferOwnership(
     _newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -535,6 +826,14 @@ export class Zap extends Contract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    mintingFinished(overrides?: CallOverrides): Promise<boolean>;
+
+    "mintingFinished()"(overrides?: CallOverrides): Promise<boolean>;
+
+    name(overrides?: CallOverrides): Promise<string>;
+
+    "name()"(overrides?: CallOverrides): Promise<string>;
+
     approve(
       _spender: string,
       _amount: BigNumberish,
@@ -550,6 +849,10 @@ export class Zap extends Contract {
     depositStake(overrides?: CallOverrides): Promise<void>;
 
     "depositStake()"(overrides?: CallOverrides): Promise<void>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       _from: string,
@@ -579,6 +882,10 @@ export class Zap extends Contract {
 
     "requestStakingWithdraw()"(overrides?: CallOverrides): Promise<void>;
 
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     requestData(
       _c_sapi: string,
       _c_symbol: string,
@@ -595,6 +902,18 @@ export class Zap extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     tallyVotes(
       _disputeId: BigNumberish,
       overrides?: CallOverrides
@@ -604,6 +923,18 @@ export class Zap extends Contract {
       _disputeId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     submitMiningSolution(
       _nonce: string,
@@ -619,6 +950,13 @@ export class Zap extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    balanceOf(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    "balanceOf(address)"(
+      _user: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     addTip(
       _requestId: BigNumberish,
       _tip: BigNumberish,
@@ -630,6 +968,10 @@ export class Zap extends Contract {
       _tip: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    finishMinting(overrides?: CallOverrides): Promise<boolean>;
+
+    "finishMinting()"(overrides?: CallOverrides): Promise<boolean>;
 
     beginDispute(
       _requestId: BigNumberish,
@@ -644,6 +986,14 @@ export class Zap extends Contract {
       _minerIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
+
+    "owner()"(overrides?: CallOverrides): Promise<string>;
+
+    symbol(overrides?: CallOverrides): Promise<string>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<string>;
 
     transfer(
       _to: string,
@@ -666,6 +1016,18 @@ export class Zap extends Contract {
     "theLazyCoon(address,uint256)"(
       _address: string,
       _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -685,6 +1047,30 @@ export class Zap extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    allowance(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "allowance(address,address)"(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     transferOwnership(
       _newOwner: string,
       overrides?: CallOverrides
@@ -696,9 +1082,50 @@ export class Zap extends Contract {
     ): Promise<void>;
   };
 
-  filters: {};
+  filters: {
+    Mint(
+      to: string | null,
+      amount: null
+    ): TypedEventFilter<[string, BigNumber], { to: string; amount: BigNumber }>;
+
+    MintFinished(): TypedEventFilter<[], {}>;
+
+    OwnershipTransferred(
+      previousOwner: string | null,
+      newOwner: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    Approval(
+      owner: string | null,
+      spender: string | null,
+      value: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; spender: string; value: BigNumber }
+    >;
+
+    Transfer(
+      from: string | null,
+      to: string | null,
+      value: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; value: BigNumber }
+    >;
+  };
 
   estimateGas: {
+    mintingFinished(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "mintingFinished()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    name(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "name()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     approve(
       _spender: string,
       _amount: BigNumberish,
@@ -718,6 +1145,10 @@ export class Zap extends Contract {
     "depositStake()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       _from: string,
@@ -751,6 +1182,10 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     requestData(
       _c_sapi: string,
       _c_symbol: string,
@@ -767,6 +1202,18 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     tallyVotes(
       _disputeId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -774,6 +1221,18 @@ export class Zap extends Contract {
 
     "tallyVotes(uint256)"(
       _disputeId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -791,6 +1250,13 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    balanceOf(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    "balanceOf(address)"(
+      _user: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     addTip(
       _requestId: BigNumberish,
       _tip: BigNumberish,
@@ -800,6 +1266,14 @@ export class Zap extends Contract {
     "addTip(uint256,uint256)"(
       _requestId: BigNumberish,
       _tip: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    finishMinting(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "finishMinting()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -816,6 +1290,14 @@ export class Zap extends Contract {
       _minerIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "owner()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    symbol(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       _to: string,
@@ -841,6 +1323,18 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     withdrawStake(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -859,6 +1353,30 @@ export class Zap extends Contract {
       _disputeId: BigNumberish,
       _supportsDispute: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    allowance(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "allowance(address,address)"(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     transferOwnership(
@@ -873,6 +1391,16 @@ export class Zap extends Contract {
   };
 
   populateTransaction: {
+    mintingFinished(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "mintingFinished()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "name()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     approve(
       _spender: string,
       _amount: BigNumberish,
@@ -892,6 +1420,10 @@ export class Zap extends Contract {
     "depositStake()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "totalSupply()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferFrom(
       _from: string,
@@ -925,6 +1457,10 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     requestData(
       _c_sapi: string,
       _c_symbol: string,
@@ -941,6 +1477,18 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    mint(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "mint(address,uint256)"(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     tallyVotes(
       _disputeId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -948,6 +1496,18 @@ export class Zap extends Contract {
 
     "tallyVotes(uint256)"(
       _disputeId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    decreaseApproval(
+      _spender: string,
+      _subtractedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "decreaseApproval(address,uint256)"(
+      _spender: string,
+      _subtractedValue: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -965,6 +1525,16 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    balanceOf(
+      _user: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "balanceOf(address)"(
+      _user: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     addTip(
       _requestId: BigNumberish,
       _tip: BigNumberish,
@@ -974,6 +1544,14 @@ export class Zap extends Contract {
     "addTip(uint256,uint256)"(
       _requestId: BigNumberish,
       _tip: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    finishMinting(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "finishMinting()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -990,6 +1568,14 @@ export class Zap extends Contract {
       _minerIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "symbol()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transfer(
       _to: string,
@@ -1015,6 +1601,18 @@ export class Zap extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    allocate(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "allocate(address,uint256)"(
+      to: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     withdrawStake(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1033,6 +1631,30 @@ export class Zap extends Contract {
       _disputeId: BigNumberish,
       _supportsDispute: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    increaseApproval(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "increaseApproval(address,uint256)"(
+      _spender: string,
+      _addedValue: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    allowance(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "allowance(address,address)"(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(

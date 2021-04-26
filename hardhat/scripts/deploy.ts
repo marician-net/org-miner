@@ -5,6 +5,7 @@
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat"
 const hre = require("hardhat");
+const ZapMasterJson = require("../artifacts/contracts/ZapMaster.sol/ZapMaster.json")
 
 async function main() {
   let signers = await ethers.getSigners();
@@ -62,15 +63,16 @@ async function main() {
   const Zap = await ethers.getContractFactory("Zap", 
   {
     libraries: {
-      ZapTransfer: zapTransfer.address,
       ZapStake: zapStake.address,
       ZapDispute: zapDispute.address,
       ZapLibrary: zapLibrary.address
     },
     signer: signers[0]
   });
-  const zap = await Zap.deploy();
-  console.log("deployed Zap")
+  const zap = await Zap.deploy("0x5fbdb2315678afecb367f032d93f642f64180aa3");
+  console.log("Zap address: " + zap.address)
+  console.log("Zap Approve: " + await zap.approve(signers[1].address, 100) );
+  console.log("Transfer: " + await zap.transfer("0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1));
 
   const ZapGetters = await ethers.getContractFactory("ZapGetters", 
   {
@@ -79,19 +81,27 @@ async function main() {
     },
     signer: signers[0]
   });
-  const zapGetters = await Zap.deploy();
+  const zapGetters = await ZapGetters.deploy("0x5fbdb2315678afecb367f032d93f642f64180aa3");
   console.log("deployed ZapGetters")
 
-  const ZapMaster = await ethers.getContractFactory("ZapMaster", 
-  {
-    libraries: {
-      ZapTransfer: zapTransfer.address,
-      ZapStake: zapStake.address,
-    },
-    signer: signers[0]
-  });
-  const zapMaster = await Zap.deploy();
-  console.log("deployed ZapMaster")
+  // const ZapMaster = await ethers.getContractFactory("ZapMaster", 
+  const ZapMaster = await ethers.getContractFactory(ZapMasterJson.abi, ZapMasterJson.bytecode, 
+  // {
+  //   libraries: {
+  //     ZapTransfer: zapTransfer.address,
+  //     ZapGettersLibrary: zapGettersLibrary.address,
+  //     ZapLibrary: zapLibrary.address,
+  //   },
+  //   signer: signers[0]
+  // }
+  signers[0]
+  );
+  // const ZapMaster = await ethers.getContractAt("ZapMaster", zap.address, signers[0]);
+
+  const zapMaster = await ZapMaster.deploy(zap.address);
+  console.log("ZapMaster address: " + zapMaster.address)
+  console.log("ZapMaster ABI: " + ZapMasterJson.abi)
+  console.log("ZapMaster ByteCode: " + ZapMasterJson.bytecode)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

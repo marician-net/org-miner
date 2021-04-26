@@ -5,13 +5,15 @@ import "./libraries/ZapStorage.sol";
 import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapGettersLibrary.sol";
 import "./libraries/ZapStake.sol";
+// import "./libraries/Upgradable.sol";
+import "./ZapToken.sol";
 
 /**
 * @title Zap Getters
 * @dev Oracle contract with all zap getter functions. The logic for the functions on this contract 
 * is saved on the ZapGettersLibrary, ZapTransfer, ZapGettersLibrary, and ZapStake
 */
-contract ZapGetters{
+contract ZapGetters is ZapToken {
     using SafeMath for uint256;
 
     using ZapTransfer for ZapStorage.ZapStorageStruct;
@@ -19,14 +21,29 @@ contract ZapGetters{
     using ZapStake for ZapStorage.ZapStorageStruct;
 
     ZapStorage.ZapStorageStruct zap;
-    
+    ZapToken token;
+
+    constructor (address zapToken) public {
+        token = ZapToken(zapToken);
+    }
+
+    // constructor (address coordinator) Upgradable(coordinator) public {
+    //     _updateDependencies();
+    // }
+
+    // function _updateDependencies() internal {
+    //     address ZapToken_Address = coordinator.getContract("ZAPTOKEN");
+    //     token = ZapToken(ZapToken_Address);
+    // }
+
     /**
     * @param _user address
     * @param _spender address
     * @return Returns the remaining allowance of tokens granted to the _spender from the _user
     */
-    function allowance(address _user, address _spender) external view returns (uint) {
-       return zap.allowance(_user,_spender);
+    function allowance(address _user, address _spender) public view returns (uint) {
+    //    return zap.allowance(_user,_spender);
+        return token.allowance(_user, _spender);
     }
 
     /**
@@ -44,8 +61,9 @@ contract ZapGetters{
     * @param _user is the owner address used to look up the balance
     * @return Returns the balance associated with the passed in _user
     */
-    function balanceOf(address _user) external view returns (uint) { 
-        return zap.balanceOf(_user);
+    function balanceOf(address _user) public view returns (uint) { 
+        // return zap.balanceOf(_user);
+        return token.balanceOf(_user);
     }
 
     /**
@@ -367,8 +385,9 @@ contract ZapGetters{
     * @dev Getter for the total_supply of oracle tokens
     * @return uint total supply
     */
-    function totalSupply() external view returns (uint) {
+    function totalTokenSupply() external view returns (uint) {
        return zap.totalSupply();
+        // return token.totalSupply;
     }
 
 }

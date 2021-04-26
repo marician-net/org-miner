@@ -2,10 +2,12 @@ pragma solidity ^0.5.0;
 
 import "./libraries/SafeMath.sol";
 import "./libraries/ZapStorage.sol";
-import "./libraries/ZapTransfer.sol";
+// import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapDispute.sol";
 import "./libraries/ZapStake.sol";
 import "./libraries/ZapLibrary.sol";
+// import "./libraries/Upgradable.sol";
+import "./ZapToken.sol";
 
 /**
  * @title Zap Oracle System
@@ -13,7 +15,7 @@ import "./libraries/ZapLibrary.sol";
  * The logic for this contract is in ZapLibrary.sol, ZapDispute.sol, ZapStake.sol, 
  * and ZapTransfer.sol
  */
-contract Zap{
+contract Zap is ZapToken {
 
     using SafeMath for uint256;
 
@@ -23,6 +25,24 @@ contract Zap{
     using ZapTransfer for ZapStorage.ZapStorageStruct;
 
     ZapStorage.ZapStorageStruct zap;
+    ZapToken token;
+
+    constructor (address zapToken) public {
+        token = ZapToken(zapToken);
+    }
+
+    function balanceOf(address _user) public view returns (uint256 balance){
+        return token.balanceOf(_user);
+    }
+
+    // constructor (address coordinator) Upgradable(coordinator) public {
+    //     _updateDependencies();
+    // }
+
+    // function _updateDependencies() internal {
+    //     address ZapToken_Address = coordinator.getContract("ZAPTOKEN");
+    //     token = ZapToken(ZapToken_Address);
+    // }
 
     /*Functions*/
     
@@ -114,7 +134,7 @@ contract Zap{
     * @dev Allows the current owner to transfer control of the contract to a newOwner.
     * @param _newOwner The address to transfer ownership to.
     */
-    function transferOwnership(address payable _newOwner) external {
+    function transferOwnership(address payable _newOwner) public {
         zap.transferOwnership(_newOwner);
     }
 
@@ -151,8 +171,9 @@ contract Zap{
     * @param _amount amount the spender is being approved for
     * @return true if spender appproved successfully
     */
-    function approve(address _spender, uint _amount) external returns (bool) {
-        return zap.approve(_spender,_amount);
+    function approve(address _spender, uint _amount) public returns (bool) {
+        // return zap.approve(_spender,_amount);
+        return token.approve(_spender, _amount);
     }
 
 
@@ -162,8 +183,9 @@ contract Zap{
     * @param _amount The amount of tokens to send
     * @return true if transfer is successful
     */
-    function transfer(address _to, uint256 _amount) external returns (bool) {
-        return zap.transfer(_to,_amount);
+    function transfer(address _to, uint256 _amount) public returns (bool) {
+        // return zap.transfer(_to,_amount);
+        return token.transfer(_to, _amount);
     }
 
 
@@ -175,8 +197,9 @@ contract Zap{
     * @param _amount The amount of tokens to be transferred
     * @return True if the transfer was successful
     */
-    function transferFrom(address _from, address _to, uint256 _amount) external returns (bool) {
-        return zap.transferFrom(_from,_to,_amount);
+    function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
+        // return zap.transferFrom(_from,_to,_amount);
+        return token.transferFrom(_from, _to, _amount);
     }
 
 }
