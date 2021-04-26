@@ -23,6 +23,7 @@ import (
 	db "github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/ops"
 	"github.com/zapproject/zap-miner/rpc"
+	token "github.com/zapproject/zap-miner/token"
 	"github.com/zapproject/zap-miner/util"
 )
 
@@ -45,11 +46,13 @@ func buildContext() error {
 			log.Fatal(err)
 		}
 		//create an instance of the Zap master contract for on-chain interactions
+		tokenAddress := common.HexToAddress(cfg.TokenAddress)
 		contractAddress := common.HexToAddress(cfg.ContractAddress)
 		masterInstance, err := contracts.NewZapMaster(contractAddress, client)
 		transactorInstance, err := contracts1.NewZapTransactor(contractAddress, client)
 		newZapInstance, err := contracts2.NewZap(contractAddress, client)
 		newTransactorInstance, err := contracts2.NewZapTransactor(contractAddress, client)
+		tokenInstance, err := token.NewZapTokenTransactor(tokenAddress, client)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -58,6 +61,7 @@ func buildContext() error {
 		ctx = context.WithValue(ctx, ZapCommon.ContractAddress, contractAddress)
 		ctx = context.WithValue(ctx, ZapCommon.MasterContractContextKey, masterInstance)
 		ctx = context.WithValue(ctx, ZapCommon.TransactorContractContextKey, transactorInstance)
+		ctx = context.WithValue(ctx, ZapCommon.TokenTransactorContractContextKey, tokenInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewZapContractContextKey, newZapInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewTransactorContractContextKey, newTransactorInstance)
 

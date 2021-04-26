@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./libraries/SafeMath.sol";
+// import "./libraries/SafeMath.sol";
 import "./libraries/ZapStorage.sol";
 // import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapDispute.sol";
@@ -15,7 +15,7 @@ import "./ZapToken.sol";
  * The logic for this contract is in ZapLibrary.sol, ZapDispute.sol, ZapStake.sol, 
  * and ZapTransfer.sol
  */
-contract Zap is ZapToken {
+contract Zap {
 
     using SafeMath for uint256;
 
@@ -25,7 +25,7 @@ contract Zap is ZapToken {
     using ZapTransfer for ZapStorage.ZapStorageStruct;
 
     ZapStorage.ZapStorageStruct zap;
-    ZapToken token;
+    ZapToken public token;
 
     constructor (address zapToken) public {
         token = ZapToken(zapToken);
@@ -34,15 +34,6 @@ contract Zap is ZapToken {
     function balanceOf(address _user) public view returns (uint256 balance){
         return token.balanceOf(_user);
     }
-
-    // constructor (address coordinator) Upgradable(coordinator) public {
-    //     _updateDependencies();
-    // }
-
-    // function _updateDependencies() internal {
-    //     address ZapToken_Address = coordinator.getContract("ZAPTOKEN");
-    //     token = ZapToken(ZapToken_Address);
-    // }
 
     /*Functions*/
     
@@ -134,9 +125,10 @@ contract Zap is ZapToken {
     * @dev Allows the current owner to transfer control of the contract to a newOwner.
     * @param _newOwner The address to transfer ownership to.
     */
-    function transferOwnership(address payable _newOwner) public {
-        zap.transferOwnership(_newOwner);
-    }
+    // function transferOwnership(address payable _newOwner) public {
+    //     // zap.transferOwnership(_newOwner);
+    //     token.transferOwnership(_newOwner);
+    // }
 
 
     /**

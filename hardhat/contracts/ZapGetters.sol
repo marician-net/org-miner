@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./libraries/SafeMath.sol";
+// import "./libraries/SafeMathM.sol";
 import "./libraries/ZapStorage.sol";
 import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapGettersLibrary.sol";
@@ -72,9 +72,9 @@ contract ZapGetters is ZapToken {
     * @param _blockNumber The block number when the balance is queried
     * @return The balance at _blockNumber
     */
-    function balanceOfAt(address _user, uint _blockNumber) external view returns (uint) {
-        return zap.balanceOfAt(_user,_blockNumber);
-    }
+    // function balanceOfAt(address _user, uint _blockNumber) external view returns (uint) {
+    //     return zap.balanceOfAt(_user,_blockNumber);
+    // }
 
     /**
     * @dev This function tells you if a given challenge has been completed by a given miner

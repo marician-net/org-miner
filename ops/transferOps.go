@@ -10,8 +10,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	zapCommon "github.com/zapproject/zap-miner/common"
 	zap "github.com/zapproject/zap-miner/contracts"
-	zap1 "github.com/zapproject/zap-miner/contracts1"
+
+	// zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/rpc"
+	token "github.com/zapproject/zap-miner/token"
 	"github.com/zapproject/zap-miner/util"
 )
 
@@ -46,7 +48,9 @@ func Transfer(toAddress common.Address, amt *big.Int, ctx context.Context) error
 		return err
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
+	// instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
+	// tx, err := instance2.Transfer(auth, toAddress, amt)
+	instance2 := ctx.Value(zapCommon.TokenTransactorContractContextKey).(*token.ZapTokenTransactor)
 	tx, err := instance2.Transfer(auth, toAddress, amt)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -61,7 +65,7 @@ func Approve(_spender common.Address, amt *big.Int, ctx context.Context) error {
 		return err
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*token.ZapTokenTransactor)
 	tx, err := instance2.Approve(auth, _spender, amt)
 	if err != nil {
 		return err

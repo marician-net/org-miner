@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./SafeMath.sol";
+import "./SafeMathM.sol";
 import "./Utilities.sol";
 import "./ZapStorage.sol";
 import "./ZapTransfer.sol";
@@ -15,7 +15,7 @@ import "./ZapGettersLibrary.sol";
  * along with the value and smart contracts can requestData and tip miners.
  */
 library ZapLibrary{
-    using SafeMath for uint256;
+    using SafeMathM for uint256;
     
     event TipAdded(address indexed _sender,uint indexed _requestId, uint _tip, uint _totalTips);
     event DataRequested(address indexed _sender, string _query,string _querySymbol,uint _granularity, uint indexed _requestId, uint _totalTips);//Emits upon someone adding value to a pool; msg.sender, amount added, and timestamp incentivized to be mined
@@ -248,11 +248,11 @@ library ZapLibrary{
     * @dev Allows the current owner to transfer control of the contract to a newOwner.
     * @param _newOwner The address to transfer ownership to.
     */
-    function transferOwnership(ZapStorage.ZapStorageStruct storage self,address payable _newOwner) internal {
-            require(msg.sender == self.addressVars[keccak256("_owner")]);
-            emit OwnershipTransferred(self.addressVars[keccak256("_owner")], _newOwner);
-            self.addressVars[keccak256("_owner")] = _newOwner;
-    }
+    // function transferOwnership(ZapStorage.ZapStorageStruct storage self,address payable _newOwner) internal {
+    //         require(msg.sender == self.addressVars[keccak256("_owner")]);
+    //         emit OwnershipTransferred(self.addressVars[keccak256("_owner")], _newOwner);
+    //         self.addressVars[keccak256("_owner")] = _newOwner;
+    // }
 
 
     /**
