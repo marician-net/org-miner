@@ -13,7 +13,7 @@ import "./token/ZapToken.sol";
 * @dev Oracle contract with all zap getter functions. The logic for the functions on this contract 
 * is saved on the ZapGettersLibrary, ZapTransfer, ZapGettersLibrary, and ZapStake
 */
-contract ZapGetters is ZapToken {
+contract ZapGetters {
     using SafeMath for uint256;
 
     using ZapTransfer for ZapStorage.ZapStorageStruct;

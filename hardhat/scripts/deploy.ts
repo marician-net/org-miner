@@ -213,7 +213,68 @@ async function main() {
    * MINERS
    */
 
-   
+  const ZapGettersLibrary = await ethers.getContractFactory("ZapGettersLibrary", signers[0]);
+  const zapGettersLibrary = await ZapGettersLibrary.deploy();
+  console.log("deployed ZapGettersLibrary")
+
+  const ZapTransfer = await ethers.getContractFactory("ZapTransfer", signers[0]);
+  const zapTransfer = await ZapTransfer.deploy();
+  console.log("deployed ZapTransfer")
+
+  const ZapDispute = await ethers.getContractFactory("ZapDispute", {
+    libraries: {
+      ZapTransfer: zapTransfer.address,
+    },
+    signer: signers[0]
+  });
+  const zapDispute = await ZapDispute.deploy();
+  console.log("deployed ZapDispute")
+
+  const ZapStake = await ethers.getContractFactory("ZapStake", {
+    libraries: {
+      ZapTransfer: zapTransfer.address,
+      ZapDispute: zapDispute.address
+    },
+    signer: signers[0]
+  });
+  const zapStake= await ZapStake.deploy();
+  console.log("deployed ZapStake")
+
+  const ZapLibrary = await ethers.getContractFactory("ZapLibrary", 
+  {
+    libraries: {
+      ZapTransfer: zapTransfer.address,
+    },
+    signer: signers[0]
+  });
+  const zapLibrary = await ZapLibrary.deploy();
+  console.log("deployed ZapLibrary")
+
+  const Zap = await ethers.getContractFactory("Zap", 
+  {
+    libraries: {
+      ZapStake: zapStake.address,
+      ZapDispute: zapDispute.address,
+      ZapLibrary: zapLibrary.address
+    },
+    signer: signers[0]
+  });
+  let zap = await Zap.deploy("0x5fbdb2315678afecb367f032d93f642f64180aa3");
+  zap = zap.connect(signers[0])
+
+  const ZapGetters = await ethers.getContractFactory("ZapGetters", 
+  {
+    libraries: {
+      ZapTransfer: zapTransfer.address,
+    },
+    signer: signers[0]
+  });
+  const zapGetters = await ZapGetters.deploy("0x5fbdb2315678afecb367f032d93f642f64180aa3");
+  console.log("deployed ZapGetters")
+
+  const ZapMaster = await ethers.getContractAt("ZapMaster", zapGetters.address, signers[0])
+  console.log("ZapMaster Address: " + ZapMaster.address)
+
 }
 
 main()

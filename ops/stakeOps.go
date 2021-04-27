@@ -81,7 +81,7 @@ func Deposit(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("couldn't prepare ethereum transaction: %s", err.Error())
 	}
-
+	fmt.Println(auth)
 	tx, err := instance2.DepositStake(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
