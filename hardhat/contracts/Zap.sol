@@ -7,7 +7,7 @@ import "./libraries/ZapDispute.sol";
 import "./libraries/ZapStake.sol";
 import "./libraries/ZapLibrary.sol";
 // import "./libraries/Upgradable.sol";
-import "./ZapToken.sol";
+import "./token/ZapToken.sol";
 
 /**
  * @title Zap Oracle System

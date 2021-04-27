@@ -6,7 +6,7 @@ import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapGettersLibrary.sol";
 import "./libraries/ZapStake.sol";
 // import "./libraries/Upgradable.sol";
-import "./ZapToken.sol";
+import "./token/ZapToken.sol";
 
 /**
 * @title Zap Getters
