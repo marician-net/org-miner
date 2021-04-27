@@ -1,11 +1,10 @@
 pragma solidity ^0.5.0;
 
-// import "./libraries/SafeMathM.sol";
+import "./libraries/SafeMathM.sol";
 import "./libraries/ZapStorage.sol";
 import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapGettersLibrary.sol";
 import "./libraries/ZapStake.sol";
-// import "./libraries/Upgradable.sol";
 import "./token/ZapToken.sol";
 
 /**
@@ -14,7 +13,7 @@ import "./token/ZapToken.sol";
 * is saved on the ZapGettersLibrary, ZapTransfer, ZapGettersLibrary, and ZapStake
 */
 contract ZapGetters {
-    using SafeMath for uint256;
+    using SafeMathM for uint256;
 
     using ZapTransfer for ZapStorage.ZapStorageStruct;
     using ZapGettersLibrary for ZapStorage.ZapStorageStruct;
@@ -26,15 +25,6 @@ contract ZapGetters {
     constructor (address zapToken) public {
         token = ZapToken(zapToken);
     }
-
-    // constructor (address coordinator) Upgradable(coordinator) public {
-    //     _updateDependencies();
-    // }
-
-    // function _updateDependencies() internal {
-    //     address ZapToken_Address = coordinator.getContract("ZAPTOKEN");
-    //     token = ZapToken(ZapToken_Address);
-    // }
 
     /**
     * @param _user address

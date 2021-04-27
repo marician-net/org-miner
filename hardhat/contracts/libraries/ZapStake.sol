@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 import "./ZapStorage.sol";
 import "./ZapTransfer.sol";
 import "./ZapDispute.sol";
+// import "../token/ZapToken.sol";
 
 /**
 * @title Zap Dispute

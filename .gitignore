@@ -76,3 +76,7 @@ logs/
 
 cache/
 .DS_Store
+
+# hardhat
+/hardhat/typechain/
+/hardhat/artifacts/

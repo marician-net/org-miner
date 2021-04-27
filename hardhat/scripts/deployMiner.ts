@@ -7,6 +7,7 @@ import { ethers } from "hardhat"
 
 async function main() {
   let signers = await ethers.getSigners();
+  const ZapMasterJSON = require("../artifacts/contracts/ZapMaster.sol/ZapMaster.json")
 
   // const SafeMath = await ethers.getContractFactory("SafeMath", signers[0]);
   // const safeMath = await SafeMath.deploy();
@@ -50,7 +51,8 @@ async function main() {
   const ZapLibrary = await ethers.getContractFactory("ZapLibrary", 
   {
     libraries: {
-      ZapTransfer: zapTransfer.address,
+      // ZapTransfer: zapTransfer.address,
+      
     },
     signer: signers[0]
   });
@@ -73,15 +75,16 @@ async function main() {
   {
     libraries: {
       ZapTransfer: zapTransfer.address,
+      ZapStake: zapStake.address
     },
     signer: signers[0]
   });
   const zapGetters = await ZapGetters.deploy("0x5fbdb2315678afecb367f032d93f642f64180aa3");
   console.log("deployed ZapGetters")
 
-  const ZapMaster = await ethers.getContractAt("ZapMaster", zapGetters.address, signers[0])
+  const ZapMaster = await ethers.getContractAt("ZapMaster", zapGetters.address, signers[0]);
+  // const ZapMaster = await zapGetters.attach("ZapMaster")
   console.log("ZapMaster Address: " + ZapMaster.address)
-
 }
 
 // We recommend this pattern to be able to use async/await everywhere
