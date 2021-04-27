@@ -70,7 +70,6 @@ func Deposit(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("fetching stake amount failed: %s", err.Error())
 	}
-
 	if balance.Cmp(stakeAmt) < 0 {
 		return fmt.Errorf("insufficient balance (%s), mining stake requires %s ZAP",
 			util.FormatERC20Balance(balance),

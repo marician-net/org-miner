@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./SafeMath.sol";
+import "./SafeMathM.sol";
 import "./ZapStorage.sol";
 import "./Utilities.sol";
 
@@ -10,7 +10,7 @@ import "./Utilities.sol";
 * libary for the getters logic
 */
 library ZapGettersLibrary{
-    using SafeMath for uint256;
+    using SafeMathM for uint256;
 
     event NewZapAddress(address _newZap); //emmited when a proposed fork is voted true
 

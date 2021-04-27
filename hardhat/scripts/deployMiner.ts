@@ -4,15 +4,10 @@
 // When running the script with `hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat"
-var Web3 = require("web3")
 
 async function main() {
   let signers = await ethers.getSigners();
-  let owner = signers[0]
-  let overrides = {
-    from: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
-  }
-  var web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545/'));
+
   // const SafeMath = await ethers.getContractFactory("SafeMath", signers[0]);
   // const safeMath = await SafeMath.deploy();
   // console.log("deployed SafeMath")

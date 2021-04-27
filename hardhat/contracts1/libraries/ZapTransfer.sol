@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./SafeMath.sol";
+import "./SafeMathM.sol";
 import "./ZapStorage.sol";
 
 
@@ -10,7 +10,7 @@ import "./ZapStorage.sol";
 * reference this library for function's logic.
 */
 library ZapTransfer {
-    using SafeMath for uint256;
+    using SafeMathM for uint256;
 
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);//ERC20 Approval event
     event Transfer(address indexed _from, address indexed _to, uint256 _value);//ERC20 Transfer Event
