@@ -40,7 +40,6 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     "mint(address,uint256)": FunctionFragment;
     "getNewValueCountbyRequestId(uint256)": FunctionFragment;
     "changeDeity(address)": FunctionFragment;
-    "balanceOfAt(address,uint256)": FunctionFragment;
     "getUintVar(bytes32)": FunctionFragment;
     "getRequestIdByRequestQIndex(uint256)": FunctionFragment;
     "didMine(bytes32,address)": FunctionFragment;
@@ -133,10 +132,6 @@ interface ZapMasterInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "changeDeity", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "balanceOfAt",
-    values: [string, BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "getUintVar",
     values: [BytesLike]
@@ -301,10 +296,6 @@ interface ZapMasterInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "changeDeity",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "balanceOfAt",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getUintVar", data: BytesLike): Result;
@@ -615,18 +606,6 @@ export class ZapMaster extends Contract {
       _newDeity: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
 
     getUintVar(
       _data: BytesLike,
@@ -1233,18 +1212,6 @@ export class ZapMaster extends Contract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  balanceOfAt(
-    _user: string,
-    _blockNumber: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "balanceOfAt(address,uint256)"(
-    _user: string,
-    _blockNumber: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   getUintVar(_data: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
   "getUintVar(bytes32)"(
@@ -1840,18 +1807,6 @@ export class ZapMaster extends Contract {
       _newDeity: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     getUintVar(_data: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2486,18 +2441,6 @@ export class ZapMaster extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getUintVar(_data: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     "getUintVar(bytes32)"(
@@ -2940,18 +2883,6 @@ export class ZapMaster extends Contract {
     "changeDeity(address)"(
       _newDeity: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getUintVar(

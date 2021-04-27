@@ -39,7 +39,6 @@ interface ZapGettersInterface extends ethers.utils.Interface {
     "isInDispute(uint256,uint256)": FunctionFragment;
     "mint(address,uint256)": FunctionFragment;
     "getNewValueCountbyRequestId(uint256)": FunctionFragment;
-    "balanceOfAt(address,uint256)": FunctionFragment;
     "getUintVar(bytes32)": FunctionFragment;
     "getRequestIdByRequestQIndex(uint256)": FunctionFragment;
     "didMine(bytes32,address)": FunctionFragment;
@@ -129,10 +128,6 @@ interface ZapGettersInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getNewValueCountbyRequestId",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "balanceOfAt",
-    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getUintVar",
@@ -290,10 +285,6 @@ interface ZapGettersInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getNewValueCountbyRequestId",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "balanceOfAt",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getUintVar", data: BytesLike): Result;
@@ -586,18 +577,6 @@ export class ZapGetters extends Contract {
 
     "getNewValueCountbyRequestId(uint256)"(
       _requestId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
@@ -1186,18 +1165,6 @@ export class ZapGetters extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  balanceOfAt(
-    _user: string,
-    _blockNumber: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "balanceOfAt(address,uint256)"(
-    _user: string,
-    _blockNumber: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   getUintVar(_data: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
   "getUintVar(bytes32)"(
@@ -1774,18 +1741,6 @@ export class ZapGetters extends Contract {
 
     "getNewValueCountbyRequestId(uint256)"(
       _requestId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -2398,18 +2353,6 @@ export class ZapGetters extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getUintVar(_data: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     "getUintVar(bytes32)"(
@@ -2831,18 +2774,6 @@ export class ZapGetters extends Contract {
 
     "getNewValueCountbyRequestId(uint256)"(
       _requestId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    balanceOfAt(
-      _user: string,
-      _blockNumber: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "balanceOfAt(address,uint256)"(
-      _user: string,
-      _blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

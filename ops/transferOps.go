@@ -65,7 +65,7 @@ func Approve(_spender common.Address, amt *big.Int, ctx context.Context) error {
 		return err
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*token.ZapTokenTransactor)
+	instance2 := ctx.Value(zapCommon.TokenTransactorContractContextKey).(*token.ZapTokenTransactor)
 	tx, err := instance2.Approve(auth, _spender, amt)
 	if err != nil {
 		return err

@@ -373,29 +373,6 @@ const _abi = [
     constant: true,
     inputs: [
       {
-        name: "_user",
-        type: "address",
-      },
-      {
-        name: "_blockNumber",
-        type: "uint256",
-      },
-    ],
-    name: "balanceOfAt",
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    constant: true,
-    inputs: [
-      {
         name: "_data",
         type: "bytes32",
       },
