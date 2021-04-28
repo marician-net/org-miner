@@ -11,8 +11,10 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	cli "github.com/jawher/mow.cli"
 	ZapCommon "github.com/zapproject/zap-miner/common"
@@ -45,6 +47,7 @@ func buildContext() error {
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		//create an instance of the Zap master contract for on-chain interactions
 		tokenAddress := common.HexToAddress(cfg.TokenAddress)
 		contractAddress := common.HexToAddress(cfg.ContractAddress)
@@ -53,6 +56,7 @@ func buildContext() error {
 		newZapInstance, err := contracts2.NewZap(contractAddress, client)
 		newTransactorInstance, err := contracts2.NewZapTransactor(contractAddress, client)
 		tokenInstance, err := token.NewZapTokenTransactor(tokenAddress, client)
+		tokenListener, err := token.NewZapTokenFilterer(tokenAddress, client)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -64,6 +68,11 @@ func buildContext() error {
 		ctx = context.WithValue(ctx, ZapCommon.TokenTransactorContractContextKey, tokenInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewZapContractContextKey, newZapInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewTransactorContractContextKey, newTransactorInstance)
+		ctx = context.WithValue(ctx, ZapCommon.TokenFilterContextKey, tokenListener)
+
+		// start event listener
+		// tokenListener.ParseTransfer()
+		go listenTransfers(client, cfg)
 
 		privateKey, err := crypto.HexToECDSA(cfg.PrivateKey)
 		if err != nil {
@@ -351,6 +360,28 @@ func dataserverCmd(cmd *cli.Cmd) {
 		fmt.Printf("Main shutdown complete\n")
 	}
 
+}
+
+func listenTransfers(client rpc.ETHClient, cfg *config.Config) {
+	tokenAddress := common.HexToAddress(cfg.TokenAddress)
+	query := ethereum.FilterQuery{
+		Addresses: []common.Address{tokenAddress},
+	}
+
+	logs := make(chan types.Log)
+	sub, err := client.SubscribeFilterLogs(context.Background(), query, logs)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for {
+		select {
+		case err := <-sub.Err():
+			log.Fatal(err)
+		case vLog := <-logs:
+			fmt.Println(vLog)
+		}
+	}
 }
 
 func main() {
