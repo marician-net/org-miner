@@ -34,4 +34,6 @@ var (
 
 	//Ethereum wallet public address
 	PublicAddress = util.NewKey("common", "PublicAddress")
+
+	TokenFilterContextKey = util.NewKey("common", "tokenFilter")
 )
