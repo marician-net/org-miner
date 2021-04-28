@@ -135,6 +135,8 @@ contract Zap {
     * @dev This function allows miners to deposit their stake.
     */
     function depositStake() external {
+        // require balance is >= here before it hits NewStake()
+        require(token.balanceOf(msg.sender) >= zap.uintVars[keccak256("stakeAmount")]);
         zap.depositStake();
     }
 

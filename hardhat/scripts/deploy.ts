@@ -255,7 +255,8 @@ async function main() {
     libraries: {
       ZapStake: zapStake.address,
       ZapDispute: zapDispute.address,
-      ZapLibrary: zapLibrary.address
+      ZapLibrary: zapLibrary.address,
+      // ZapTransfer: zapTransfer.address
     },
     signer: signers[0]
   });
@@ -281,6 +282,7 @@ async function main() {
   });
   const zapMaster = await ZapMaster.deploy(zap.address, "0x5fbdb2315678afecb367f032d93f642f64180aa3");
   console.log("ZapMaster Address: " + zapMaster.address)
+  // console.log(zapMaster)
 
 }
 
