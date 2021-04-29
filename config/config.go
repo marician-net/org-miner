@@ -83,6 +83,7 @@ type Config struct {
 	IndexFolder                  string                `json:"indexFolder"`
 	DisputeTimeDelta             Duration              `json:"disputeTimeDelta"` //ignore data further than this away from the value we are checking
 	DisputeThreshold             float64               `json:"disputeThreshold"` //maximum allowed relative difference between observed and submitted value
+	UseGPU                       bool                  `json:"useGPU"`
 
 	//config parameters excluded from the json config file
 	PrivateKey string `json:"privateKey"`
