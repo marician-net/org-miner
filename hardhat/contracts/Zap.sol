@@ -100,7 +100,7 @@ contract Zap {
     * @dev Request to retreive value from oracle based on timestamp. The tip is not required to be 
     * greater than 0 because there are no tokens in circulation for the initial(genesis) request 
     * @param _c_sapi string API being requested be mined
-    * @param _c_symbol is the short string symbol for the api request
+    * @param _c_symbol is the zshort string symbol for the api request
     * @param _granularity is the number of decimals miners should include on the submitted value
     * @param _tip amount the requester is willing to pay to be get on queue. Miners
     * mine the onDeckQueryHash, or the api with the highest payout pool
@@ -194,6 +194,14 @@ contract Zap {
     function transferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
         // return zap.transferFrom(_from,_to,_amount);
         return token.transferFrom(_from, _to, _amount);
+    }
+
+    /**
+    * @dev Getter for the current variables that include the 5 requests Id's
+    * @return the challenge, 5 requestsId, difficulty and tip
+    */
+    function getNewCurrentVariables() external view returns(bytes32 _challenge,uint[5] memory _requestIds,uint256 _difficutly, uint256 _tip){
+        return zap.getNewCurrentVariables();
     }
 
 }

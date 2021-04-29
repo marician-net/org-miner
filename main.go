@@ -72,7 +72,7 @@ func buildContext() error {
 
 		// start event listener
 		// tokenListener.ParseTransfer()
-		go listenTransfers(client, cfg)
+		// go listenTransfers(client, cfg)
 
 		privateKey, err := crypto.HexToECDSA(cfg.PrivateKey)
 		if err != nil {

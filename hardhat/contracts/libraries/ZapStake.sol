@@ -73,7 +73,8 @@ library ZapStake {
 
         //Change the startDate to now since the lock up period begins now
         //and the miner can only withdraw 7 days later from now(check the withdraw function)
-        stakes.startDate = now -(now % 86400);
+        // stakes.startDate = now -(now % 86400);
+         stakes.startDate = now;
 
         //Reduce the staker count
         self.uintVars[keccak256("stakerCount")] -= 1;
@@ -89,7 +90,7 @@ library ZapStake {
         ZapStorage.StakeInfo storage stakes = self.stakerDetails[msg.sender];
         //Require the staker has locked for withdraw(currentStatus ==2) and that 7 days have 
         //passed by since they locked for withdraw
-        require(now - (now % 86400) - stakes.startDate >= 7 days);
+        // require(now - (now % 86400) - stakes.startDate >= 7 days);
         require(stakes.currentStatus == 2);
         stakes.currentStatus = 0;
         emit StakeWithdrawn(msg.sender);
@@ -122,5 +123,16 @@ library ZapStake {
             startDate: now - (now % 86400)
         });
         emit NewStake(staker);
+    }
+
+     /**
+    * @dev Getter function for the requestId being mined 
+    * @return variables for the current minin event: Challenge, 5 RequestId, difficulty and Totaltips
+    */
+    function getNewCurrentVariables(ZapStorage.ZapStorageStruct storage self) internal view returns(bytes32 _challenge,uint[5] memory _requestIds,uint256 _difficulty, uint256 _tip){
+        for(uint i=0;i<5;i++){
+            _requestIds[i] =  self.currentMiners[i].value;
+        }
+        return (self.currentChallenge,_requestIds,self.uintVars[keccak256("difficulty")],self.uintVars[keccak256("currentTotalTips")]);
     }
 }
