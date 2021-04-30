@@ -2,9 +2,14 @@ package ops
 
 import (
 	"context"
+	"fmt"
+	"math/big"
 	"os"
 	"time"
 
+	zapcommon "github.com/zapproject/zap-miner/common"
+	zap "github.com/zapproject/zap-miner/contracts"
+	zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/dataServer"
 	"github.com/zapproject/zap-miner/util"
 )
@@ -37,6 +42,14 @@ func CreateDataServerOps(ctx context.Context, exitCh chan os.Signal) (*DataServe
 
 //Start the data server
 func (ops *DataServerOps) Start(ctx context.Context) {
+	auth, _ := PrepareEthTransaction(ctx)
+	instance := ctx.Value(zapcommon.TransactorContractContextKey).(*zap1.ZapTransactor)
+	instance.RequestData(auth,
+		"json(https://api.coindesk.com/v1/bpi/currentprice.json).bpi.USD.rate", "USD",
+		new(big.Int).SetInt64(10), new(big.Int).SetInt64(1))
+
+	master := ctx.Value(zapcommon.MasterContractContextKey).(*zap.ZapMaster)
+	fmt.Println(master.GetRequestQ(nil))
 	ops.server.Start(ctx, ops.done)
 	ops.Running = true
 	go func() {
