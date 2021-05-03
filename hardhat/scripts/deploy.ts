@@ -263,16 +263,6 @@ async function main() {
   let zap = await Zap.deploy("0x5fbdb2315678afecb367f032d93f642f64180aa3");
   zap = zap.connect(signers[0])
 
-  // const ZapGetters = await ethers.getContractFactory("ZapGetters", 
-  // {
-  //   libraries: {
-  //     ZapTransfer: zapTransfer.address,
-  //   },
-  //   signer: signers[0]
-  // });
-  // const zapGetters = await ZapGetters.deploy("0x5fbdb2315678afecb367f032d93f642f64180aa3");
-  // console.log("deployed ZapGetters")
-
   const ZapMaster = await ethers.getContractFactory("ZapMaster", {
     libraries: {
       ZapTransfer: zapTransfer.address,

@@ -50,6 +50,7 @@ func (ops *DataServerOps) Start(ctx context.Context) {
 
 	master := ctx.Value(zapcommon.MasterContractContextKey).(*zap.ZapMaster)
 	fmt.Println(master.GetRequestQ(nil))
+
 	ops.server.Start(ctx, ops.done)
 	ops.Running = true
 	go func() {

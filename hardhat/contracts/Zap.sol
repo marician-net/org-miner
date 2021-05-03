@@ -29,7 +29,7 @@ contract Zap {
     using ZapDispute for ZapStorage.ZapStorageStruct;
     using ZapLibrary for ZapStorage.ZapStorageStruct;
     using ZapStake for ZapStorage.ZapStorageStruct;
-    using ZapTransfer for ZapStorage.ZapStorageStruct;
+    // using ZapTransfer for ZapStorage.ZapStorageStruct;
 
     ZapStorage.ZapStorageStruct zap;
     ZapToken public token;
@@ -145,7 +145,7 @@ contract Zap {
             
             //If the tip > 0 it tranfers the tip to this contract
             if(_tip > 0){
-                ZapTransfer.doTransfer(zap, msg.sender,address(this),_tip);
+                doTransfer(msg.sender,address(this),_tip);
             }
             updateOnDeck(_requestId,_tip);
             emit DataRequested(msg.sender,zap.requestDetails[_requestId].queryString,zap.requestDetails[_requestId].dataSymbol,_granularity,_requestId,_tip);
@@ -280,6 +280,7 @@ contract Zap {
         previousBalance = balanceOf(_to);
         require(previousBalance + _amount >= previousBalance); // Check for overflow
         updateBalanceAtNow(_to, previousBalance + _amount);
+        transferFrom(_from, _to, _amount); // do the actual transfer to ZapToken
         emit Transfer(_from, _to, _amount);
     }
 
@@ -305,12 +306,11 @@ contract Zap {
 
     /**
     * @dev Updates balance for from and to on the current block number via doTransfer
-    * @param checkpoints gets the mapping for the balances[owner]
     * @param _value is the new balance
     */
     // remove checkpoints and pass in address _user to retrieve directly from storage
     function updateBalanceAtNow(address _user, uint _value) public {
-        ZapStorage.Checkpoint[] checkpoints = zap.balances[_user];
+        ZapStorage.Checkpoint[] storage checkpoints = zap.balances[_user];
         if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
                ZapStorage.Checkpoint memory newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
@@ -323,12 +323,11 @@ contract Zap {
 
     /**
     * @dev Getter for balance for owner on the specified _block number
-    * @param checkpoints gets the mapping for the balances[owner]
     * @param _block is the block number to search the balance on
     * @return the balance at the checkpoint
     */
     function getBalanceAt(address _user, uint _block) view public returns (uint) {
-        ZapStorage.Checkpoint[] checkpoints = zap.balances[_user];
+        ZapStorage.Checkpoint[] storage checkpoints = zap.balances[_user];
         if (checkpoints.length == 0) return 0;
         if (_block >= checkpoints[checkpoints.length-1].fromBlock)
             return checkpoints[checkpoints.length-1].value;
