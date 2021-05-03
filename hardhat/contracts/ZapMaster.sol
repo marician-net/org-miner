@@ -8,20 +8,21 @@ import "./ZapGetters.sol";
 * The logic for the functions on this contract is saved on the ZapGettersLibrary, ZapTransfer, 
 * ZapGettersLibrary, and ZapStake
 */
-contract ZapMaster is ZapGetters{
+contract ZapMaster is ZapGetters {
     
     event NewZapAddress(address _newZap);
-
     /**
     * @dev The constructor sets the original `zapStorageOwner` of the contract to the sender
     * account, the zap contract to the Zap master address and owner to the Zap master owner address 
     * @param _zapContract is the address for the zap contract
     */
-    constructor (address _zapContract)  public{
+    constructor (address _zapContract, address tokenAddress)  public ZapGetters(tokenAddress) {
         zap.init();
         zap.addressVars[keccak256("_owner")] = msg.sender;
         zap.addressVars[keccak256("_deity")] = msg.sender;
         zap.addressVars[keccak256("zapContract")]= _zapContract;
+        zap.addressVars[keccak256("zapTokenContract")]= tokenAddress;
+
         emit NewZapAddress(_zapContract);
     }
     

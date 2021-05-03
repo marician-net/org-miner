@@ -9,21 +9,24 @@ import (
 	"math/big"
 	"os"
 	"os/signal"
-	"time"Zap
-Zap
-	zapCommon "github.com/zapproject/zap-minercommon"
-	"github.com/zapproject/zap-minerconfig"
-	"github.com/zapproject/zap-minercontracts"
-	"github.com/zapproject/zap-minercontracts1"
-	"github.com/zapproject/zap-minercontracts2"
-	"github.com/zapproject/zap-minerdb"
-	"github.com/zapproject/zap-miner/ops"
-	"github.com/zapproject/zap-miner/rpc"
-	"github.com/zapproject/zap-miner/util"
+	"time"
+
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	cli "github.com/jawher/mow.cli"
+	ZapCommon "github.com/zapproject/zap-miner/common"
+	config "github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/contracts"
+	"github.com/zapproject/zap-miner/contracts1"
+	"github.com/zapproject/zap-miner/contracts2"
+	db "github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/ops"
+	"github.com/zapproject/zap-miner/rpc"
+	token "github.com/zapproject/zap-miner/token"
+	"github.com/zapproject/zap-miner/util"
 )
 
 var ctx context.Context
@@ -44,12 +47,16 @@ func buildContext() error {
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		//create an instance of the Zap master contract for on-chain interactions
-		contractAddress := common.HexToAddreZapg.ContractAddress)
-		masterInstance, err := contracts.NewZapMaZapcontractAddress, client)
-		traZaporInstance, err := contracts1.NewZapTransactor(contractAddress, client)
-		newZapInstance, err := contracts2.NewZap(conZapAddress,client)
-		newTransactorInstance, err := contracts2.NewZapTransactor(contractAddress,client)
+		tokenAddress := common.HexToAddress(cfg.TokenAddress)
+		contractAddress := common.HexToAddress(cfg.ContractAddress)
+		masterInstance, err := contracts.NewZapMaster(contractAddress, client)
+		transactorInstance, err := contracts1.NewZapTransactor(contractAddress, client)
+		newZapInstance, err := contracts2.NewZap(contractAddress, client)
+		newTransactorInstance, err := contracts2.NewZapTransactor(contractAddress, client)
+		tokenInstance, err := token.NewZapTokenTransactor(tokenAddress, client)
+		tokenListener, err := token.NewZapTokenFilterer(tokenAddress, client)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -57,9 +64,15 @@ func buildContext() error {
 		ctx = context.WithValue(context.Background(), ZapCommon.ClientContextKey, client)
 		ctx = context.WithValue(ctx, ZapCommon.ContractAddress, contractAddress)
 		ctx = context.WithValue(ctx, ZapCommon.MasterContractContextKey, masterInstance)
-		ctx = context.WithValue(ctx, ZapCommon.TransZapContractContextKey, traZaporInstance)
+		ctx = context.WithValue(ctx, ZapCommon.TransactorContractContextKey, transactorInstance)
+		ctx = context.WithValue(ctx, ZapCommon.TokenTransactorContractContextKey, tokenInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewZapContractContextKey, newZapInstance)
 		ctx = context.WithValue(ctx, ZapCommon.NewTransactorContractContextKey, newTransactorInstance)
+		ctx = context.WithValue(ctx, ZapCommon.TokenFilterContextKey, tokenListener)
+
+		// start event listener
+		// tokenListener.ParseTransfer()
+		// go listenTransfers(client, cfg)
 
 		privateKey, err := crypto.HexToECDSA(cfg.PrivateKey)
 		if err != nil {
@@ -119,8 +132,7 @@ func AddDBToCtx(remote bool) error {
 var GitTag string
 var GitHash string
 
-const versionMessage =
-	`Zap
+const versionMessage = `Zap
     The official Zap Miner %s (%s)
     -----------------------------------------
 	Website: https://Zap.org
@@ -129,7 +141,6 @@ const versionMessage =
 
 func App() *cli.Cli {
 
-Zap
 	app := cli.App("ZapMiner", "The Zap.io official miner")
 
 	//app wide config options
@@ -163,7 +174,7 @@ func stakeCmd(cmd *cli.Cmd) {
 	cmd.Command("status", "show current staking status", simpleCmd(ops.ShowStatus))
 }
 
-func simpleCmd(f func (context.Context) error) func(*cli.Cmd) {
+func simpleCmd(f func(context.Context) error) func(*cli.Cmd) {
 	return func(cmd *cli.Cmd) {
 		cmd.Action = func() {
 			ErrorHandler(f(ctx), "")
@@ -171,7 +182,7 @@ func simpleCmd(f func (context.Context) error) func(*cli.Cmd) {
 	}
 }
 
-func moveCmd(f func(common.Address, *big.Int, context.Context) error) func (*cli.Cmd) {
+func moveCmd(f func(common.Address, *big.Int, context.Context) error) func(*cli.Cmd) {
 	return func(cmd *cli.Cmd) {
 		amt := ZAPAmount{}
 		addr := ETHAddress{}
@@ -256,7 +267,7 @@ func mineCmd(cmd *cli.Cmd) {
 		if err != nil {
 			fmt.Println("ignoring --- could not get dispute status.  Check if staked")
 		}
-		status,_ := hexutil.DecodeBig(string(v))
+		status, _ := hexutil.DecodeBig(string(v))
 		if status.Cmp(big.NewInt(1)) != 0 {
 			log.Fatalf("Miner is not able to mine with status %v. Stopping all mining immediately", status)
 		}
@@ -349,6 +360,28 @@ func dataserverCmd(cmd *cli.Cmd) {
 		fmt.Printf("Main shutdown complete\n")
 	}
 
+}
+
+func listenTransfers(client rpc.ETHClient, cfg *config.Config) {
+	tokenAddress := common.HexToAddress(cfg.TokenAddress)
+	query := ethereum.FilterQuery{
+		Addresses: []common.Address{tokenAddress},
+	}
+
+	logs := make(chan types.Log)
+	sub, err := client.SubscribeFilterLogs(context.Background(), query, logs)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for {
+		select {
+		case err := <-sub.Err():
+			log.Fatal(err)
+		case vLog := <-logs:
+			fmt.Println(vLog)
+		}
+	}
 }
 
 func main() {

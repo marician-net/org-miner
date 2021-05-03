@@ -9,6 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	zapCommon "github.com/zapproject/zap-miner/common"
+	zap "github.com/zapproject/zap-miner/contracts"
+	zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/util"
 )
 
@@ -43,19 +45,19 @@ func printStakeStatus(bigStatus *big.Int, started *big.Int) {
 
 func Deposit(ctx context.Context) error {
 
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	balance, err := tmaster.BalanceOf(nil, publicAddress)
 	if err != nil {
-		return fmt.Errorf("couldn't get BRY balance: %s", err.Error())
+		return fmt.Errorf("couldn't get ZAP balance: %s", err.Error())
 	}
 
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
 		return fmt.Errorf("failed to get stake status: %s", err.Error())
 	}
-
+	fmt.Println("AFTER GETSTAKEINFO")
 	if status.Uint64() != 0 && status.Uint64() != 2 {
 		printStakeStatus(status, startTime)
 		return nil
@@ -68,19 +70,18 @@ func Deposit(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("fetching stake amount failed: %s", err.Error())
 	}
-
 	if balance.Cmp(stakeAmt) < 0 {
-		return fmt.Errorf("insufficient balance (%s), mining stake requires %s BRY",
+		return fmt.Errorf("insufficient balance (%s), mining stake requires %s ZAP",
 			util.FormatERC20Balance(balance),
 			util.FormatERC20Balance(stakeAmt))
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	auth, err := PrepareEthTransaction(ctx)
 	if err != nil {
 		return fmt.Errorf("couldn't prepare ethereum transaction: %s", err.Error())
 	}
-
+	fmt.Println(auth)
 	tx, err := instance2.DepositStake(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -91,7 +92,7 @@ func Deposit(ctx context.Context) error {
 }
 
 func ShowStatus(ctx context.Context) error {
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
@@ -105,7 +106,7 @@ func ShowStatus(ctx context.Context) error {
 
 func RequestStakingWithdraw(ctx context.Context) error {
 
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
@@ -121,7 +122,7 @@ func RequestStakingWithdraw(ctx context.Context) error {
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	tx, err := instance2.RequestStakingWithdraw(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -133,7 +134,7 @@ func RequestStakingWithdraw(ctx context.Context) error {
 
 func WithdrawStake(ctx context.Context) error {
 
-	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	tmaster := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	publicAddress := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	status, startTime, err := tmaster.GetStakerInfo(nil, publicAddress)
 	if err != nil {
@@ -150,7 +151,7 @@ func WithdrawStake(ctx context.Context) error {
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	tx, err := instance2.WithdrawStake(auth)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())

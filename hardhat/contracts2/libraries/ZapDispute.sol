@@ -1,5 +1,5 @@
-// pragma solidity >=0.5.0 <0.7.0;
-pragma solidity >=0.7.0
+pragma solidity >=0.5.0 <0.7.0;
+// pragma solidity >=0.7.0
 import "./ZapStorage.sol";
 import "./ZapTransfer.sol";
 
@@ -9,7 +9,7 @@ import "./ZapTransfer.sol";
 * @dev Contains the methods related to disputes. Zap.sol references this library for function's logic.
 */
 
-library ZapDispute {
+library ZapDispute  {
     using SafeMath for uint256;
     using SafeMath for int256;
 
@@ -97,6 +97,7 @@ library ZapDispute {
         self.disputesById[disputeId].disputeUintVars[keccak256("fee")] = _fee;
   
         ZapTransfer.doTransfer(self, msg.sender, address(this),_fee);
+
 
         //Values are sorted as they come in and the official value is the median of the first five
         //So the "official value" miner is always minerIndex==2. If the official value is being

@@ -23,12 +23,12 @@ library ZapStake {
     */
     function init(ZapStorage.ZapStorageStruct storage self) public {
         require(self.uintVars[keccak256("decimals")] == 0, "Too many decimals");
-        //Give this contract 6000 Zap Tributes so that it can stake the initial 6 miners
+        //Give this contract 6000 Zap Tokens so that it can stake the initial 6 miners
         ZapTransfer.updateBalanceAtNow(self.balances[address(this)], 2**256 - 1 - 6000e18);
 
         // //the initial 5 miner addresses are specfied below
         // //changed payable[5] to 6
-        address[6] memory _initalMiners = [
+        address payable [6] memory _initalMiners = [
             address(0xE037EC8EC9ec423826750853899394dE7F024fee),
             address(0xcdd8FA31AF8475574B8909F135d510579a8087d3),
             address(0xb9dD5AfD86547Df817DA2d0Fb89334A6F8eDd891),

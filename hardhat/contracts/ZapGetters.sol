@@ -1,32 +1,39 @@
 pragma solidity ^0.5.0;
 
-import "./libraries/SafeMath.sol";
+import "./libraries/SafeMathM.sol";
 import "./libraries/ZapStorage.sol";
 import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapGettersLibrary.sol";
 import "./libraries/ZapStake.sol";
+import "./token/ZapToken.sol";
 
 /**
 * @title Zap Getters
 * @dev Oracle contract with all zap getter functions. The logic for the functions on this contract 
 * is saved on the ZapGettersLibrary, ZapTransfer, ZapGettersLibrary, and ZapStake
 */
-contract ZapGetters{
-    using SafeMath for uint256;
+contract ZapGetters {
+    using SafeMathM for uint256;
 
     using ZapTransfer for ZapStorage.ZapStorageStruct;
     using ZapGettersLibrary for ZapStorage.ZapStorageStruct;
     using ZapStake for ZapStorage.ZapStorageStruct;
 
     ZapStorage.ZapStorageStruct zap;
-    
+    ZapToken token;
+
+    constructor (address zapToken) public {
+        token = ZapToken(zapToken);
+    }
+
     /**
     * @param _user address
     * @param _spender address
     * @return Returns the remaining allowance of tokens granted to the _spender from the _user
     */
-    function allowance(address _user, address _spender) external view returns (uint) {
-       return zap.allowance(_user,_spender);
+    function allowance(address _user, address _spender) public view returns (uint) {
+    //    return zap.allowance(_user,_spender);
+        return token.allowance(_user, _spender);
     }
 
     /**
@@ -44,8 +51,9 @@ contract ZapGetters{
     * @param _user is the owner address used to look up the balance
     * @return Returns the balance associated with the passed in _user
     */
-    function balanceOf(address _user) external view returns (uint) { 
-        return zap.balanceOf(_user);
+    function balanceOf(address _user) public view returns (uint) { 
+        // return zap.balanceOf(_user);
+        return token.balanceOf(_user);
     }
 
     /**
@@ -54,9 +62,9 @@ contract ZapGetters{
     * @param _blockNumber The block number when the balance is queried
     * @return The balance at _blockNumber
     */
-    function balanceOfAt(address _user, uint _blockNumber) external view returns (uint) {
-        return zap.balanceOfAt(_user,_blockNumber);
-    }
+    // function balanceOfAt(address _user, uint _blockNumber) external view returns (uint) {
+    //     return zap.balanceOfAt(_user,_blockNumber);
+    // }
 
     /**
     * @dev This function tells you if a given challenge has been completed by a given miner
@@ -367,8 +375,9 @@ contract ZapGetters{
     * @dev Getter for the total_supply of oracle tokens
     * @return uint total supply
     */
-    function totalSupply() external view returns (uint) {
+    function totalTokenSupply() external view returns (uint) {
        return zap.totalSupply();
+        // return token.totalSupply;
     }
 
 }

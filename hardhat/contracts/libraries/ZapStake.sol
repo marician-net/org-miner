@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 import "./ZapStorage.sol";
 import "./ZapTransfer.sol";
 import "./ZapDispute.sol";
+// import "../token/ZapToken.sol";
 
 /**
 * @title Zap Dispute
@@ -28,12 +29,14 @@ library ZapStake {
 
         // //the initial 5 miner addresses are specfied below
         // //changed payable[5] to 6
-        address payable[6] memory _initalMiners = [address(0xE037EC8EC9ec423826750853899394dE7F024fee),
-        address(0xcdd8FA31AF8475574B8909F135d510579a8087d3),
-        address(0xb9dD5AfD86547Df817DA2d0Fb89334A6F8eDd891),
-        address(0x230570cD052f40E14C14a81038c6f3aa685d712B),
-        address(0x3233afA02644CCd048587F8ba6e99b3C00A34DcC),
-        address(0xe010aC6e0248790e08F42d5F697160DEDf97E024)];
+        address payable[6] memory _initalMiners = [
+            address(0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097),
+            address(0xcd3B766CCDd6AE721141F452C550Ca635964ce71),
+            address(0x2546BcD3c84621e976D8185a91A922aE77ECEc30),
+            address(0xbDA5747bFD65F08deb54cb465eB87D40e51B197E),
+            address(0xdD2FD4581271e230360230F9337D5c0430Bf44C0),
+            address(0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199)
+        ];
         //Stake each of the 5 miners specified above
         for(uint i=0;i<6;i++){//6th miner to allow for dispute
             //Miner balance is set at 1000e18 at the block that this function is ran
@@ -70,7 +73,8 @@ library ZapStake {
 
         //Change the startDate to now since the lock up period begins now
         //and the miner can only withdraw 7 days later from now(check the withdraw function)
-        stakes.startDate = now -(now % 86400);
+        // stakes.startDate = now -(now % 86400);
+         stakes.startDate = now;
 
         //Reduce the staker count
         self.uintVars[keccak256("stakerCount")] -= 1;
@@ -86,7 +90,7 @@ library ZapStake {
         ZapStorage.StakeInfo storage stakes = self.stakerDetails[msg.sender];
         //Require the staker has locked for withdraw(currentStatus ==2) and that 7 days have 
         //passed by since they locked for withdraw
-        require(now - (now % 86400) - stakes.startDate >= 7 days);
+        // require(now - (now % 86400) - stakes.startDate >= 7 days);
         require(stakes.currentStatus == 2);
         stakes.currentStatus = 0;
         emit StakeWithdrawn(msg.sender);
@@ -108,7 +112,7 @@ library ZapStake {
     * and updates the number of stakers in the system.
     */
     function newStake(ZapStorage.ZapStorageStruct storage self, address staker) internal {
-        require(ZapTransfer.balanceOf(self,staker) >= self.uintVars[keccak256("stakeAmount")]);
+        // require(ZapTransfer.balanceOf(self,staker) >= self.uintVars[keccak256("stakeAmount")]);
         //Ensure they can only stake if they are not currrently staked or if their stake time frame has ended
         //and they are currently locked for witdhraw
         require(self.stakerDetails[staker].currentStatus == 0 || self.stakerDetails[staker].currentStatus == 2);
@@ -119,5 +123,16 @@ library ZapStake {
             startDate: now - (now % 86400)
         });
         emit NewStake(staker);
+    }
+
+     /**
+    * @dev Getter function for the requestId being mined 
+    * @return variables for the current minin event: Challenge, 5 RequestId, difficulty and Totaltips
+    */
+    function getNewCurrentVariables(ZapStorage.ZapStorageStruct storage self) internal view returns(bytes32 _challenge,uint[5] memory _requestIds,uint256 _difficulty, uint256 _tip){
+        for(uint i=0;i<5;i++){
+            _requestIds[i] =  self.currentMiners[i].value;
+        }
+        return (self.currentChallenge,_requestIds,self.uintVars[keccak256("difficulty")],self.uintVars[keccak256("currentTotalTips")]);
     }
 }

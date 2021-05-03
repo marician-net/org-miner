@@ -74,3 +74,8 @@ logs/
 *.test
 
 cache/
+.DS_Store
+
+# hardhat
+/hardhat/typechain/
+/hardhat/artifacts/

@@ -41,7 +41,7 @@ func TestDataServerOps(t *testing.T) {
 		log.Fatal(err)
 	}
 	contractAddress := common.HexToAddress(cfg.ContractAddress)
-	masterInstance, err := contracts.NewzapMaster(contractAddress, client)
+	masterInstance, err := contracts.NewZapMaster(contractAddress, client)
 	if err != nil {
 		t.Fatalf("Problem creating zap master instance: %v\n", err)
 	}

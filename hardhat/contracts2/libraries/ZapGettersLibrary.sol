@@ -6,7 +6,7 @@ import "./Utilities.sol";
 
 /**
 * @title Zap Getters Library
-* @dev This is the getter library for all variables in the Zap Tributes system. ZapGetters references this
+* @dev This is the getter library for all variables in the Zap Tokens system. ZapGetters references this
 * libary for the getters logic
 */
 library ZapGettersLibrary {
@@ -209,7 +209,7 @@ library ZapGettersLibrary {
     * string of the token name
     */
 /*    function getName(ZapStorage.ZapStorageStruct storage self) internal pure returns (string memory) {
-        return "Zap Tributes";
+        return "Zap Tokens";
     }*/
 
     /**

@@ -15,6 +15,8 @@ import (
 	"github.com/zapproject/zap-miner/apiOracle"
 	zapCommon "github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/config"
+	zap "github.com/zapproject/zap-miner/contracts"
+	zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/rpc"
 	"github.com/zapproject/zap-miner/tracker"
 	"github.com/zapproject/zap-miner/util"
@@ -30,7 +32,7 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 		return fmt.Errorf("miner index should be between 0 and 4 (got %s)", minerIndex.Text(10))
 	}
 
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	addr := ctx.Value(zapCommon.PublicAddress).(common.Address)
 
 	balance, err := instance.BalanceOf(nil, addr)
@@ -45,7 +47,7 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 	}
 
 	if balance.Cmp(disputeCost) < 0 {
-		return fmt.Errorf("insufficient balance (%s BRY) disputes require (%s BRY)",
+		return fmt.Errorf("insufficient balance (%s ZAP) disputes require (%s ZAP)",
 			util.FormatERC20Balance(balance),
 			util.FormatERC20Balance(disputeCost))
 	}
@@ -55,7 +57,7 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 		return fmt.Errorf("failed to prepare ethereum transaction: %s", err.Error())
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 	tx, err := instance2.BeginDispute(auth, requestId, timestamp, minerIndex)
 	if err != nil {
 		return fmt.Errorf("failed to send dispute txn: %s", err.Error())
@@ -66,7 +68,7 @@ func Dispute(requestId *big.Int, timestamp *big.Int, minerIndex *big.Int, ctx co
 
 func Vote(_disputeId *big.Int, _supportsDispute bool, ctx context.Context) error {
 
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	addr := ctx.Value(zapCommon.PublicAddress).(common.Address)
 	voted, err := instance.DidVote(nil, _disputeId, addr)
 	if err != nil {
@@ -77,7 +79,7 @@ func Vote(_disputeId *big.Int, _supportsDispute bool, ctx context.Context) error
 		return nil
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
 
 	auth, err := PrepareEthTransaction(ctx)
 	if err != nil {
@@ -92,9 +94,9 @@ func Vote(_disputeId *big.Int, _supportsDispute bool, ctx context.Context) error
 	return nil
 }
 
-func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1.zapDisputeNewDispute) ([]*apiOracle.PriceStamp, error) {
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
-	tokenAbi, err := abi.JSON(strings.NewReader(zap1.zapLibraryABI))
+func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1.ZapDisputeNewDispute) ([]*apiOracle.PriceStamp, error) {
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
+	tokenAbi, err := abi.JSON(strings.NewReader(zap1.ZapLibraryABI))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse abi: %v", err)
 	}
@@ -134,7 +136,7 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1
 		}
 
 		for _, l := range logs {
-			nonceSubmit := zap1.zapLibraryNonceSubmitted{}
+			nonceSubmit := zap1.ZapLibraryNonceSubmitted{}
 			err := bar.UnpackLog(&nonceSubmit, "NonceSubmitted", l)
 			if err != nil {
 				return nil, fmt.Errorf("failed to unpack into object: %v", err)
@@ -174,7 +176,7 @@ func List(ctx context.Context) error {
 	//	return fmt.Errorf("failed to read request info: %v\n", err)
 	//}
 
-	tokenAbi, err := abi.JSON(strings.NewReader(zap1.zapDisputeABI))
+	tokenAbi, err := abi.JSON(strings.NewReader(zap1.ZapDisputeABI))
 	if err != nil {
 		return fmt.Errorf("failed to parse abi: %v", err)
 	}
@@ -204,12 +206,12 @@ func List(ctx context.Context) error {
 		return fmt.Errorf("failed to filter eth logs: %v", err)
 	}
 
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 
 	fmt.Printf("There are currently %d open disputes\n", len(logs))
 	fmt.Printf("-------------------------------------\n")
 	for _, rawDispute := range logs {
-		dispute := zap1.zapDisputeNewDispute{}
+		dispute := zap1.ZapDisputeNewDispute{}
 		err := bar.UnpackLog(&dispute, "NewDispute", rawDispute)
 		if err != nil {
 			return fmt.Errorf("failed to unpack dispute event from logs: %v", err)
@@ -238,7 +240,7 @@ func List(ctx context.Context) error {
 		fmt.Printf("    Accused Party: %s\n", reportedAddr.Hex())
 		fmt.Printf("    Disputed by: %s\n", reportingMiner.Hex())
 		fmt.Printf("    Created on:  %s\n", createdTime.Format("3:04 PM January 02, 2006 MST"))
-		fmt.Printf("    Fee: %s BRY\n", util.FormatERC20Balance(uintVars[8]))
+		fmt.Printf("    Fee: %s ZAP\n", util.FormatERC20Balance(uintVars[8]))
 		fmt.Printf("    \n")
 		fmt.Printf("    Value disputed for requestID %d:\n", dispute.RequestId.Uint64())
 
@@ -267,7 +269,7 @@ func List(ctx context.Context) error {
 		currQuorum, _ := tmp.Float64()
 		currTallyFloat += currQuorum
 		currTallyRatio := currTallyFloat / 2 * currQuorum
-		fmt.Printf("    Currently %.0f%% of %s BRY support this dispute (%s votes)\n", currTallyRatio*100, util.FormatERC20Balance(uintVars[7]), uintVars[4])
+		fmt.Printf("    Currently %.0f%% of %s ZAP support this dispute (%s votes)\n", currTallyRatio*100, util.FormatERC20Balance(uintVars[7]), uintVars[4])
 
 		result := tracker.CheckValueAtTime(dispute.RequestId.Uint64(), uintVars[2], disputedValTime)
 		if result == nil || len(result.Datapoints) < 0 {

@@ -9,7 +9,11 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	zapCommon "github.com/zapproject/zap-miner/common"
+	zap "github.com/zapproject/zap-miner/contracts"
+
+	// zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/rpc"
+	token "github.com/zapproject/zap-miner/token"
 	"github.com/zapproject/zap-miner/util"
 )
 
@@ -18,7 +22,7 @@ import (
  */
 
 func prepareTransfer(amt *big.Int, ctx context.Context) (*bind.TransactOpts, error) {
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	senderPubAddr := ctx.Value(zapCommon.PublicAddress).(common.Address)
 
 	balance, err := instance.BalanceOf(nil, senderPubAddr)
@@ -27,7 +31,7 @@ func prepareTransfer(amt *big.Int, ctx context.Context) (*bind.TransactOpts, err
 	}
 	fmt.Println("My balance", util.FormatERC20Balance(balance))
 	if balance.Cmp(amt) < 0 {
-		return nil, fmt.Errorf("insufficent balance (%s BRY), requested %s BRY",
+		return nil, fmt.Errorf("insufficent balance (%s ZAP), requested %s ZAP",
 			util.FormatERC20Balance(balance),
 			util.FormatERC20Balance(amt))
 	}
@@ -44,7 +48,9 @@ func Transfer(toAddress common.Address, amt *big.Int, ctx context.Context) error
 		return err
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	// instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
+	// tx, err := instance2.Transfer(auth, toAddress, amt)
+	instance2 := ctx.Value(zapCommon.TokenTransactorContractContextKey).(*token.ZapTokenTransactor)
 	tx, err := instance2.Transfer(auth, toAddress, amt)
 	if err != nil {
 		return fmt.Errorf("contract failed: %s", err.Error())
@@ -59,7 +65,7 @@ func Approve(_spender common.Address, amt *big.Int, ctx context.Context) error {
 		return err
 	}
 
-	instance2 := ctx.Value(zapCommon.TransactorContractContextKey).(*zap1.zapTransactor)
+	instance2 := ctx.Value(zapCommon.TokenTransactorContractContextKey).(*token.ZapTokenTransactor)
 	tx, err := instance2.Approve(auth, _spender, amt)
 	if err != nil {
 		return err
@@ -76,7 +82,7 @@ func Balance(ctx context.Context, addr common.Address) error {
 		return fmt.Errorf("problem getting balance: %+v", err)
 	}
 
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.zapMaster)
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
 	trbBalance, err := instance.BalanceOf(nil, addr)
 	if err != nil {
 		log.Fatal(err)
@@ -84,6 +90,6 @@ func Balance(ctx context.Context, addr common.Address) error {
 	}
 	fmt.Printf("%s\n", addr.String())
 	fmt.Printf("%10s ETH\n", util.FormatERC20Balance(ethBalance))
-	fmt.Printf("%10s BRY\n", util.FormatERC20Balance(trbBalance))
+	fmt.Printf("%10s ZAP\n", util.FormatERC20Balance(trbBalance))
 	return nil
 }

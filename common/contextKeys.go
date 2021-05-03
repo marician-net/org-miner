@@ -22,6 +22,8 @@ var (
 	//TransactorContractContextKey is the shared context key to get shared transactor zap contract instance
 	TransactorContractContextKey = util.NewKey("common", "transactorContract")
 
+	TokenTransactorContractContextKey = util.NewKey("common", "tokenTransactorContract")
+
 	NewTransactorContractContextKey = util.NewKey("common", "newTransactorContract")
 
 	//DataProxyKey used to access the local or remote data server proxy
@@ -32,4 +34,6 @@ var (
 
 	//Ethereum wallet public address
 	PublicAddress = util.NewKey("common", "PublicAddress")
+
+	TokenFilterContextKey = util.NewKey("common", "tokenFilter")
 )
