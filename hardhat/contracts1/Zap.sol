@@ -8,7 +8,6 @@ import "./libraries/ZapStake.sol";
 import "./libraries/ZapLibrary.sol";
 // import "./libraries/Upgradable.sol";
 import "./ZapToken.sol";
-import "hardhat/console.sol";
 
 /**
  * @title Zap Oracle System
@@ -157,10 +156,6 @@ contract Zap {
         require(bytes(_sapi).length > 0);
         require(bytes(_symbol).length < 64);
         bytes32 _queryHash = keccak256(abi.encodePacked(_sapi, _granularity));
-
-        console.log("msg.sender: " + msg.sender);
-        console.log("address : " + address(this));
-        console.log("tip: " + _tip);
 
         //If this is the first time the API and granularity combination has been requested then create the API and granularity hash
         //otherwise the tip will be added to the requestId submitted

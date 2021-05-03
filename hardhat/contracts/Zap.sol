@@ -276,10 +276,8 @@ contract Zap {
         require(_to != address(0));
         require(allowedToTrade(_from,_amount)); //allowedToTrade checks the stakeAmount is removed from balance if the _user is staked
         uint previousBalance = balanceOf(_from);
-        updateBalanceAtNow(_from, previousBalance - _amount);
         previousBalance = balanceOf(_to);
         require(previousBalance + _amount >= previousBalance); // Check for overflow
-        updateBalanceAtNow(_to, previousBalance + _amount);
         transferFrom(_from, _to, _amount); // do the actual transfer to ZapToken
         emit Transfer(_from, _to, _amount);
     }
