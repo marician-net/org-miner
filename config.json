@@ -16,7 +16,7 @@
         "balance",
         "disputeStatus",
         "gas",
-        "tributeBalance",
+        "tokenBalance",
         "indexers"
     ],
     "dbFile": "zapDB"
