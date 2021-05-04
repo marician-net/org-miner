@@ -191,7 +191,7 @@ func List(ctx context.Context) error {
 		return fmt.Errorf("failed to get latest eth block header: %v", err)
 	}
 
-	startBlock := big.NewInt(10e3 * 14)
+	startBlock := big.NewInt(54) //big.NewInt(10e3 * 14)
 	startBlock.Sub(header.Number, startBlock)
 	newDisputeID := tokenAbi.Events["NewDispute"].ID()
 	query := ethereum.FilterQuery{
