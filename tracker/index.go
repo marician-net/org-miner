@@ -36,7 +36,7 @@ func BuildIndexTrackers() ([]Tracker, error) {
 
 	cfg := config.GetConfig()
 
-	indexPath := filepath.Join(cfg.IndexFolder, "indexes.json")
+	indexPath := filepath.Join("..", cfg.IndexFolder, "indexes.json")
 	byteValue, err := ioutil.ReadFile(indexPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read index file @ %s: %v", indexPath, err)
