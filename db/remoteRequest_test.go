@@ -9,10 +9,16 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/util"
 )
 
 func setup() (DataServerProxy, DB, error) {
 	err := config.ParseConfig("../config.json")
+	if err != nil {
+		return nil, nil, err
+	}
+	path := "../testConfig.json"
+	err = util.ParseLoggingConfig(path)
 	if err != nil {
 		return nil, nil, err
 	}

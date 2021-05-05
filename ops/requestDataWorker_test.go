@@ -53,6 +53,7 @@ func (t testSubmit) PrepareTransaction(ctx context.Context, ctxName string, fn z
 
 func TestRequestDataOps(t *testing.T) {
 	exitCh := make(chan os.Signal)
+	setup()
 	cfg := config.GetConfig()
 
 	submitter := NewSubmitter()

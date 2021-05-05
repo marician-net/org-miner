@@ -13,6 +13,7 @@ import (
 	"github.com/zapproject/zap-miner/contracts"
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/rpc"
+	"github.com/zapproject/zap-miner/util"
 )
 
 func setup() error {
@@ -20,6 +21,13 @@ func setup() error {
 	if err != nil {
 		return err
 	}
+
+	path := "../testConfig.json"
+	err = util.ParseLoggingConfig(path)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
