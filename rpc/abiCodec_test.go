@@ -6,9 +6,24 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/zapproject/zap-miner/config"
+	"github.com/zapproject/zap-miner/util"
 )
 
+func setup() {
+	err := config.ParseConfig("../config.json")
+	if err != nil {
+		fmt.Errorf("Can't parse config for test.")
+	}
+	path := "../testConfig.json"
+	err = util.ParseLoggingConfig(path)
+	if err != nil {
+		fmt.Errorf("Can't parse logging config for test.")
+	}
+}
+
 func TestABICodec(t *testing.T) {
+	setup()
 	codec, err := BuildCodec()
 	if err != nil {
 		t.Fatal(err)
