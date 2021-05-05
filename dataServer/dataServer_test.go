@@ -12,6 +12,7 @@ import (
 	zapCommon "github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/config"
 	"github.com/zapproject/zap-miner/contracts"
+	"github.com/zapproject/zap-miner/contracts2"
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/rpc"
 	"github.com/zapproject/zap-miner/util"
@@ -56,10 +57,16 @@ func TestDataServer(t *testing.T) {
 		t.Fatalf("Problem creating remote db: %v\n", err)
 	}
 
+	instance, err := contracts2.NewZap(contractAddress, client)
+	if err != nil {
+		t.Fatalf("Provlem with initializing contract2: %v\n", err)
+	}
+
 	ctx := context.WithValue(context.Background(), zapCommon.DBContextKey, DB)
 	ctx = context.WithValue(ctx, zapCommon.ClientContextKey, client)
 	ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
 	ctx = context.WithValue(ctx, zapCommon.DataProxyKey, proxy)
+	ctx = context.WithValue(ctx, zapCommon.NewZapContractContextKey, instance)
 	ds, err := CreateServer(ctx)
 	if err != nil {
 		log.Fatal(err)
