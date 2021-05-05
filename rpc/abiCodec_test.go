@@ -28,7 +28,7 @@ func TestABICodec(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	m := codec.methods["0xe1eee6d6"]
+	m := codec.methods["0xe1eee6d6"] // method signature
 	if m == nil {
 		t.Fatal("Missing expected method matching test sig")
 	}
