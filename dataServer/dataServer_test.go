@@ -59,7 +59,7 @@ func TestDataServer(t *testing.T) {
 
 	instance, err := contracts2.NewZap(contractAddress, client)
 	if err != nil {
-		t.Fatalf("Provlem with initializing contract2: %v\n", err)
+		t.Fatalf("Problem with initializing contracts2: %v\n", err)
 	}
 
 	ctx := context.WithValue(context.Background(), zapCommon.DBContextKey, DB)
@@ -74,6 +74,12 @@ func TestDataServer(t *testing.T) {
 	ds.Start(ctx, exitCh)
 
 	time.Sleep(5000 * time.Millisecond)
+
+	isReady := <-ds.Ready()
+
+	if !isReady {
+		t.Fatal("Data Server is not ready")
+	}
 
 	resp, err := http.Get("http://localhost:5001/balance")
 	if err != nil {
