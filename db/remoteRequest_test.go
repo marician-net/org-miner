@@ -12,7 +12,7 @@ import (
 	"github.com/zapproject/zap-miner/util"
 )
 
-func setup() (DataServerProxy, DB, error) {
+func setupRemote() (DataServerProxy, DB, error) {
 	err := config.ParseConfig("../config.json")
 	if err != nil {
 		return nil, nil, err
@@ -32,7 +32,7 @@ func setup() (DataServerProxy, DB, error) {
 }
 
 func TestRemoteRequestCodec(t *testing.T) {
-	remote, DB, err := setup()
+	remote, DB, err := setupRemote()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func TestRemoteRequestCodec(t *testing.T) {
 
 func TestRequestReplayAttack(t *testing.T) {
 
-	remote, DB, err := setup()
+	remote, DB, err := setupRemote()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -114,7 +114,7 @@ func TestRequestReplayAttack(t *testing.T) {
 }
 
 func TestRequestForData(t *testing.T) {
-	remote, DB, err := setup()
+	remote, DB, err := setupRemote()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func TestRequestForData(t *testing.T) {
 }
 
 func TestRequestPut(t *testing.T) {
-	remote, DB, err := setup()
+	remote, DB, err := setupRemote()
 	if err != nil {
 		t.Fatal(err)
 	}
