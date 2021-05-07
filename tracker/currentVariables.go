@@ -19,6 +19,7 @@ var currentVarsLog = util.NewLogger("tracker", "CurrentVarsTracker")
 type CurrentVariablesTracker struct {
 }
 
+// Returns the CurrentVariablesTracker name
 func (b *CurrentVariablesTracker) String() string {
 	return "CurrentVariablesTracker"
 }

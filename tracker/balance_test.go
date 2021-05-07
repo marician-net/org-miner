@@ -26,6 +26,11 @@ func TestStringId(t *testing.T) {
 	if res != "BalanceTracker" {
 		t.Fatalf("should return 'BalanceTracker' string")
 	}
+
+	// If res equals "BalanceTracker" print "BalanceTracker ID:", "BalanceTracker"
+	if res == "BalanceTracker" {
+		fmt.Println("BalanceTracker ID:", res)
+	}
 }
 func TestPositiveBalance(t *testing.T) {
 
@@ -91,23 +96,24 @@ func dbBalanceTest(startBal *big.Int, t *testing.T) {
 	ctx = context.WithValue(ctx, common.DBContextKey, DB)
 	err = tracker.Exec(ctx)
 
-	// If the err does not have a zero value
-	// Log the err
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	//
 	v, err := DB.Get(db.BalanceKey)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	b, err := hexutil.DecodeBig(string(v))
-	fmt.Println("B", b)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	t.Logf("Balance stored: %v\n", string(v))
+
 	if b.Cmp(startBal) != 0 {
 		t.Fatalf("Balance from client did not match what should have been stored in DB. %s != %s", b, startBal)
 	}

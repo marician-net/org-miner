@@ -20,11 +20,22 @@ import (
 )
 
 func TestCurrentVarableString(t *testing.T) {
+
+	// Gets the CurrentVariablesTracker string
+	// Type is *tracker.CurrentVariablesTracker
 	tracker := &CurrentVariablesTracker{}
+
+	// Converts the tracker data type to a string
 	res := tracker.String()
+
 	if res != "CurrentVariablesTracker" {
 		t.Fatalf("should return 'CurrentVariablesTracker' string")
 	}
+
+	if res == "CurrentVariablesTracker" {
+		fmt.Println("CurrentVariablesTracker ID:", res)
+	}
+
 }
 
 func TestCurrentVariables(t *testing.T) {
