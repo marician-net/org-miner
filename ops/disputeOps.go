@@ -116,7 +116,7 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1
 		return nil, fmt.Errorf("failed to get miner addresses for dispute: %v", err)
 	}
 
-	const blockStep = 100
+	const blockStep = 67
 	high := int64(valueBlock.Uint64())
 	low := high - blockStep
 	nonceSubmitID := tokenAbi.Events["NonceSubmitted"].ID()
@@ -244,6 +244,7 @@ func List(ctx context.Context) error {
 		fmt.Printf("    \n")
 		fmt.Printf("    Value disputed for requestID %d:\n", dispute.RequestId.Uint64())
 
+		fmt.Println("UINTVAR[5]: ", uintVars[5])
 		allSubmitted, err := getNonceSubmissions(ctx, uintVars[5], &dispute)
 		if err != nil {
 			return fmt.Errorf("failed to get the values submitted by other miners for the disputed block: %v", err)
