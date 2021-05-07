@@ -2,10 +2,10 @@ package tracker
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,7 +20,7 @@ func TestStringId(t *testing.T) {
 
 	tracker := &BalanceTracker{}
 
-	// Converts the value of tracker to a string
+	// Converts tracker to a
 	res := tracker.String()
 
 	// If res does not equal "BalanceTracker" log
@@ -28,12 +28,12 @@ func TestStringId(t *testing.T) {
 		t.Fatalf("should return 'BalanceTracker' string")
 	}
 
-	// If res equals "BalanceTracker" print "BalanceTracker ID:", "BalanceTracker"
-	if res == "BalanceTracker" {
-		fmt.Println("BalanceTracker ID:", res)
-	}
+	// Assert that the data type of res("BalanceTracker") is equal to the data type of "BalanceTracker"
+	assert.Equal(t, reflect.TypeOf(res), reflect.TypeOf("BalanceTracker"))
 
-	assert.Equal(t, 2, 1)
+	// Assert that the value of res is equal to "BalanceTracker"
+	assert.Equal(t, res, "BalanceTracker")
+
 }
 func TestPositiveBalance(t *testing.T) {
 
