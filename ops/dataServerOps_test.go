@@ -62,6 +62,7 @@ func TestDataServerOps(t *testing.T) {
 	ctx = context.WithValue(ctx, zapCommon.ClientContextKey, client)
 	ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
 	ctx = context.WithValue(ctx, zapCommon.DataProxyKey, proxy)
+	ctx = context.WithValue(ctx, zapCommon.PublicAddress, common.BytesToAddress([]byte(cfg.PublicAddress)))
 
 	ops, err := CreateDataServerOps(ctx, exitCh)
 	if err != nil {

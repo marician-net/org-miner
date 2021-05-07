@@ -21,6 +21,6 @@
         "newCurrentVariables",
         "currentVariables"
     ],
-    "indexFolder": "./indexes",
+    "indexFolder": "indexes",
     "dbFile": "zapDB"
 }

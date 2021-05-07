@@ -228,7 +228,7 @@ async function main() {
     signer: signers[0]
   });
   const zapDispute = await ZapDispute.deploy();
-  console.log("deployed ZapDispute")
+  console.log("deployed ZapDispute: " + zapDispute.address)
 
   const ZapStake = await ethers.getContractFactory("ZapStake", {
     libraries: {
@@ -248,7 +248,7 @@ async function main() {
     signer: signers[0]
   });
   const zapLibrary = await ZapLibrary.deploy();
-  console.log("deployed ZapLibrary")
+  console.log("deployed ZapLibrary: " + zapLibrary.address)
 
   const Zap = await ethers.getContractFactory("Zap", 
   {
