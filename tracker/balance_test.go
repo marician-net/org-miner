@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/db"
@@ -16,7 +18,6 @@ import (
 
 func TestStringId(t *testing.T) {
 
-	// Gets the BalanceTracker string
 	tracker := &BalanceTracker{}
 
 	// Converts the value of tracker to a string
@@ -31,6 +32,8 @@ func TestStringId(t *testing.T) {
 	if res == "BalanceTracker" {
 		fmt.Println("BalanceTracker ID:", res)
 	}
+
+	assert.Equal(t, 2, 1)
 }
 func TestPositiveBalance(t *testing.T) {
 

@@ -55,6 +55,7 @@ func (b *CurrentVariablesTracker) Exec(ctx context.Context) error {
 		bitSetVar = []byte{1}
 	}
 	currentVarsLog.Info("Retrieved variables. challengeHash: %x", currentChallenge)
+	fmt.Println("VARS", currentVarsLog)
 
 	err = DB.Put(db.CurrentChallengeKey, currentChallenge[:])
 	//if err != nil {
