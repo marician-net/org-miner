@@ -2,15 +2,14 @@ package tracker
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/stretchr/testify/assert"
 	"github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/rpc"
@@ -18,9 +17,10 @@ import (
 
 func TestStringId(t *testing.T) {
 
+	// Stores the value "BalanceTracker" with the type *tracker.BalanceTracker
 	tracker := &BalanceTracker{}
 
-	// Converts tracker to a
+	// Converts the type of tracker to a string
 	res := tracker.String()
 
 	// If res does not equal "BalanceTracker" log
@@ -28,39 +28,81 @@ func TestStringId(t *testing.T) {
 		t.Fatalf("should return 'BalanceTracker' string")
 	}
 
-	// Assert that the data type of res("BalanceTracker") is equal to the data type of "BalanceTracker"
-	assert.Equal(t, reflect.TypeOf(res), reflect.TypeOf("BalanceTracker"))
-
 	// Assert that the value of res is equal to "BalanceTracker"
 	assert.Equal(t, res, "BalanceTracker")
 
 }
 func TestPositiveBalance(t *testing.T) {
 
+	// +1 = Greater than
+	// 0 = Equal To
+	// -1 = Less than
+
 	// Stores the bigInt balance 356000
 	startBal := big.NewInt(356000)
 
+	// Stores the bigInt value 0
+	zeroBal := big.NewInt(0)
+
+	// Stores the bigInt comparison between startBal(356000) and zeroBal(0)
+	// Checking if startBal is greater than, equal to, or less than zeroBal
+	testPositiveBal := startBal.Cmp(zeroBal)
+
+	// Assert that testPositiveBal equals +1(Greater than)
+	assert.Equal(t, testPositiveBal, +1)
+
 	dbBalanceTest(startBal, t)
+
 }
 
 func TestZeroBalance(t *testing.T) {
 
+	//  +1 = Greater than
+	//	0 = Equal To
+	//  -1 = Less than
+
 	// Stores the bigInt balance 0
 	startBal := big.NewInt(0)
+
+	// Stores the bigInt value 0
+	zeroBal := big.NewInt(0)
+
+	// Stores the bigInt comparison between startBal(0) and zeroBal(0)
+	// Checking if startBal is greater than, equal to, or less than zeroBal
+	testZeroBal := startBal.Cmp(zeroBal)
+
+	// Assert that testZeroBal equals 0(Equal to)
+	assert.Equal(t, testZeroBal, 0)
 
 	dbBalanceTest(startBal, t)
 }
 
 func TestNegativeBalance(t *testing.T) {
 
+	//  +1 = Greater than
+	//	0 = Equal To
+	//  -1 = Less than
+
 	// Stores the bigInt balance -753
 	startBal := big.NewInt(-753)
 
-	opts := &rpc.MockOptions{ETHBalance: startBal, Nonce: 1, GasPrice: big.NewInt(700000000),
-		TokenBalance: big.NewInt(0), Top50Requests: []*big.Int{}}
+	// Stores the bigInt balance 0
+	zeroBal := big.NewInt(0)
+
+	// Config options for the mock configs
+	opts := &rpc.MockOptions{
+		ETHBalance:    startBal,
+		Nonce:         1,
+		GasPrice:      big.NewInt(700000000),
+		TokenBalance:  big.NewInt(0),
+		Top50Requests: []*big.Int{}}
+
+	// NewMockClientWithValues creates a mock client with default values to return for calls
 	client := rpc.NewMockClientWithValues(opts)
 
 	DB, err := db.Open(filepath.Join(os.TempDir(), "test_balance"))
+
+	fmt.Println(DB)
 
 	// Error Handler
 	if err != nil {
@@ -78,6 +120,13 @@ func TestNegativeBalance(t *testing.T) {
 		t.Fatal(err)
 
 	}
+
+	// Stores the bigInt comparison between startBal(0) and zeroBal(0)
+	// Checking if startBal is greater than, equal to, or less than zeroBal
+	testNegBal := startBal.Cmp(zeroBal)
+
+	// Assert that testZeroBal equals -1(Less than)
+	assert.Equal(t, testNegBal, -1)
 }
 
 func dbBalanceTest(startBal *big.Int, t *testing.T) {
@@ -92,7 +141,6 @@ func dbBalanceTest(startBal *big.Int, t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Assigned the string value "BalanceTracker"
 	tracker := &BalanceTracker{}
 
 	ctx := context.WithValue(context.Background(), common.ClientContextKey, client)
@@ -103,9 +151,13 @@ func dbBalanceTest(startBal *big.Int, t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// This value is only read during the TestPositiveBalance and TestZeroBalance tests
+	// If TestPositiveBalance, v = 35600
+	// If TestNegativeBalance, v = 0
 	v, err := DB.Get(db.BalanceKey)
 
 	if err != nil {
+
 		t.Fatal(err)
 	}
 
