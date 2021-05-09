@@ -137,28 +137,33 @@ func encodeKeysValuesAndTime(buf *bytes.Buffer, dbKeys []string, values [][]byte
 func decodeKeysValuesAndTime(buf io.Reader) ([]string, [][]byte, int64, error) {
 	var time int64
 	if err := decode(buf, &time); err != nil {
+		rrlog.Error("Error in reading time: %s", err)
 		return nil, nil, 0, err
 	}
 	len := uint32(0)
 	if err := decode(buf, &len); err != nil {
+		rrlog.Error("Error in reading len: %s", err)
 		return nil, nil, 0, err
 	}
 	dbKeys := make([]string, len, len)
 	for i := uint32(0); i < len; i++ {
 		s, err := decodeString(buf)
 		if err != nil {
+			rrlog.Error("Error in decoding string: %s", err)
 			return nil, nil, 0, err
 		}
 		dbKeys[i] = s
 	}
 	len = uint32(0)
 	if err := decode(buf, &len); err != nil {
+		rrlog.Error("Error in reading len: %s", err)
 		return nil, nil, 0, err
 	}
 	values := make([][]byte, len, len)
 	for i := uint32(0); i < len; i++ {
 		bts, err := decodeBytes(buf)
 		if err != nil {
+			rrlog.Error("Error in decoding bytes: %s", err)
 			return nil, nil, 0, err
 		}
 		values[i] = bts
@@ -204,6 +209,7 @@ func decodeRequest(data []byte, validator RequestValidator) (*requestPayload, er
 	buf := bytes.NewReader(data)
 	keys, vals, time, err := decodeKeysValuesAndTime(buf)
 	if err != nil {
+		rrlog.Error("Problem with decoding")
 		return nil, err
 	}
 	if len(keys) == 0 {

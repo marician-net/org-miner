@@ -14,7 +14,7 @@ import (
 )
 
 // This package starts the rest server, db and runner for handling
-// requests sent to the miner
+// requests sent to and received from the rest server
 
 //DataServer holds refs to primary stack of utilities for data retrieval and serving
 type DataServer struct {
