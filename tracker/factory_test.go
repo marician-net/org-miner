@@ -2,14 +2,25 @@ package tracker
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateTracker(t *testing.T) {
+func TestCreateBalanceTracker(t *testing.T) {
 
 	balanceTracker, _ := createTracker("balance")
-	if balanceTracker[0].String() != "BalanceTracker" {
-		t.Fatalf("Expected BalanceTracker but got %s", balanceTracker[0].String())
+
+	balanceTrackerStr := balanceTracker[0].String()
+
+	if balanceTrackerStr != "BalanceTracker" {
+		t.Fatalf("Expected BalanceTracker but got %s", balanceTrackerStr)
 	}
+
+	assert.Equal(t, balanceTrackerStr, "BalanceTracker")
+
+}
+
+func TestCreateTracker(t *testing.T) {
 
 	currentVariablesTracker, _ := createTracker("currentVariables")
 	if currentVariablesTracker[0].String() != "CurrentVariablesTracker" {

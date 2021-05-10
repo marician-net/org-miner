@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -9,33 +10,72 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 	zapCommon "github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/config"
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/rpc"
 )
 
+func TestDisputeCheckerString(t *testing.T) {
+
+	// Gets the DisputeTracker string
+	// Type is *tracker.disputeChecker
+	tracker := &disputeChecker{}
+
+	disputeCheckerStr := tracker.String()
+
+	if disputeCheckerStr != "DisputeChecker" {
+
+		t.Fatal("Should return 'DisputeChecker' string")
+	}
+
+	assert.Equal(t, disputeCheckerStr, "DisputeChecker")
+
+}
+
 func TestDisputeCheckerInRange(t *testing.T) {
-	opts := &rpc.MockOptions{ETHBalance: big.NewInt(300000), Nonce: 1, GasPrice: big.NewInt(7000000000),
-		TokenBalance: big.NewInt(0), Top50Requests: []*big.Int{}}
+
+	opts := &rpc.MockOptions{ETHBalance: big.NewInt(300000),
+
+		Nonce:         1,
+		GasPrice:      big.NewInt(7000000000),
+		TokenBalance:  big.NewInt(0),
+		Top50Requests: []*big.Int{}}
+
 	disputeChecker := &disputeChecker{lastCheckedBlock: 500}
+
+	fmt.Println("TESTING", disputeChecker)
+
 	DB, err := db.Open(filepath.Join(os.TempDir(), "disputeChecker_test"))
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	client := rpc.NewMockClientWithValues(opts)
+
 	ctx := context.WithValue(context.Background(), zapCommon.ClientContextKey, client)
 	ctx = context.WithValue(ctx, zapCommon.DBContextKey, DB)
+
 	BuildIndexTrackers()
+
 	ethUSDPairs := indexes["ETH/USD"]
+
 	execEthUsdPsrs(ctx, t, ethUSDPairs)
+
 	time.Sleep(2 * time.Second)
+
 	execEthUsdPsrs(ctx, t, ethUSDPairs)
+
 	ctx = context.WithValue(ctx, zapCommon.ContractAddress, common.Address{0x0000000000000000000000000000000000000000})
+
 	err = disputeChecker.Exec(ctx)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	DB.Close()
 }
 

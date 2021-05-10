@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -61,13 +62,10 @@ func TestCurrentVariables(t *testing.T) {
 
 	chal := &rpc.CurrentChallenge{ChallengeHash: b32,
 
-		// RequestID number
 		RequestID: big.NewInt(1),
 
-		// Sets the difficulty to 500
 		Difficulty: big.NewInt(500),
 
-		// Sets the QueryString to "json(https://coinbase.com)"
 		QueryString: queryStr,
 
 		Granularity: big.NewInt(1000),
@@ -120,6 +118,8 @@ func TestCurrentVariables(t *testing.T) {
 	}
 
 	err = tracker.Exec(ctx)
+
+	fmt.Println("Master Instance", masterInstance)
 
 	if err != nil {
 		t.Fatal(err)

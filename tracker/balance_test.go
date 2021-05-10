@@ -88,6 +88,9 @@ func TestNegativeBalance(t *testing.T) {
 	// Stores the bigInt balance 0
 	zeroBal := big.NewInt(0)
 
+	// Path for test_balance directory
+	testBalPath := filepath.Join(os.TempDir(), "test_balance")
+
 	// Config options for the mock configs
 	opts := &rpc.MockOptions{
 		ETHBalance:    startBal,
@@ -109,6 +112,9 @@ func TestNegativeBalance(t *testing.T) {
 	// Prints the BalanceTracker id "BalanceTracker"
 	tracker := &BalanceTracker{}
 
+	// Converts the tracker to a string
+	balanceTrackerStr := tracker.String()
+
 	ctx := context.WithValue(context.Background(), common.ClientContextKey, client)
 	ctx = context.WithValue(ctx, common.DBContextKey, DB)
 	err = tracker.Exec(ctx)
@@ -122,6 +128,12 @@ func TestNegativeBalance(t *testing.T) {
 	// Stores the bigInt comparison between startBal(0) and zeroBal(0)
 	// Checking if startBal is greater than, equal to, or less than zeroBal
 	testNegBal := startBal.Cmp(zeroBal)
+
+	// Assert that the value of balanceTrackerStr is equal to "BalanceTracker"
+	assert.Equal(t, balanceTrackerStr, "BalanceTracker")
+
+	// Asserts the path for test_balance exists
+	assert.DirExists(t, testBalPath)
 
 	// Assert that testZeroBal equals -1(Less than)
 	assert.Equal(t, testNegBal, -1)

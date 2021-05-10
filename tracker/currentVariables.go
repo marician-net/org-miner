@@ -26,8 +26,10 @@ func (b *CurrentVariablesTracker) String() string {
 
 //Exec implementation for tracker
 func (b *CurrentVariablesTracker) Exec(ctx context.Context) error {
+
 	//cast client using type assertion since context holds generic interface{}
 	DB := ctx.Value(zapCommon.DBContextKey).(db.DB)
+
 	//get the single config instance
 	cfg := config.GetConfig()
 
@@ -38,6 +40,7 @@ func (b *CurrentVariablesTracker) Exec(ctx context.Context) error {
 	fromAddress := common.HexToAddress(_fromAddress)
 
 	instance := ctx.Value(zapCommon.MasterContractContextKey).(*contracts.ZapMaster)
+
 	currentChallenge, requestID, difficulty, queryString, granularity, totalTip, err := instance.GetCurrentVariables(nil)
 	if err != nil {
 		fmt.Println("Current Variables Retrieval Error")
