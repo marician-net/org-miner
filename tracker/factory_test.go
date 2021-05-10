@@ -20,12 +20,21 @@ func TestCreateBalanceTracker(t *testing.T) {
 
 }
 
-func TestCreateTracker(t *testing.T) {
+func TestCreateCurrentVariablesTracker(t *testing.T) {
 
 	currentVariablesTracker, _ := createTracker("currentVariables")
-	if currentVariablesTracker[0].String() != "CurrentVariablesTracker" {
-		t.Fatalf("Expected CurrentVariablesTracker but got %s", currentVariablesTracker[0].String())
+
+	currentVariablesStr := currentVariablesTracker[0].String()
+
+	if currentVariablesStr != "CurrentVariablesTracker" {
+		t.Fatalf("Expected CurrentVariablesTracker but got %s", currentVariablesStr)
 	}
+
+	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker")
+
+}
+
+func TestCreateTracker(t *testing.T) {
 
 	disputeStatusTracker, _ := createTracker("disputeStatus")
 	if disputeStatusTracker[0].String() != "DisputeTracker" {
