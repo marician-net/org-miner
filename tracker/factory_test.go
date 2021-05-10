@@ -92,16 +92,27 @@ func TestCreateIndexesTracker(t *testing.T) {
 
 }
 
-func TestCreateTracker(t *testing.T) {
+func TestCreateDisputeCheckerTracker(t *testing.T) {
 
 	disputeChecker, _ := createTracker("disputeChecker")
-	if disputeChecker[0].String() != "DisputeChecker" {
-		t.Fatalf("Expected DisputeChecker but got %s", disputeChecker[0].String())
+
+	disputeCheckerStr := disputeChecker[0].String()
+
+	if disputeCheckerStr != "DisputeChecker" {
+		t.Fatalf("Expected DisputeChecker but got %s", disputeCheckerStr)
 	}
 
+	assert.Equal(t, disputeCheckerStr, "DisputeChecker")
+
+}
+
+func TestCreateBadTracker(t *testing.T) {
+
 	badTracker, err := createTracker("badTracker")
+
 	if err == nil {
 		t.Fatalf("expected error but instead received this tracker: %s", badTracker[0].String())
 	}
 
+	assert.Len(t, badTracker, 0)
 }
