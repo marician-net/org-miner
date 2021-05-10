@@ -28,13 +28,8 @@ func TestCurrentVarableString(t *testing.T) {
 	// Converts the tracker data type to a string
 	res := tracker.String()
 
-	// If res does not equal "CurrentVariablesTracker" log the error
-	if res != "CurrentVariablesTracker" {
-		t.Fatalf("should return 'CurrentVariablesTracker' string")
-	}
-
 	// Assert that the value of res is equal to "CurrentVariablesTracker"
-	assert.Equal(t, res, "CurrentVariablesTracker")
+	assert.Equal(t, res, "CurrentVariablesTracker", "Should return 'CurrentVariablesTracker' string")
 
 }
 
