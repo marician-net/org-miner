@@ -120,7 +120,8 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1
 	high := int64(valueBlock.Uint64())
 	low := high - blockStep
 	nonceSubmitID := tokenAbi.Events["NonceSubmitted"].ID()
-	timedValues := make([]*apiOracle.PriceStamp, 5)
+	var timedValues [5]*apiOracle.PriceStamp
+	// timedValues := make([]*apiOracle.PriceStamp, 5)
 	found := 0
 	for found < 5 {
 		query := ethereum.FilterQuery{
@@ -165,7 +166,7 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1
 		high -= blockStep
 		low = high - blockStep
 	}
-	return timedValues, nil
+	return timedValues[:], nil
 }
 
 func List(ctx context.Context) error {
@@ -244,7 +245,6 @@ func List(ctx context.Context) error {
 		fmt.Printf("    \n")
 		fmt.Printf("    Value disputed for requestID %d:\n", dispute.RequestId.Uint64())
 
-		fmt.Println("UINTVAR[5]: ", uintVars[5])
 		allSubmitted, err := getNonceSubmissions(ctx, uintVars[5], &dispute)
 		if err != nil {
 			return fmt.Errorf("failed to get the values submitted by other miners for the disputed block: %v", err)
