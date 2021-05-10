@@ -22,13 +22,8 @@ func TestStringId(t *testing.T) {
 	// Converts the type of tracker to a string
 	res := tracker.String()
 
-	// If res does not equal "BalanceTracker" log the error
-	if res != "BalanceTracker" {
-		t.Fatalf("should return 'BalanceTracker' string")
-	}
-
 	// Assert that the value of res is equal to "BalanceTracker"
-	assert.Equal(t, res, "BalanceTracker")
+	assert.Equal(t, res, "BalanceTracker", "Should return 'BalanceTracker' string ")
 
 }
 func TestPositiveBalance(t *testing.T) {

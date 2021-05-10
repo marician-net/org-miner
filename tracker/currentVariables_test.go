@@ -2,7 +2,6 @@ package tracker
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -119,8 +118,7 @@ func TestCurrentVariables(t *testing.T) {
 
 	err = tracker.Exec(ctx)
 
-	fmt.Println("Master Instance", masterInstance)
-
+	// Error handler for tracker.Exec
 	if err != nil {
 		t.Fatal(err)
 	}
