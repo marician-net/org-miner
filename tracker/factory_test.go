@@ -48,12 +48,21 @@ func TestCreateDisputeStatusTracker(t *testing.T) {
 
 }
 
-func TestCreateTracker(t *testing.T) {
+func TestCreateGasTracker(t *testing.T) {
 
 	gasTracker, _ := createTracker("gas")
-	if gasTracker[0].String() != "GasTracker" {
-		t.Fatalf("Expected GasTracker but got %s", gasTracker[0].String())
+
+	gasTrackerStr := gasTracker[0].String()
+
+	if gasTrackerStr != "GasTracker" {
+		t.Fatalf("Expected GasTracker but got %s", gasTrackerStr)
 	}
+
+	assert.Equal(t, gasTrackerStr, "GasTracker")
+
+}
+
+func TestCreateTracker(t *testing.T) {
 
 	tokenBalanceTracker, _ := createTracker("tokenBalance")
 	if tokenBalanceTracker[0].String() != "TokenTracker" {
