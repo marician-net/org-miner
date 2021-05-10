@@ -49,7 +49,7 @@ func CheckValueAtTime(reqID uint64, val *big.Int, at time.Time) *ValueCheckResul
 	for i := 0; i < 5; i++ {
 		t := at.Add((time.Duration(i) - 2) * cfg.DisputeTimeDelta.Duration / 5)
 		fval, confidence := PSRValueForTime(int(reqID), t)
-		fmt.Println("FVAL: ", fval, " - Confidence: ", confidence)
+		// fmt.Println("FVAL: ", fval, " - Confidence: ", confidence)
 		if confidence > 0.8 {
 			datapoints = append(datapoints, fval)
 			times = append(times, t)

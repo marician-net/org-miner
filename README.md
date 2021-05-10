@@ -15,41 +15,21 @@
 3) Run "start.sh" script in hardhat/ directory in terminal #1
  <!-- Run "go test" inside a package directory (i.e. /ops) in terminal #2 -->
 
-## Execute (with Pool Mining Below)
+## Execute (Single Miner/Thread)
 (If running on local execute steps 1 - 3 from above)
 1) Run "release_build.sh"
 2) ./zap-miner [cmd]
 
-In order to run dispute commands: (inefficient)
-1) Run "./zap-miner --config local_cfgs/config1.json mine"
-2) CTRL+C when "Successfully submitted solution" is logged
-3) Run "./zap-miner --config local_cfgs/config2.json mine"
-4) CTRL+C when "Successfully submitted solution" is logged
-5) Run "./zap-miner --config local_cfgs/config3.json mine"
-6) CTRL+C when "Successfully submitted solution" is logged
-7) Run "./zap-miner --config local_cfgs/config4.json mine"
-8) CTRL+C when "Successfully submitted solution" is logged
-9) Run "./zap-miner --config local_cfgs/config5.json mine"
-10) CTRL+C when "Successfully submitted solution" is logged
-11) Run "./zap-miner dataserver"
-12) Locate log with "TimeStamp: %!(EXTRA *big.Int=XXX)" and copy the big.Int value
-13) Run "./zap-miner approve 10000 0xCD8a1C3ba11CF5ECfa6267617243239504a98d90"
-14) Run "./zap-miner approve 10000 0xb7278a61aa25c888815afc32ad3cc52ff24fe575"
-15) Run "./zap-miner dispute new 1 {TimeStamp value copied from step 12} 4
-- This command disputes miner 5 
-
-## Execute with Pool Mining
+## Execute (Remote Mining/Multi Miners)
 (If running on local execute steps 1 - 3 from Node Setup)
 1) Run "release_build.sh"
 2) Run "./zap-miner dataserver"
-3) Run "./start_local.sh"
-4) If some of the miners do not start with the rest, try and run it manually using the config file like above.
+3) Run "./start_local.sh" in a new terminal
+4) Check the logs/ for failing miners. Manually run "nohup ./zap-miner --config=local_cfgs/config{miner # 1-5}.json mine -r > logs/{miner # 1-5}.log &" for failing miners.
 
-Similar to above, in order to run dispute commands: (inefficient)
+In order to run dispute commands: (inefficient)
 5) Locate log with "TimeStamp: %!(EXTRA *big.Int=XXX)" and copy the big.Int value
-6) Run "./zap-miner approve 10000 0xCD8a1C3ba11CF5ECfa6267617243239504a98d90"
-7) Run "./zap-miner approve 10000 0xb7278a61aa25c888815afc32ad3cc52ff24fe575"
-8) Run "./zap-miner dispute new 1 {TimeStamp value copied from step 12} 4
+6) Run "./zap-miner dispute new 1 {TimeStamp value copied from step 12} 4
 
 
 ## Config.json
