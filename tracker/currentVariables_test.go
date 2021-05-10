@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 	zapCommon "github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/config"
 	zap "github.com/zapproject/zap-miner/contracts"
@@ -32,9 +33,8 @@ func TestCurrentVarableString(t *testing.T) {
 		t.Fatalf("should return 'CurrentVariablesTracker' string")
 	}
 
-	if res == "CurrentVariablesTracker" {
-		fmt.Println("CurrentVariablesTracker ID:", res)
-	}
+	// Assert that the value of res is equal to "CurrentVariablesTracker"
+	assert.Equal(t, res, "CurrentVariablesTracker")
 
 }
 
