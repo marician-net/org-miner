@@ -34,12 +34,21 @@ func TestCreateCurrentVariablesTracker(t *testing.T) {
 
 }
 
-func TestCreateTracker(t *testing.T) {
+func TestCreateDisputeStatusTracker(t *testing.T) {
 
 	disputeStatusTracker, _ := createTracker("disputeStatus")
-	if disputeStatusTracker[0].String() != "DisputeTracker" {
-		t.Fatalf("Expected DisputeTracker but got %s", disputeStatusTracker[0].String())
+
+	disputeStatusStr := disputeStatusTracker[0].String()
+
+	if disputeStatusStr != "DisputeTracker" {
+		t.Fatalf("Expected DisputeTracker but got %s", disputeStatusStr)
 	}
+
+	assert.Equal(t, disputeStatusStr, "DisputeTracker")
+
+}
+
+func TestCreateTracker(t *testing.T) {
 
 	gasTracker, _ := createTracker("gas")
 	if gasTracker[0].String() != "GasTracker" {
