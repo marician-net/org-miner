@@ -40,6 +40,7 @@ func TestCurrentVarableString(t *testing.T) {
 
 func TestCurrentVariables(t *testing.T) {
 
+	// Stores the bigInt balance 356000
 	startBal := big.NewInt(356000)
 
 	// Creates a hash
@@ -168,6 +169,9 @@ func TestCurrentVariables(t *testing.T) {
 		t.Fatalf("Expected query string to match test input: %s != %s\n",
 			string(getQueryStr), queryStr)
 	}
+
+	// Asserts that the b32 challenge array length is 32
+	assert.Len(t, b32, 32)
 
 	// Assert that tracker is equal to "CurrentVariablesTracker"
 	assert.Equal(t, tracker.String(), "CurrentVariablesTracker")

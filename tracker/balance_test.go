@@ -2,7 +2,6 @@ package tracker
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -102,9 +101,7 @@ func TestNegativeBalance(t *testing.T) {
 
 	DB, err := db.Open(filepath.Join(os.TempDir(), "test_balance"))
 
-	fmt.Println(DB)
-
-	// Error Handler
+	// Error Handler for DB
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,6 +113,7 @@ func TestNegativeBalance(t *testing.T) {
 	ctx = context.WithValue(ctx, common.DBContextKey, DB)
 	err = tracker.Exec(ctx)
 
+	// Error handler for tracker.Exec
 	if err == nil {
 		t.Fatal(err)
 
@@ -152,25 +150,30 @@ func dbBalanceTest(startBal *big.Int, t *testing.T) {
 	}
 
 	// This value is only read during the TestPositiveBalance and TestZeroBalance tests
-	// If TestPositiveBalance, v = 35600
-	// If TestNegativeBalance, v = 0
-	v, err := DB.Get(db.BalanceKey)
+	// If TestPositiveBalance, balance = 35600
+	// If TestNegativeBalance, balance = 0
+	getBalance, err := DB.Get(db.BalanceKey)
 
+	// Error handler for getBalance
 	if err != nil {
 
 		t.Fatal(err)
 	}
 
-	b, err := hexutil.DecodeBig(string(v))
+	// Parses the balance from a bytes array to a bigInt
+	balance, err := hexutil.DecodeBig(string(getBalance))
 
+	//  Error handler for balance
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("Balance stored: %v\n", string(v))
+	t.Logf("Balance stored: %v\n", string(getBalance))
 
-	if b.Cmp(startBal) != 0 {
-		t.Fatalf("Balance from client did not match what should have been stored in DB. %s != %s", b, startBal)
+	if balance.Cmp(startBal) != 0 {
+		t.Fatalf("Balance from client did not match what should have been stored in DB. %s != %s",
+			balance, startBal)
 	}
+
 	DB.Close()
 }
