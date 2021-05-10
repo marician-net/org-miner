@@ -2,7 +2,6 @@ package tracker
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -29,6 +28,7 @@ func TestCurrentVarableString(t *testing.T) {
 	// Converts the tracker data type to a string
 	res := tracker.String()
 
+	// If res does not equal "CurrentVariablesTracker" log the error
 	if res != "CurrentVariablesTracker" {
 		t.Fatalf("should return 'CurrentVariablesTracker' string")
 	}
@@ -49,15 +49,19 @@ func TestCurrentVariables(t *testing.T) {
 	var b32 [32]byte
 
 	// Iterates through hash
-	for i, v := range hash {
-		b32[i] = v
+	for i, hashElement := range hash {
+
+		b32[i] = hashElement
 
 	}
 
 	// Query String
 	queryStr := "json(https://coinbase.com)"
 
-	chal := &rpc.CurrentChallenge{ChallengeHash: b32, RequestID: big.NewInt(1),
+	chal := &rpc.CurrentChallenge{ChallengeHash: b32,
+
+		// RequestID number
+		RequestID: big.NewInt(1),
 
 		// Sets the difficulty to 500
 		Difficulty: big.NewInt(500),
@@ -66,7 +70,8 @@ func TestCurrentVariables(t *testing.T) {
 		QueryString: queryStr,
 
 		Granularity: big.NewInt(1000),
-		Tip:         big.NewInt(0)}
+
+		Tip: big.NewInt(0)}
 
 	opts := &rpc.MockOptions{ETHBalance: startBal, Nonce: 1,
 
@@ -113,8 +118,6 @@ func TestCurrentVariables(t *testing.T) {
 		ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
 	}
 
-	fmt.Println("Working to Line 41")
-
 	err = tracker.Exec(ctx)
 
 	if err != nil {
@@ -122,37 +125,57 @@ func TestCurrentVariables(t *testing.T) {
 	}
 
 	// Gets the request ID as a bytes array
-	v, err := DB.Get(db.RequestIdKey)
+	getRequestId, err := DB.Get(db.RequestIdKey)
 
+	// Error handler for getRequestId
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	fmt.Println("Working to Line 51", v)
+	// Parses the requestId from a bytes array to a bigInt
+	requestId, err := hexutil.DecodeBig(string(getRequestId))
 
-	b, err := hexutil.DecodeBig(string(v))
-
+	// Error handler for requestId
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("RequestID stored: %v\n", string(v))
+	t.Logf("RequestID stored: %v\n", string(getRequestId))
 
-	if b.Cmp(big.NewInt(1)) != 0 {
-		t.Fatalf("Current Request ID from client did not match what should have been stored in DB. %s != %s", b, string(rune(1)))
+	// If the requestId does not equal 1 log the error
+	if requestId.Cmp(big.NewInt(1)) != 0 {
+		t.Fatalf(
+			"Current Request ID from client did not match what should have been stored in DB. %s != %s",
+			requestId, string(rune(1)))
 	}
+
+	// Stores the bigInt comparison between requestId and a bigInt with the value of 1
+	// Checking if requestId is greater than, equal to, or less than bigInt 1
+	testQueryId := requestId.Cmp(big.NewInt(1))
 
 	// Gets the QueryStringKey from the DB as a bytes array
-	v, err = DB.Get(db.QueryStringKey)
+	var getQueryStr, getQueryErr = DB.Get(db.QueryStringKey)
 
-	if err != nil {
+	// Error Handler for getQueryStr
+	if getQueryErr != nil {
 		t.Fatal(err)
 	}
 
-	// Converts the QueryStringKey from a bytes array to a string
-	// Checks if the QueryStringKey returned from the DB is equivalent to the queryStr
-	if string(v) != queryStr {
-		t.Fatalf("Expected query string to match test input: %s != %s\n", string(v), queryStr)
+	// Converts getQueryStr from a bytes array to a string
+	// Checks if its not equal to queryStr
+	if string(getQueryStr) != queryStr {
+
+		t.Fatalf("Expected query string to match test input: %s != %s\n",
+			string(getQueryStr), queryStr)
 	}
+
+	// Assert that tracker is equal to "CurrentVariablesTracker"
+	assert.Equal(t, tracker.String(), "CurrentVariablesTracker")
+
+	// Assert that testQueryId equals 0(Equal to)
+	assert.Equal(t, testQueryId, 0)
+
+	// Asserts that returned QueryStringKey is equal to the queryString
+	assert.Equal(t, string(getQueryStr), queryStr)
 
 }
