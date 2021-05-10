@@ -97,12 +97,7 @@ func TestNegativeBalance(t *testing.T) {
 	// NewMockClientWithValues creates a mock client with default values to return for calls
 	client := rpc.NewMockClientWithValues(opts)
 
-	DB, err := db.Open(filepath.Join(os.TempDir(), "test_balance"))
-
-	// Error Handler for DB
-	if err != nil {
-		t.Fatal(err)
-	}
+	DB, DBerr := db.Open(filepath.Join(os.TempDir(), "test_balance"))
 
 	// Prints the BalanceTracker id "BalanceTracker"
 	tracker := &BalanceTracker{}
@@ -112,17 +107,17 @@ func TestNegativeBalance(t *testing.T) {
 
 	ctx := context.WithValue(context.Background(), common.ClientContextKey, client)
 	ctx = context.WithValue(ctx, common.DBContextKey, DB)
-	err = tracker.Exec(ctx)
-
-	// Error handler for tracker.Exec
-	if err == nil {
-		t.Fatal(err)
-
-	}
+	var trackerErr = tracker.Exec(ctx)
 
 	// Stores the bigInt comparison between startBal(0) and zeroBal(0)
 	// Checking if startBal is greater than, equal to, or less than zeroBal
 	testNegBal := startBal.Cmp(zeroBal)
+
+	// Asserts DBerr is nil
+	assert.Nil(t, DBerr)
+
+	// Asserts trackerErr is not nil
+	assert.NotNil(t, trackerErr)
 
 	// Assert that the value of balanceTrackerStr is equal to "BalanceTracker"
 	assert.Equal(t, balanceTrackerStr, "BalanceTracker")
