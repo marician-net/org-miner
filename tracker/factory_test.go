@@ -76,15 +76,23 @@ func TestCreateTokenBalanceTracker(t *testing.T) {
 
 }
 
-func TestCreateTracker(t *testing.T) {
+func TestCreateIndexesTracker(t *testing.T) {
 
 	indexersTracker, err := createTracker("indexers")
+
 	if err != nil {
 		t.Fatalf("Could not build IndexTracker")
 	}
+
 	if len(indexersTracker) == 0 {
 		t.Fatalf("Could not build all IndexTrackers: only tracking %d indexes", len(indexersTracker))
 	}
+
+	assert.NotEqual(t, len(indexersTracker), 0)
+
+}
+
+func TestCreateTracker(t *testing.T) {
 
 	disputeChecker, _ := createTracker("disputeChecker")
 	if disputeChecker[0].String() != "DisputeChecker" {
