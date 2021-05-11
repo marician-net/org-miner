@@ -65,15 +65,20 @@ func TestCreateDisputeStatusTracker(t *testing.T) {
 
 func TestCreateGasTracker(t *testing.T) {
 
+	// Gets the GasTracker string
+	// Type is *tracker.GasTracker
 	gasTracker, _ := createTracker("gas")
 
+	// Converts the tracker data type to a string
 	gasTrackerStr := gasTracker[0].String()
 
-	if gasTrackerStr != "GasTracker" {
-		t.Fatalf("Expected GasTracker but got %s", gasTrackerStr)
-	}
+	// Asserts gasTrackerStr has a value
+	assert.NotNil(t, gasTrackerStr)
 
-	assert.Equal(t, gasTrackerStr, "GasTracker")
+	// Assert gasTrackerStr equals "GasTracker"
+	assert.Equal(t, gasTrackerStr, "GasTracker",
+
+		"Expected GasTracker but got %s", gasTrackerStr)
 
 }
 
