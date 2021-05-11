@@ -84,15 +84,20 @@ func TestCreateGasTracker(t *testing.T) {
 
 func TestCreateTokenBalanceTracker(t *testing.T) {
 
+	// Gets the tokenBalanceTracker string
+	// Type is *tracker.TokenTracker
 	tokenBalanceTracker, _ := createTracker("tokenBalance")
 
+	// Converts the tracker data type to a string
 	tokenBalanceStr := tokenBalanceTracker[0].String()
 
-	if tokenBalanceStr != "TokenTracker" {
-		t.Fatalf("Expected TokenTracker but got %s", tokenBalanceStr)
-	}
+	// Asserts tokenBalanceStr has a value
+	assert.NotNil(t, tokenBalanceStr)
 
-	assert.Equal(t, tokenBalanceStr, "TokenTracker")
+	// Asserts tokenBalanceStr equals "TokenTracker"
+	assert.Equal(t, tokenBalanceStr, "TokenTracker",
+
+		"Expected TokenTracker but got %s", tokenBalanceStr)
 
 }
 
