@@ -103,17 +103,16 @@ func TestCreateTokenBalanceTracker(t *testing.T) {
 
 func TestCreateIndexesTracker(t *testing.T) {
 
+	// Gets the array of price query strings
 	indexersTracker, err := createTracker("indexers")
 
-	if err != nil {
-		t.Fatalf("Could not build IndexTracker")
-	}
+	// Asserts err has no value
+	assert.Nil(t, err, "Could not build IndexTracker")
 
-	if len(indexersTracker) == 0 {
-		t.Fatalf("Could not build all IndexTrackers: only tracking %d indexes", len(indexersTracker))
-	}
+	// Asserts indexersTracker length is not 0
+	assert.NotEqual(t, len(indexersTracker), 0,
 
-	assert.NotEqual(t, len(indexersTracker), 0)
+		"Could not build all IndexTrackers: only tracking %d indexes", len(indexersTracker))
 
 }
 
