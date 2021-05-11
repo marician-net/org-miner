@@ -118,15 +118,19 @@ func TestCreateIndexesTracker(t *testing.T) {
 
 func TestCreateDisputeCheckerTracker(t *testing.T) {
 
+	// Gets the DisputeChecker string
 	disputeChecker, _ := createTracker("disputeChecker")
 
+	// Converts the tracker data type to a string
 	disputeCheckerStr := disputeChecker[0].String()
 
-	if disputeCheckerStr != "DisputeChecker" {
-		t.Fatalf("Expected DisputeChecker but got %s", disputeCheckerStr)
-	}
+	// Asserts disputeCheckerStr has a value
+	assert.NotNil(t, disputeCheckerStr)
 
-	assert.Equal(t, disputeCheckerStr, "DisputeChecker")
+	// Asserts disputeCheckerStr equals "DisputeChecker"
+	assert.Equal(t, disputeCheckerStr, "DisputeChecker",
+
+		"Expected DisputeChecker but got %s", disputeCheckerStr)
 
 }
 
