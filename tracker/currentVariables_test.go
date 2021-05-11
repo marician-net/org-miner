@@ -34,7 +34,9 @@ func TestCurrentVarableString(t *testing.T) {
 	assert.NotNil(t, currentVariablesStr, "Should return 'CurrentVariablesTracker' string")
 
 	// Asserts currentVariablesStr is equal to "CurrentVariablesTracker"
-	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker")
+	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker",
+
+		"Should return 'CurrentVariablesTracker' string")
 
 }
 
