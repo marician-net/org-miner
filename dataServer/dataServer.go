@@ -72,11 +72,11 @@ func (ds *DataServer) Start(ctx context.Context, exitCh chan int) error {
 	ds.server.Start()
 	go func() {
 		<-ds.runner.Ready()
-		ds.log.Info("Runner signaled it is ready")
+		ds.log.Info("Runner signaled it is ready ✅")
 		ds.readyChannel <- true
-		ds.log.Info("DataServer ready for use")
+		ds.log.Info("DataServer ready for use 💪")
 		<-ds.exitCh
-		ds.log.Info("DataServer received signal to stop")
+		ds.log.Info("DataServer received signal to stop ❌")
 		ds.stop()
 	}()
 	return nil
