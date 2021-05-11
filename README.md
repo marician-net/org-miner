@@ -41,10 +41,21 @@ go help testflag
 3) Run "start.sh" script in hardhat/ directory in terminal #1
  <!-- Run "go test" inside a package directory (i.e. /ops) in terminal #2 -->
 
-## Execute
+## Execute (Single Miner/Thread)
 (If running on local execute steps 1 - 3 from above)
 1) Run "release_build.sh"
 2) ./zap-miner [cmd]
+
+## Execute (Remote Mining/Multi Miners)
+(If running on local execute steps 1 - 3 from Node Setup)
+1) Run "release_build.sh"
+2) Run "./zap-miner dataserver"
+3) Run "./start_local.sh" in a new terminal
+4) Check the logs/ for failing miners. Manually run "nohup ./zap-miner --config=local_cfgs/config{miner # 1-5}.json mine -r > logs/{miner # 1-5}.log &" for failing miners.
+
+In order to run dispute commands: (inefficient)
+5) Locate log with "TimeStamp: %!(EXTRA *big.Int=XXX)" and copy the big.Int value
+6) Run "./zap-miner dispute new 1 {TimeStamp value copied from step 12} 4
 
 
 ## Config.json
@@ -71,3 +82,34 @@ numProcessors - an integer number of CPU cores/threads to use for mining.
 disputeTimeDelta - how far back to store values for min/max range - default 5 (in minutes)
 disputeThreshold - percentage of acceptable range outside min/max for dispute checking -
     default
+
+
+## **Debug**
+
+### Install
+Delve is a debugger for the Go programming language. Follow the steps in this [repo](https://github.com/go-delve/delve) to install onto your machine.
+
+*For debugging, we needed to take out the -s and -w flags in the ./release-build.sh script.*
+1) Follow the steps above up until Execute - 1. Don't run the ```./zap-miner``` command.
+2) Instead run ```dlv exec ./zap-miner [command]```. This allows the debugger to run the script.
+3) Set breakpoint(s).
+4) Enter ```continue``` command to allow the program to run till breakpoint.
+5) Check variables using ```locals``` and/or ```print```.
+6) Step In and Out of functions with ```step``` and ```stepout```.
+7) Use ```restart``` to start over. Breakpoints will persist.
+8) Use ```quit``` to exit debug mode.
+
+
+
+### **Basic Debug Commands**
+[continue](#continue) | Run until breakpoint or program termination.  
+[break](#break) | Sets a breakpoint. (EX. ```break tracker/index.go:39``` That will set a breakpoint on line 39 in tracker.index.go file.)  
+[breakpoints](#breakpoints) | Print out info for active breakpoints.  
+[step](#step) | Single step through program.  
+[stepout](#stepout) | Step out of the current function.  
+[locals](#locals) | Print local variables.  
+[print](#print) | Evaluate an expression.  
+[restart](#restart) | Restart process.  
+
+
+More commands here ```$GOPATH/src/github.com/go-delve/delve/tree/master/Documentation/cli/locspec.md``` or type ```help``` when in debug mode.

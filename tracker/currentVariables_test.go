@@ -79,9 +79,8 @@ func TestCurrentVariables(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("RequestID stored: %v\n", string(v))
 	if b.Cmp(big.NewInt(1)) != 0 {
-		t.Fatalf("Current Request ID from client did not match what should have been stored in DB. %s != %s", b, string(1))
+		t.Fatalf("Current Request ID from client did not match what should have been stored in DB. %s != %s", b, string(rune(1)))
 	}
 
 	v, err = DB.Get(db.QueryStringKey)

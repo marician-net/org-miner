@@ -2,11 +2,9 @@ pragma solidity ^0.5.0;
 
 import "./libraries/SafeMathM.sol";
 import "./libraries/ZapStorage.sol";
-// import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapDispute.sol";
 import "./libraries/ZapStake.sol";
 import "./libraries/ZapLibrary.sol";
-// import "./libraries/Upgradable.sol";
 import "./token/ZapToken.sol";
 
 /**
@@ -16,7 +14,7 @@ import "./token/ZapToken.sol";
  * and ZapTransfer.sol
  */
 contract Zap {
-
+    event NewDispute(uint indexed _disputeId, uint indexed _requestId, uint _timestamp, address _miner);//emitted when a new dispute is initialized
     event NewChallenge(bytes32 _currentChallenge,uint indexed _currentRequestId,uint _difficulty,uint _multiplier,string _query,uint _totalTips); //emits when a new challenge is created (either on mined block or when a new request is pushed forward on waiting system)
     event TipAdded(address indexed _sender,uint indexed _requestId, uint _tip, uint _totalTips);
     event NewRequestOnDeck(uint indexed _requestId, string _query, bytes32 _onDeckQueryHash, uint _onDeckTotalTips); //emits when a the payout of another request is higher after adding to the payoutPool or submitting a request
@@ -29,7 +27,6 @@ contract Zap {
     using ZapDispute for ZapStorage.ZapStorageStruct;
     using ZapLibrary for ZapStorage.ZapStorageStruct;
     using ZapStake for ZapStorage.ZapStorageStruct;
-    // using ZapTransfer for ZapStorage.ZapStorageStruct;
 
     ZapStorage.ZapStorageStruct zap;
     ZapToken public token;
@@ -60,7 +57,58 @@ contract Zap {
     * requires 5 miners to submit a value.
     */
     function beginDispute(uint _requestId, uint _timestamp,uint _minerIndex) external {
-        zap.beginDispute(_requestId,_timestamp,_minerIndex);
+        ZapStorage.Request storage _request = zap.requestDetails[_requestId];
+        //require that no more than a day( (24 hours * 60 minutes)/10minutes=144 blocks) has gone by since the value was "mined"
+        require(block.number- _request.minedBlockNum[_timestamp]<= 144);
+        require(_request.minedBlockNum[_timestamp] > 0);
+        require(_minerIndex < 5);
+        
+        //_miner is the miner being disputed. For every mined value 5 miners are saved in an array and the _minerIndex
+        //provided by the party initiating the dispute
+        address _miner = _request.minersByValue[_timestamp][_minerIndex];
+        bytes32 _hash = keccak256(abi.encodePacked(_miner,_requestId,_timestamp));
+        
+        //Ensures that a dispute is not already open for the that miner, requestId and timestamp
+        require(zap.disputeIdByDisputeHash[_hash] == 0);
+        doTransfer(msg.sender,address(this), zap.uintVars[keccak256("disputeFee")]);
+        
+        //Increase the dispute count by 1
+        zap.uintVars[keccak256("disputeCount")] =  zap.uintVars[keccak256("disputeCount")] + 1;
+        
+        //Sets the new disputeCount as the disputeId
+        uint disputeId = zap.uintVars[keccak256("disputeCount")];
+        
+        //maps the dispute hash to the disputeId
+        zap.disputeIdByDisputeHash[_hash] = disputeId;
+        //maps the dispute to the Dispute struct
+        zap.disputesById[disputeId] = ZapStorage.Dispute({
+            hash:_hash,
+            isPropFork: false,
+            reportedMiner: _miner,
+            reportingParty: msg.sender,
+            proposedForkAddress:address(0),
+            executed: false,
+            disputeVotePassed: false,
+            tally: 0
+            });
+        
+        //Saves all the dispute variables for the disputeId
+        zap.disputesById[disputeId].disputeUintVars[keccak256("requestId")] = _requestId;
+        zap.disputesById[disputeId].disputeUintVars[keccak256("timestamp")] = _timestamp;
+        zap.disputesById[disputeId].disputeUintVars[keccak256("value")] = _request.valuesByTimestamp[_timestamp][_minerIndex];
+        zap.disputesById[disputeId].disputeUintVars[keccak256("minExecutionDate")] = now + 7 days;
+        zap.disputesById[disputeId].disputeUintVars[keccak256("blockNumber")] = block.number;
+        zap.disputesById[disputeId].disputeUintVars[keccak256("minerSlot")] = _minerIndex;
+        zap.disputesById[disputeId].disputeUintVars[keccak256("fee")]  = zap.uintVars[keccak256("disputeFee")];
+        
+        //Values are sorted as they come in and the official value is the median of the first five
+        //So the "official value" miner is always minerIndex==2. If the official value is being 
+        //disputed, it sets its status to inDispute(currentStatus = 3) so that users are made aware it is under dispute
+        if(_minerIndex == 2){
+            zap.requestDetails[_requestId].inDispute[_timestamp] = true;
+        }
+        zap.stakerDetails[_miner].currentStatus = 3;
+        emit NewDispute(disputeId,_requestId,_timestamp,_miner);
     }
 
 
@@ -92,17 +140,6 @@ contract Zap {
     }
 
 
-   /**
-    * @dev Add tip to Request value from oracle
-    * @param _requestId being requested to be mined
-    * @param _tip amount the requester is willing to pay to be get on queue. Miners
-    * mine the onDeckQueryHash, or the api with the highest payout pool
-    */
-    // function addTip(uint _requestId, uint _tip) external {
-    //     zap.addTip(_requestId,_tip);
-    // }
-
-
     /**
     * @dev Request to retreive value from oracle based on timestamp. The tip is not required to be 
     * greater than 0 because there are no tokens in circulation for the initial(genesis) request 
@@ -113,7 +150,6 @@ contract Zap {
     * mine the onDeckQueryHash, or the api with the highest payout pool
     */
     function requestData(string calldata _c_sapi,string calldata _c_symbol,uint _granularity, uint _tip) external {
-        // zap.requestData(_c_sapi,_c_symbol,_granularity,_tip);
         //Require at least one decimal place
         require(_granularity > 0);
         
@@ -169,16 +205,6 @@ contract Zap {
 
 
     /**
-    * @dev Allows the current owner to transfer control of the contract to a newOwner.
-    * @param _newOwner The address to transfer ownership to.
-    */
-    // function transferOwnership(address payable _newOwner) public {
-    //     // zap.transferOwnership(_newOwner);
-    //     token.transferOwnership(_newOwner);
-    // }
-
-
-    /**
     * @dev This function allows miners to deposit their stake.
     */
     function depositStake() external {
@@ -213,7 +239,6 @@ contract Zap {
     * @return true if spender appproved successfully
     */
     function approve(address _spender, uint _amount) public returns (bool) {
-        // return zap.approve(_spender,_amount);
         return token.approve(_spender, _amount);
     }
 
@@ -310,11 +335,11 @@ contract Zap {
     function updateBalanceAtNow(address _user, uint _value) public {
         ZapStorage.Checkpoint[] storage checkpoints = zap.balances[_user];
         if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
-               ZapStorage.Checkpoint memory newCheckPoint = checkpoints[ checkpoints.length++ ];
+               ZapStorage.Checkpoint storage newCheckPoint = checkpoints[ checkpoints.length++ ];
                newCheckPoint.fromBlock =  uint128(block.number);
                newCheckPoint.value = uint128(_value);
         } else {
-               ZapStorage.Checkpoint memory oldCheckPoint = checkpoints[checkpoints.length-1];
+               ZapStorage.Checkpoint storage oldCheckPoint = checkpoints[checkpoints.length-1];
                oldCheckPoint.value = uint128(_value);
         }
     }
