@@ -136,11 +136,13 @@ func TestCreateDisputeCheckerTracker(t *testing.T) {
 
 func TestCreateBadTracker(t *testing.T) {
 
+	// Creates a bad tracker as an empty array
 	badTracker, err := createTracker("badTracker")
 
-	if err == nil {
-		t.Fatalf("expected error but instead received this tracker: %s", badTracker[0].String())
-	}
+	// Asserts err has a value
+	assert.NotNil(t, err,
+		"Expected error but instead received this tracker: %s", badTracker)
 
+	// Asserts the empty badTracker array length equals 0
 	assert.Len(t, badTracker, 0)
 }
