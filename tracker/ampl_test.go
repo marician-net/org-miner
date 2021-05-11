@@ -58,26 +58,11 @@ func TestAmpl(t *testing.T) {
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, common.DBContextKey, db)
 	BuildIndexTrackers()
-
-	// Empty
-	amplTrackers := indexes["AMPL/USD"]
-
-	// Able to reference query strings from indexes.json
 	btcTrackers := indexes["BTC/USD"]
-
-	// Empty
-	amplBtcTrackers := indexes["AMPL/BTC"]
 
 	// Assigns the value of the IndexTracker struct
 	indexers := []*IndexTracker{}
-
-	indexers = append(indexers, amplTrackers...)
-
-	// Appends the BTC/USD price trackers to the indexers
 	indexers = append(indexers, btcTrackers...)
-
-	indexers = append(indexers, amplBtcTrackers...)
-
 	for i := 0; i < 288; i++ {
 
 		for _, indexer := range indexers {

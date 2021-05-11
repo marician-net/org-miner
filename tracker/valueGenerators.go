@@ -46,8 +46,8 @@ func PSRValueForTime(requestID int, at time.Time) (float64, float64) {
 	reqs := PSRs[requestID].Require(at)
 	values := make(map[string]apiOracle.PriceInfo)
 	minConfidence := math.MaxFloat64
-	for symbol, fn := range reqs {
 
+	for symbol, fn := range reqs {
 		val, confidence := fn(indexes[symbol], at)
 		if confidence == 0 {
 			return 0, 0
@@ -56,9 +56,9 @@ func PSRValueForTime(requestID int, at time.Time) (float64, float64) {
 			minConfidence = confidence
 		}
 		values[symbol] = val
-		//fmt.Println("Value Updated", symbol, " : ", requestID, ": ", val)
+		// fmt.Println("Value Updated", symbol, " : ", requestID, ": ", val)
 	}
-	//fmt.Println("values", values)
+	// fmt.Println("values", values)
 	return PSRs[requestID].ValueAt(values, at), minConfidence
 }
 

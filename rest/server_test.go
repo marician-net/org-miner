@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -12,13 +13,27 @@ import (
 	"github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/config"
 	"github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/util"
 )
+
+func setup() {
+	err := config.ParseConfig("../config.json")
+	if err != nil {
+		fmt.Errorf("Can't parse config for test.")
+	}
+	path := "../testConfig.json"
+	err = util.ParseLoggingConfig(path)
+	if err != nil {
+		fmt.Errorf("Can't parse logging config for test.")
+	}
+}
 
 type BalTest struct {
 	Balance string `json:"balance"`
 }
 
 func TestServer(t *testing.T) {
+	setup()
 	DB, err := db.Open(filepath.Join(os.TempDir(), "test_server"))
 	if err != nil {
 		t.Fatal(err)

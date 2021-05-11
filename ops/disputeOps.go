@@ -116,11 +116,12 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1
 		return nil, fmt.Errorf("failed to get miner addresses for dispute: %v", err)
 	}
 
-	const blockStep = 100
+	const blockStep = 67
 	high := int64(valueBlock.Uint64())
 	low := high - blockStep
 	nonceSubmitID := tokenAbi.Events["NonceSubmitted"].ID()
-	timedValues := make([]*apiOracle.PriceStamp, 5)
+	var timedValues [5]*apiOracle.PriceStamp
+	// timedValues := make([]*apiOracle.PriceStamp, 5)
 	found := 0
 	for found < 5 {
 		query := ethereum.FilterQuery{
@@ -165,7 +166,7 @@ func getNonceSubmissions(ctx context.Context, valueBlock *big.Int, dispute *zap1
 		high -= blockStep
 		low = high - blockStep
 	}
-	return timedValues, nil
+	return timedValues[:], nil
 }
 
 func List(ctx context.Context) error {
@@ -191,7 +192,7 @@ func List(ctx context.Context) error {
 		return fmt.Errorf("failed to get latest eth block header: %v", err)
 	}
 
-	startBlock := big.NewInt(10e3 * 14)
+	startBlock := big.NewInt(54) //big.NewInt(10e3 * 14)
 	startBlock.Sub(header.Number, startBlock)
 	newDisputeID := tokenAbi.Events["NewDispute"].ID()
 	query := ethereum.FilterQuery{

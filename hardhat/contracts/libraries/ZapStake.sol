@@ -30,7 +30,7 @@ library ZapStake {
         // //the initial 5 miner addresses are specfied below
         // //changed payable[5] to 6
         address payable[6] memory _initalMiners = [
-            address(0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097),
+            address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266),
             address(0xcd3B766CCDd6AE721141F452C550Ca635964ce71),
             address(0x2546BcD3c84621e976D8185a91A922aE77ECEc30),
             address(0xbDA5747bFD65F08deb54cb465eB87D40e51B197E),

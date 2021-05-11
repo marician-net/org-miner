@@ -143,13 +143,16 @@ func MedianAtEOD(apis []*IndexTracker, at time.Time) (apiOracle.PriceInfo, float
 
 func Median(values []apiOracle.PriceInfo) apiOracle.PriceInfo {
 	var result apiOracle.PriceInfo
+	// fmt.Println("Values: ", values)
 	sort.Slice(values, func(i, j int) bool {
 		return values[i].Price < values[j].Price
 	})
+
 	result.Price = values[len(values)/2].Price
 	for _, val := range values {
 		result.Volume += val.Volume
 	}
+	// fmt.Println("Result: ", result)
 	return result
 }
 

@@ -53,6 +53,7 @@ func (t testSubmit) PrepareTransaction(ctx context.Context, ctxName string, fn z
 
 func TestRequestDataOps(t *testing.T) {
 	exitCh := make(chan os.Signal)
+	setup()
 	cfg := config.GetConfig()
 
 	submitter := NewSubmitter()
@@ -65,8 +66,14 @@ func TestRequestDataOps(t *testing.T) {
 		log.Fatal(err)
 	}
 
+	proxy, err := db.OpenRemoteDB(DB)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ctx := context.WithValue(context.Background(), zapCommon.DBContextKey, DB)
-	proxy := ctx.Value(zapCommon.DataProxyKey).(db.DataServerProxy)
+	ctx = context.WithValue(ctx, zapCommon.DataProxyKey, proxy)
+	proxy = ctx.Value(zapCommon.DataProxyKey).(db.DataServerProxy)
 	reqData := CreateDataRequester(exitCh, submitter, 2, proxy)
 
 	//it should not request data if not configured to do it

@@ -1,0 +1,30 @@
+=============== May 6, 2021 (EDT) ===============
+15:15:37.611776 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:15:37.619958 db@open opening
+15:15:37.621160 version@stat F·[] S·0B[] Sc·[]
+15:15:37.629361 db@janitor F·2 G·0
+15:15:37.630082 db@open done T·9.681257ms
+15:15:47.649621 db@close closing
+15:15:47.649700 db@close done T·77.537µs
+=============== May 6, 2021 (EDT) ===============
+15:16:40.018215 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:16:40.022533 version@stat F·[] S·0B[] Sc·[]
+15:16:40.023927 db@open opening
+15:16:40.024019 journal@recovery F·1
+15:16:40.024117 journal@recovery recovering @1
+15:16:40.030740 memdb@flush created L0@2 N·32 S·896B "0xf..tus,v3":"wei..ice,v4"
+15:16:40.034713 version@stat F·[1] S·896B[896B] Sc·[0.25]
+15:16:40.053427 db@janitor F·3 G·0
+15:16:40.053462 db@open done T·29.518774ms
+15:16:50.088918 db@close closing
+15:16:50.089068 db@close done T·175.638µs
+=============== May 6, 2021 (EDT) ===============
+15:16:58.223023 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:16:58.225571 version@stat F·[1] S·896B[896B] Sc·[0.25]
+15:16:58.226505 db@open opening
+15:16:58.226673 journal@recovery F·1
+15:16:58.226762 journal@recovery recovering @3
+15:16:58.229177 memdb@flush created L0@5 N·32 S·903B "0xf..tus,v36":"wei..ice,v37"
+15:16:58.233800 version@stat F·[2] S·1KiB[1KiB] Sc·[0.50]
+15:16:58.248750 db@janitor F·4 G·0
+15:16:58.248807 db@open done T·22.25825ms

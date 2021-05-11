@@ -6,6 +6,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 	zapCommon "github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/config"
 	"github.com/zapproject/zap-miner/contracts"
@@ -59,6 +60,15 @@ func (b *CurrentVariablesTracker) Exec(ctx context.Context) error {
 	}
 	currentVarsLog.Info("Retrieved variables. challengeHash: %x", currentChallenge)
 	fmt.Println("VARS", currentVarsLog)
+
+	array := [32]byte{}
+	data := []byte("timeOfLastNewValue")
+	data = crypto.Keccak256(data)
+	for i := 0; i < 32; i++ {
+		array[i] = data[i]
+	}
+	uvar, _ := instance.GetUintVar(nil, array)
+	currentVarsLog.Info("TimeStamp: ", uvar)
 
 	err = DB.Put(db.CurrentChallengeKey, currentChallenge[:])
 	//if err != nil {
