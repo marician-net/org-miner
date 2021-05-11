@@ -46,15 +46,20 @@ func TestCreateCurrentVariablesTracker(t *testing.T) {
 
 func TestCreateDisputeStatusTracker(t *testing.T) {
 
+	// Gets the DisputeStatusTracker string
+	// Type is *tracker.DisputeTracker
 	disputeStatusTracker, _ := createTracker("disputeStatus")
 
+	// Converts the tracker data type to a string
 	disputeStatusStr := disputeStatusTracker[0].String()
 
-	if disputeStatusStr != "DisputeTracker" {
-		t.Fatalf("Expected DisputeTracker but got %s", disputeStatusStr)
-	}
+	// Asserts disputeStatusStr has a value
+	assert.NotNil(t, disputeStatusStr)
 
-	assert.Equal(t, disputeStatusStr, "DisputeTracker")
+	// Asserts disputeStatusStr is equal to DisputeTracker
+	assert.Equal(t, disputeStatusStr, "DisputeTracker",
+
+		"Expected DisputeTracker but got %s", disputeStatusStr)
 
 }
 
