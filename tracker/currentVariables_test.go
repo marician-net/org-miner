@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/ethereum/go-ethereum/common"
 	zapCommon "github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/config"
@@ -26,15 +28,13 @@ func TestCurrentVarableString(t *testing.T) {
 	tracker := &CurrentVariablesTracker{}
 
 	// Converts the tracker data type to a string
-	res := tracker.String()
+	currentVariablesStr := tracker.String()
 
-	if res != "CurrentVariablesTracker" {
-		t.Fatalf("should return 'CurrentVariablesTracker' string")
-	}
+	// Asserts currentVariablesStr has a value
+	assert.NotNil(t, currentVariablesStr, "Should return 'CurrentVariablesTracker' string")
 
-	if res == "CurrentVariablesTracker" {
-		fmt.Println("CurrentVariablesTracker ID:", res)
-	}
+	// Asserts currentVariablesStr is equal to "CurrentVariablesTracker"
+	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker")
 
 }
 
