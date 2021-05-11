@@ -8,29 +8,39 @@ import (
 
 func TestCreateBalanceTracker(t *testing.T) {
 
+	// Gets the BalanceTracker string
+	// Type is *tracker.BalanceTracker
 	balanceTracker, _ := createTracker("balance")
 
+	// Converts the tracker data type to a string
 	balanceTrackerStr := balanceTracker[0].String()
 
-	if balanceTrackerStr != "BalanceTracker" {
-		t.Fatalf("Expected BalanceTracker but got %s", balanceTrackerStr)
-	}
+	// Asserts balanceTrackerStr has a value
+	assert.NotNil(t, balanceTrackerStr)
 
-	assert.Equal(t, balanceTrackerStr, "BalanceTracker")
+	// Asserts balanceTrackerStr equals "BalanceTracker"
+	assert.Equal(t, balanceTrackerStr, "BalanceTracker",
+
+		"Expected BalanceTracker but got %s", balanceTrackerStr)
 
 }
 
 func TestCreateCurrentVariablesTracker(t *testing.T) {
 
+	// Gets the CurrentVariablesTracker string
+	// Type is *tracker.CurrentVariablesTracker
 	currentVariablesTracker, _ := createTracker("currentVariables")
 
+	// Converts the tracker data type to a string
 	currentVariablesStr := currentVariablesTracker[0].String()
 
-	if currentVariablesStr != "CurrentVariablesTracker" {
-		t.Fatalf("Expected CurrentVariablesTracker but got %s", currentVariablesStr)
-	}
+	// Asserts currentVariablesStr has a value
+	assert.NotNil(t, currentVariablesStr)
 
-	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker")
+	// Asserts currentVariablesStr is equal to "CurrentVariablesTracker"
+	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker",
+
+		"Expected CurrentVariablesTracker but got %s", currentVariablesStr)
 
 }
 
