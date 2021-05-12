@@ -23,7 +23,7 @@
         "newCurrentVariables",
         "currentVariables"
     ],
-    "indexFolder": "indexes",
+    "indexFolder": "..",
     "dbFile": "zapDB",
     "disputeTimeDelta": "600s"
 }
