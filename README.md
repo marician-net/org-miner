@@ -15,21 +15,29 @@ In the root of this project, run:
 ./runPkgTest.sh <PACKAGE_NAME>
 ```
 
-This will run all tests, identified by `*_test.go`, in the given package. It will also give you coverage instights.
+This will run all tests, identified by `*_test.go`, in the given package. It will also give you coverage insights.
 If instead you'd like to test a specific test in a package run:
 
 ```bash
 ./runTest.sh <TEST_NAME> <PACKAGE_NAME>
 ```
+e.g. `./runTest.sh TestDataServer dataServer`
 
-This will run the given `<TEST_NAME>` as long as it is named `*_test.go`.
+This will run the given `<TEST_NAME>` as long as it is inside a `*_test.go` file in the given `<PACKAGE_NAME>`.
 
 ### Go test from CLI
-You could of course also `cd` into the package of choice and run the standard `go test [test flags]` e.g.
+You could of course also `cd` into the package of choice and run the standard `go test [test flags...]` e.g.
 ```bash
 cd pow
 go test -v -cover  # Test with increased verbosity and give a coverage analysis
 ```
+
+You can also run individual test just like when running the `./runTest.sh` script
+```bash
+cd zap-miner # while in the root of the project...
+go test -v [test flags...] [PACKAGE_NAME] -run [TEST_NAME]
+```
+
 For more `go test` flags you can use, run this command in your terminal
 ```bash
 go help testflag
