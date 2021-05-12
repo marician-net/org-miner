@@ -12,62 +12,34 @@ import (
 	"testing"
 	"time"
 
-	// Imports the clock package
 	"github.com/benbjohnson/clock"
-
 	"github.com/zapproject/zap-miner/common"
-
-	// imports the db package
 	"github.com/zapproject/zap-miner/db"
-
-	// Imports the utils package
 	"github.com/zapproject/zap-miner/util"
 )
 
 func TestAmpl(t *testing.T) {
-
-	// Imports the CreateTestClient function from the utils folder
-	// CreateTestClient returns *http.Client with Transport replaced to avoid making real calls
-	// &client = Uses the address operator and points to the http client address
-	// mockAPI = A function used used to make a query
 	util.CreateTestClient(&client, mockAPI)
 
-	// Open the database using the given DB file as its data store
 	db, err := db.Open(filepath.Join(os.TempDir(), "test_MeanAt"))
-
-	// Error Handler
 	if err != nil {
 		log.Fatal(err)
 		panic(err.Error())
 	}
-
-	// defer = Used to ensure that a function call is performed later in a program’s execution
-	// Closes the db file
 	defer db.Close()
-
-	/*NewMock returns an instance of a mock clock.
-	The current time of the mock clock on initialization is the Unix epoc*/
 	mock := clock.NewMock()
-
-	// Assign clck the value of mock
 	clck = mock
-
-	// Now returns the current local time.
 	mock.Set(time.Now())
-
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, common.DBContextKey, db)
 	BuildIndexTrackers()
 	btcTrackers := indexes["BTC/USD"]
 
-	// Assigns the value of the IndexTracker struct
 	indexers := []*IndexTracker{}
 	indexers = append(indexers, btcTrackers...)
 	for i := 0; i < 288; i++ {
-
 		for _, indexer := range indexers {
 			indexer.Exec(ctx)
-
 		}
 		mock.Add(10 * time.Minute)
 	}
