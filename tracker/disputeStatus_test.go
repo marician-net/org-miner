@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/db"
@@ -15,13 +17,13 @@ import (
 
 func TestDisputeString(t *testing.T) {
 
+	// Gets the DisputeTracker ID
 	tracker := &DisputeTracker{}
 
+	// Converts the DisputeTracker ID to a string
 	disputeTrackerStr := tracker.String()
 
-	if disputeTrackerStr != "DisputeTracker" {
-		t.Fatalf("should return 'DisputeTracker' string")
-	}
+	assert.Equal(t, disputeTrackerStr, "DisputeTracker", "should return 'DisputeTracker' string")
 }
 
 func TestDisputeStatus(t *testing.T) {
