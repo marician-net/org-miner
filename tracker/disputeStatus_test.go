@@ -23,6 +23,7 @@ func TestDisputeString(t *testing.T) {
 	// Converts the DisputeTracker ID to a string
 	disputeTrackerStr := tracker.String()
 
+	// Asserts disputeTrackerStr equals "DispuateTracker"
 	assert.Equal(t, disputeTrackerStr, "DisputeTracker", "should return 'DisputeTracker' string")
 }
 
