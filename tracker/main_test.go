@@ -31,7 +31,6 @@ func TestMain(m *testing.M) {
 	}
 	util.ParseLoggingConfig("")
 	apiOracle.EnsureValueOracle()
-	// assert for indexes
 	os.Exit(m.Run())
 }
 
