@@ -55,4 +55,15 @@ func TestBalanceHandler(t *testing.T) {
 		t.Logf("Ending balance: %s\n", res.Balance)
 	}
 
+	// router := NewRouter(DB)
+
+	// router.AddRoute("/balance", h)
+
+	// resp, err := http.Get("http://localhost:5001/balance")  // not sure how to make requests for routes.router
+	// if err != nil {
+	// 	t.Fatalf("Error getting balance from endpoint: %v", err)
+	// }
+
+	// t.Logf("Balance from response: %v", resp.Body)
+
 }
