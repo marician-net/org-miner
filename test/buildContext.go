@@ -51,10 +51,6 @@ func buildContext() error {
 		ctx = context.WithValue(ctx, ZapCommon.NewTransactorContractContextKey, newTransactorInstance)
 		ctx = context.WithValue(ctx, ZapCommon.TokenFilterContextKey, tokenListener)
 
-		// start event listener
-		// tokenListener.ParseTransfer()
-		// go listenTransfers(client, cfg)
-
 		privateKey, err := crypto.HexToECDSA(cfg.PrivateKey)
 		if err != nil {
 			return fmt.Errorf("problem getting private key: %s", err.Error())
