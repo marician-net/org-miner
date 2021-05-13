@@ -18,21 +18,21 @@ import (
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/ops"
 	"github.com/zapproject/zap-miner/rest"
-	"github.com/zapproject/zap-miner/rest/routes"
 	"github.com/zapproject/zap-miner/rpc"
+	"github.com/zapproject/zap-miner/tracker"
 	"github.com/zapproject/zap-miner/util"
 )
 
-var DB db.DB
-var err error
-var ctx context.Context
-var cfg *config.Config
-var currentChallenge [32]byte
-var requestID *big.Int
-var difficulty *big.Int
-var queryString string
-var granularity *big.Int
-var totalTip *big.Int
+// var DB db.DB
+// var err error
+// var ctx context.Context
+// var cfg *config.Config
+// var currentChallenge [32]byte
+// var requestID *big.Int
+// var difficulty *big.Int
+// var queryString string
+// var granularity *big.Int
+// var totalTip *big.Int
 
 // var instance *contracts.ZapMaster
 // var fromAddress common.Address
@@ -123,11 +123,11 @@ func prep_I(t *testing.T) {
 }
 
 func setup_I(t *testing.T) {
-	err := config.ParseConfig("../../../config.json")
+	err := config.ParseConfig("../../config.json")
 	if err != nil {
 		fmt.Errorf("Can't parse config for test.")
 	}
-	path := "../../../testConfig.json"
+	path := "../../testConfig.json"
 	err = util.ParseLoggingConfig(path)
 	if err != nil {
 		fmt.Errorf("Can't parse logging config for test.")
@@ -137,7 +137,7 @@ func setup_I(t *testing.T) {
 }
 
 func Test_I_CurrentChanllengeHandler(t *testing.T) {
-	ch := &routes.CurrentChallengeHandler{}
+	ch := &CurrentChallengeHandler{}
 	if cfg == nil {
 		setup_I(t)
 	}
@@ -154,7 +154,7 @@ func Test_I_CurrentChanllengeHandler(t *testing.T) {
 }
 
 func Test_I_DifficultyHandler(t *testing.T) {
-	dh := &routes.DifficultyHandler{}
+	dh := &DifficultyHandler{}
 	if cfg == nil {
 		setup_I(t)
 	}
@@ -172,49 +172,51 @@ func Test_I_DifficultyHandler(t *testing.T) {
 }
 
 func Test_I_DisputeStatusHandler(t *testing.T) {
-	// dsh := &routes.DisputeStatusHandler{}
-	// if cfg == nil {
-	// 	setup_I(t)
-	// }
+	dsh := &DisputeStatusHandler{}
+	if cfg == nil {
+		setup_I(t)
+	}
 
-	// enc := hexutil.EncodeBig(status)
-	// t.Logf("Staker Status: %v", enc)
-	// DB.Put(db.DisputeStatusKey, []byte(enc))
+	trkr := &tracker.DisputeTracker{}
+	err = trkr.Exec(ctx)
 
-	// code, payload := dsh.Incoming(ctx, nil)
-	// t.Logf("Dispute status payload: %s\n", payload)
-	// if code != 200 {
-	// 	if !strings.Contains(payload, "error") {
-	// 		t.Fatal("Expected non-200 code to contain error message")
-	// 	}
-	// }
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	code, payload := dsh.Incoming(ctx, nil)
+	t.Logf("Dispute status payload: %s\n", payload)
+	if code != 200 {
+		if !strings.Contains(payload, "error") {
+			t.Fatal("Expected non-200 code to contain error message")
+		}
+	}
 }
 
 func Test_I_GasHandler(t *testing.T) {
-	// gh := &routes.GasHandler{}
-	// if cfg == nil {
-	// 	setup_I(t)
-	// }
+	gh := &GasHandler{}
+	if cfg == nil {
+		setup_I(t)
+	}
 
-	// gasPrice, err := client.SuggestGasPrice(context.Background())
-	// if err != nil {
-	// 	t.Fatalf("Error in getting the suggested gas price: %v", err)
-	// }
+	trkr := &tracker.GasTracker{}
 
-	// enc := hexutil.EncodeBig(gasPrice)
-	// DB.Put(db.GasKey, []byte(enc))
+	err = trkr.Exec(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	// code, payload := gh.Incoming(ctx, nil)
-	// t.Logf("Gas Price payload: %s\n", payload)
-	// if code != 200 {
-	// 	if !strings.Contains(payload, "error") {
-	// 		t.Fatal("Expected non-200 code to contain error message")
-	// 	}
-	// }
+	code, payload := gh.Incoming(ctx, nil)
+	t.Logf("Gas Price payload: %s\n", payload)
+	if code != 200 {
+		if !strings.Contains(payload, "error") {
+			t.Fatal("Expected non-200 code to contain error message")
+		}
+	}
 }
 
 func Test_I_GranularityHandler(t *testing.T) {
-	gh := &routes.GranularityHandler{}
+	gh := &GranularityHandler{}
 	if cfg == nil {
 		setup_I(t)
 	}
@@ -232,28 +234,28 @@ func Test_I_GranularityHandler(t *testing.T) {
 }
 
 func Test_I_MiningStatusHandler(t *testing.T) {
-	// msh := &routes.MiningStatusHandler{}
-	// if cfg == nil {
-	// 	setup_I(t)
-	// }
+	msh := &MiningStatusHandler{}
+	if cfg == nil {
+		setup_I(t)
+	}
 
-	// ms := []byte{0}
-	// if opts.MiningStatus {
-	// 	ms = []byte{1}
-	// }
-	// DB.Put(db.MiningStatusKey, ms)
+	ms := []byte{0}
+	if myStatus {
+		ms = []byte{1}
+	}
+	DB.Put(db.MiningStatusKey, ms)
 
-	// code, payload := msh.Incoming(ctx, nil)
-	// t.Logf("Mining status payload: %s\n", payload)
-	// if code != 200 {
-	// 	if !strings.Contains(payload, "error") {
-	// 		t.Fatal("Expected non-200 code to contain error message")
-	// 	}
-	// }
+	code, payload := msh.Incoming(ctx, nil)
+	t.Logf("Mining status payload: %s\n", payload)
+	if code != 200 {
+		if !strings.Contains(payload, "error") {
+			t.Fatal("Expected non-200 code to contain error message")
+		}
+	}
 }
 
 func Test_I_QueryStringHandler(t *testing.T) {
-	qsh := &routes.QueryStringHandler{}
+	qsh := &QueryStringHandler{}
 	if cfg == nil {
 		setup_I(t)
 	}
@@ -270,7 +272,7 @@ func Test_I_QueryStringHandler(t *testing.T) {
 }
 
 func Test_I_RequestIdHandler(t *testing.T) {
-	ridh := &routes.RequestIdHandler{}
+	ridh := &RequestIdHandler{}
 	if cfg == nil {
 		setup_I(t)
 	}
@@ -288,7 +290,7 @@ func Test_I_RequestIdHandler(t *testing.T) {
 }
 
 func Test_I_TotalTipHandler(t *testing.T) {
-	tth := &routes.TotalTipHandler{}
+	tth := &TotalTipHandler{}
 	if cfg == nil {
 		setup_I(t)
 	}
@@ -303,22 +305,30 @@ func Test_I_TotalTipHandler(t *testing.T) {
 			t.Fatal("Expected non-200 code to contain error message")
 		}
 	}
+
+	_, cancel := context.WithCancel(ctx)
+
+	cancel()
 }
 
 func Test_I_TributeBalanceHandler(t *testing.T) {
-	// tbh := &routes.TokenBalanceHandler{}
-	// if cfg == nil {
-	// 	setup_I(t)
-	// }
+	tbh := &TokenBalanceHandler{}
+	if cfg == nil {
+		setup_I(t)
+	}
 
-	// enc := hexutil.EncodeBig(opts.TokenBalance)
-	// DB.Put(db.TokenBalanceKey, []byte(enc))
+	trkr := &tracker.GasTracker{}
 
-	// code, payload := tbh.Incoming(ctx, nil)
-	// t.Logf("Token balance payload: %s\n", payload)
-	// if code != 200 {
-	// 	if !strings.Contains(payload, "error") {
-	// 		t.Fatal("Expected non-200 code to contain error message")
-	// 	}
-	// }
+	err = trkr.Exec(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	code, payload := tbh.Incoming(ctx, nil)
+	t.Logf("Token balance payload: %s\n", payload)
+	if code != 200 {
+		if !strings.Contains(payload, "error") {
+			t.Fatal("Expected non-200 code to contain error message")
+		}
+	}
 }
