@@ -46,6 +46,7 @@ func (b *DisputeTracker) Exec(ctx context.Context) error {
 	contractAddress := common.HexToAddress(_conAddress)
 
 	instance, err := zap.NewZapMaster(contractAddress, client)
+
 	if err != nil {
 		fmt.Println("instance Error, disputeStatus")
 		return err
@@ -57,13 +58,18 @@ func (b *DisputeTracker) Exec(ctx context.Context) error {
 		fmt.Println("instance Error, disputeStatus")
 		return err
 	}
+
 	enc := hexutil.EncodeBig(status)
+
 	log.Printf("Staker Status: %v", enc)
+
 	err = DB.Put(db.DisputeStatusKey, []byte(enc))
+
 	if err != nil {
 		fmt.Printf("Problem storing dispute info: %v\n", err)
 		return err
 	}
+
 	//Issue #50, bail out of not able to mine
 	// if status.Cmp(big.NewInt(1)) != 0 {
 	// 	log.Fatalf("Miner is not able to mine with status %v. Stopping all mining immediately", status)
