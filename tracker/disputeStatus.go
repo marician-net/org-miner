@@ -22,13 +22,16 @@ type DisputeTracker struct {
 }
 
 func (b *DisputeTracker) String() string {
+
 	return "DisputeTracker"
 }
 
 //Exec - Places the Dispute Status in the database
 func (b *DisputeTracker) Exec(ctx context.Context) error {
+
 	//cast client using type assertion since context holds generic interface{}
 	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
+
 	DB := ctx.Value(zapCommon.DBContextKey).(db.DB)
 
 	//get the single config instance
@@ -54,6 +57,8 @@ func (b *DisputeTracker) Exec(ctx context.Context) error {
 
 	status, _, err := instance.GetStakerInfo(nil, fromAddress)
 
+	fmt.Println(status)
+
 	if err != nil {
 		fmt.Println("instance Error, disputeStatus")
 		return err
@@ -61,7 +66,14 @@ func (b *DisputeTracker) Exec(ctx context.Context) error {
 
 	enc := hexutil.EncodeBig(status)
 
-	log.Printf("Staker Status: %v", enc)
+	stakerStatus, stakerStatusErr := hexutil.DecodeBig(enc)
+
+	if stakerStatusErr != nil {
+
+		return stakerStatusErr
+	}
+
+	log.Printf("Staker Status: %v", stakerStatus)
 
 	err = DB.Put(db.DisputeStatusKey, []byte(enc))
 
