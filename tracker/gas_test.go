@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/zapproject/zap-miner/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/stretchr/testify/assert"
 	zapCommon "github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/rpc"
@@ -24,7 +25,7 @@ func TestETHGasStation(t *testing.T) {
 		t.Fatal(err)
 	}
 	ctx := context.WithValue(context.Background(), zapCommon.ClientContextKey, client)
-	ctx = context.WithValue(ctx, common.DBContextKey, DB)
+	ctx = context.WithValue(ctx, zapCommon.DBContextKey, DB)
 	err = tracker.Exec(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -34,8 +35,14 @@ func TestETHGasStation(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	dec, err := hexutil.DecodeBig(string(v))
+	if err != nil {
+		t.Fatalf("Error in decoding gas price: %v", err)
+	}
+
 	t.Logf("Gas Price stored: %v\n", string(v))
 
+	assert.IsType(t, big.NewInt(0), dec)
 }
 
 // func TestGas(t *testing.T) {
