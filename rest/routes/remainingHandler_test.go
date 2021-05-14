@@ -15,6 +15,7 @@ import (
 	"github.com/zapproject/zap-miner/contracts"
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/rpc"
+	"github.com/zapproject/zap-miner/tracker"
 	"github.com/zapproject/zap-miner/util"
 )
 
@@ -29,6 +30,7 @@ var difficulty *big.Int
 var queryString string
 var granularity *big.Int
 var totalTip *big.Int
+var myStatus bool
 
 func prep(t *testing.T) {
 	cfg = config.GetConfig()
@@ -80,16 +82,22 @@ func prep(t *testing.T) {
 		ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
 	}
 
-	// _fromAddress := cfg.PublicAddress
+	_fromAddress := cfg.PublicAddress
 
-	// //convert to address
-	// fromAddress := common.HexToAddress(_fromAddress)
+	//convert to address
+	fromAddress := common.HexToAddress(_fromAddress)
 
 	instance := ctx.Value(zapCommon.MasterContractContextKey).(*contracts.ZapMaster)
 	currentChallenge, requestID, difficulty, queryString, granularity, totalTip, err = instance.GetCurrentVariables(nil)
 	if err != nil {
 		fmt.Println("Current Variables Retrieval Error")
 	}
+
+	myStatus, err = instance.DidMine(nil, currentChallenge, fromAddress)
+	if err != nil {
+		t.Fatalf("Could not retrieve mining status: %v", err)
+	}
+
 }
 
 func setup(t *testing.T) {
@@ -147,8 +155,12 @@ func TestDisputeStatusHandler(t *testing.T) {
 		setup(t)
 	}
 
-	enc := hexutil.EncodeBig(opts.DisputeStatus)
-	DB.Put(db.DisputeStatusKey, []byte(enc))
+	trkr := &tracker.DisputeTracker{}
+	err = trkr.Exec(ctx)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	code, payload := dsh.Incoming(ctx, nil)
 	t.Logf("Dispute status payload: %s\n", payload)
@@ -165,8 +177,12 @@ func TestGasHandler(t *testing.T) {
 		setup(t)
 	}
 
-	enc := hexutil.EncodeBig(opts.GasPrice)
-	DB.Put(db.GasKey, []byte(enc))
+	trkr := &tracker.GasTracker{}
+
+	err = trkr.Exec(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	code, payload := gh.Incoming(ctx, nil)
 	t.Logf("Gas Price payload: %s\n", payload)
@@ -202,7 +218,7 @@ func TestMiningStatusHandler(t *testing.T) {
 	}
 
 	ms := []byte{0}
-	if opts.MiningStatus {
+	if myStatus {
 		ms = []byte{1}
 	}
 	DB.Put(db.MiningStatusKey, ms)
@@ -275,8 +291,12 @@ func TestTributeBalanceHandler(t *testing.T) {
 		setup(t)
 	}
 
-	enc := hexutil.EncodeBig(opts.TokenBalance)
-	DB.Put(db.TokenBalanceKey, []byte(enc))
+	trkr := &tracker.GasTracker{}
+
+	err = trkr.Exec(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	code, payload := tbh.Incoming(ctx, nil)
 	t.Logf("Token balance payload: %s\n", payload)
