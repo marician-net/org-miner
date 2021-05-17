@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -10,6 +11,39 @@ import (
 	"github.com/zapproject/zap-miner/common"
 	"github.com/zapproject/zap-miner/db"
 )
+
+func TestGetLatest(t *testing.T) {
+
+	// Creates the test db for test_MeanAt
+	db, dbErr := db.Open(filepath.Join(os.TempDir(), "test_MeanAt"))
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, common.DBContextKey, db)
+
+	// BuildIndexTrackers creates and initializes a new tracker instance
+	BuildIndexTrackers()
+
+	// Gets all the query strings related to ETH/USD pairs
+	ethIndexes := indexes["ETH/USD"]
+
+	// Tracks and validates each query string stored in ethIndexes
+	execEthUsdPsrs(ctx, t, ethIndexes)
+
+	// Gets thprice/volumes for ETH/USD
+	getLatest, test := getLatest(ethIndexes, clck.Now())
+
+	latestLen := len(getLatest)
+
+	ethIndexesLen := len(ethIndexes)
+
+	fmt.Println(test)
+
+	// Asserts dbErr has no value
+	assert.Nil(t, dbErr)
+
+	// Asserts the array length equal the amount of ETH/USD query strings
+	assert.Equal(t, latestLen, ethIndexesLen)
+}
 
 func TestMeanAt(t *testing.T) {
 
@@ -42,7 +76,7 @@ func TestMeanAt(t *testing.T) {
 
 	// Assert confidence is not 0
 	// 0 = No Value
-	assert.NotEqual(t, confidence, 0, "Confidence:", 0, "has no value")
+	assert.NotEqual(t, confidence, 0, "Confidence:", confidence, "has no value")
 
 	db.Close()
 }
