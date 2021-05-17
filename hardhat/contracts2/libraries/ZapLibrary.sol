@@ -32,24 +32,6 @@ library ZapLibrary {
     event OwnershipProposed(address indexed _previousOwner, address indexed _newOwner);
 
     /*Functions*/
-    /**
-    * @dev Add tip to Request value from oracle
-    * @param _requestId being requested to be mined
-    * @param _tip amount the requester is willing to pay to be get on queue. Miners
-    * mine the onDeckQueryHash, or the api with the highest payout pool
-    */
-    function addTip(ZapStorage.ZapStorageStruct storage self, uint256 _requestId, uint256 _tip) public {
-        require(_requestId > 0, "RequestId is 0");
-        require(_tip > 0, "Tip should be greater than 0");
-        require(_requestId <= self.uintVars[keccak256("requestCount")]+1, "RequestId is not less than count");
-        if(_requestId > self.uintVars[keccak256("requestCount")]){
-            self.uintVars[keccak256("requestCount")]++;
-        }
-        ZapTransfer.doTransfer(self, msg.sender, address(this), _tip);
-        //Update the information for the request that should be mined next based on the tip submitted
-        updateOnDeck(self, _requestId, _tip);
-        emit TipAdded(msg.sender, _requestId, _tip, self.requestDetails[_requestId].apiUintVars[keccak256("totalTip")]);
-    }
 
    /**
     * @dev This fucntion is called by submitMiningSolution and adjusts the difficulty, sorts and stores the first
@@ -382,41 +364,6 @@ library ZapLibrary {
         require(msg.sender == self.addressVars[keccak256("pending_owner")], "Sender is not pending owner");
         emit OwnershipTransferred(self.addressVars[keccak256("_owner")], self.addressVars[keccak256("pending_owner")]);
         self.addressVars[keccak256("_owner")] = self.addressVars[keccak256("pending_owner")];
-    }
-
-    /**
-    * @dev This function updates APIonQ and the requestQ when requestData or addTip are ran
-    * @param _requestId being requested
-    * @param _tip is the tip to add
-    */
-    function updateOnDeck(ZapStorage.ZapStorageStruct storage self, uint256 _requestId, uint256 _tip) public {
-        ZapStorage.Request storage _request = self.requestDetails[_requestId];
-        _request.apiUintVars[keccak256("totalTip")] = _request.apiUintVars[keccak256("totalTip")].add(_tip);
-        //maybe use a request uintVar to keep track if its being mined?
-        if(self.currentMiners[0].value == _requestId || self.currentMiners[1].value== _requestId ||self.currentMiners[2].value == _requestId||self.currentMiners[3].value== _requestId || self.currentMiners[4].value== _requestId ){
-            self.uintVars[keccak256("currentTotalTips")] += _tip;
-        }
-        else {
-            //if the request is not part of the requestQ[51] array
-            //then add to the requestQ[51] only if the _payout/tip is greater than the minimum(tip) in the requestQ[51] array
-            if (_request.apiUintVars[keccak256("requestQPosition")] == 0) {
-                uint256 _min;
-                uint256 _index;
-                (_min, _index) = Utilities.getMin(self.requestQ);
-                //we have to zero out the oldOne
-                //if the _payout is greater than the current minimum payout in the requestQ[51] or if the minimum is zero
-                //then add it to the requestQ array aand map its index information to the requestId and the apiUintvars
-                if (_request.apiUintVars[keccak256("totalTip")] > _min || _min == 0) {
-                    self.requestQ[_index] = _request.apiUintVars[keccak256("totalTip")];
-                    self.requestDetails[self.requestIdByRequestQIndex[_index]].apiUintVars[keccak256("requestQPosition")] = 0;
-                    self.requestIdByRequestQIndex[_index] = _requestId;
-                    _request.apiUintVars[keccak256("requestQPosition")] = _index;
-                }
-                // else if the requestid is part of the requestQ[51] then update the tip for it
-            } else{
-                self.requestQ[_request.apiUintVars[keccak256("requestQPosition")]] += _tip;
-            }
-        }
     }
 
 

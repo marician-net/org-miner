@@ -79,21 +79,20 @@ func TestServer(t *testing.T) {
 		t.Fatal(err)
 	}
 	srv.Start()
-	defer srv.Stop()
+	defer srv.Stop()**/
 
-	resp, err := http.Get("http://localhost:5000/balance")
-	if err != nil {
-		t.Fatal(err)
-	}
-	var bal BalTest
-	defer resp.Body.Close()
-	dec := json.NewDecoder(resp.Body)
-	err = dec.Decode(&bal)
-	if !strings.Contains(bal.Balance, "0x") {
-		t.Fatal("Missing balance in response")
-	} else {
-		t.Logf("Retrieved balance from server: %+v\n", bal)
-	}
-	**/
+	// resp, err := http.Get("http://localhost:5001/balance")
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
+	// var bal BalTest
+	// defer resp.Body.Close()
+	// dec := json.NewDecoder(resp.Body)
+	// dec.Decode(&bal)
+	// if !strings.Contains(bal.Balance, "0x") {
+	// 	t.Fatal("Missing balance in response")
+	// } else {
+	// 	t.Logf("Retrieved balance from server: %+v\n", bal)
+	// }
 
 }

@@ -2,11 +2,9 @@ pragma solidity ^0.5.0;
 
 import "./libraries/SafeMathM.sol";
 import "./libraries/ZapStorage.sol";
-// import "./libraries/ZapTransfer.sol";
 import "./libraries/ZapDispute.sol";
 import "./libraries/ZapStake.sol";
 import "./libraries/ZapLibrary.sol";
-// import "./libraries/Upgradable.sol";
 import "./ZapToken.sol";
 
 /**

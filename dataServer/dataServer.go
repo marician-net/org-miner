@@ -77,7 +77,10 @@ func (ds *DataServer) Start(ctx context.Context, exitCh chan int) error {
 		ds.log.Info("DataServer ready for use")
 		<-ds.exitCh
 		ds.log.Info("DataServer received signal to stop")
-		ds.stop()
+		err = ds.stop(ctx)
+		if err != nil {
+			ds.log.Error("Data server can't be stopped")
+		}
 	}()
 	return nil
 }
@@ -87,12 +90,13 @@ func (ds *DataServer) Ready() chan bool {
 	return ds.readyChannel
 }
 
-func (ds *DataServer) stop() error {
+func (ds *DataServer) stop(ctx context.Context) error {
 	//stop tracker run loop
 	ds.runnerExitCh <- 1
 
 	//stop REST erver
 	ds.server.Stop()
+	ds.server.Shutdown(ctx)
 
 	//stop the DB
 	ds.DB.Close()

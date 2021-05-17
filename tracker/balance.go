@@ -17,7 +17,9 @@ import (
 type BalanceTracker struct {
 }
 
+// Returns the BalanceTracker name
 func (b *BalanceTracker) String() string {
+
 	return "BalanceTracker"
 }
 
@@ -37,13 +39,26 @@ func (b *BalanceTracker) Exec(ctx context.Context) error {
 	//convert to address
 	fromAddress := common.HexToAddress(_fromAddress)
 
+	// Gets the balance from an address
 	balance, err := client.BalanceAt(ctx, fromAddress, nil)
 
+	// If the balance is a negative number it will not return nil and throw an error
 	if err != nil {
+
 		fmt.Println("balance Error, balance.go")
+
 		return err
 	}
+
+	// Encodes a BigInt balance to a hex string
 	enc := hexutil.EncodeBig(balance)
-	log.Printf("Balance: %v", enc)
+
+	// log = Prints the date/time
+	// Printf = Prints formatted data
+	// %v = Used with Printf and gets the value of a variable
+	log.Printf("Balance: %v", balance)
+
+	// BalanceKey is the key to store/lookup account balance
+	// Stores the converted hex string balance as a slice of bytes
 	return DB.Put(db.BalanceKey, []byte(enc))
 }

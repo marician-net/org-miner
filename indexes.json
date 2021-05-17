@@ -38,5 +38,22 @@
 	"EOS/USD": [
 		"json(https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=usd).eos.usd",
 		"json(https://api.binance.com/api/v1/klines?symbol=EOSUSDT&interval=1d&limit=1).0.4"
+	],
+	"ZAP/USD": [
+		"json(https://api.probit.com/api/exchange/v1/ticker?market_ids=ZAP-USDT).data.0.last",
+		"json(https://cex.io/api/ticker/ZAP/USDT).last",
+		"json(https://www.bitrue.com/api/v1/ticker/price?symbol=ZAPUSDT).price",
+		"json(https://poloniex.com/public?command=returnTicker).USDT_ZAP.last",
+		"json(https://api.hitbtc.com/api/2/public/ticker?symbols=ZAPUSD).0.last",
+		"json(https://api.coingecko.com/api/v3/simple/price?ids=zap&vs_currencies=usd).zap.usd"
+	],
+	"ZAP/BTC": [
+		"json(https://www.bitrue.com/api/v1/ticker/price?symbol=ZAPBTC).price",
+		"json(https://api.hitbtc.com/api/2/public/ticker?symbols=ZAPBTC).0.last",
+		"json(https://api.coingecko.com/api/v3/simple/price?ids=zap&vs_currencies=btc).zap.btc"
+	],
+	"ZAP/ETH": [
+		"json(https://api.hitbtc.com/api/2/public/ticker?symbols=ZAPETH).0.last",
+		"json(https://api.coingecko.com/api/v3/simple/price?ids=zap&vs_currencies=eth).zap.eth"
 	]
 }
