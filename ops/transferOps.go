@@ -11,7 +11,6 @@ import (
 	zapCommon "github.com/zapproject/zap-miner/common"
 	zap "github.com/zapproject/zap-miner/contracts"
 
-	// zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/rpc"
 	token "github.com/zapproject/zap-miner/token"
 	"github.com/zapproject/zap-miner/util"

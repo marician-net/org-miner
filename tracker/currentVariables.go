@@ -20,14 +20,17 @@ var currentVarsLog = util.NewLogger("tracker", "CurrentVarsTracker")
 type CurrentVariablesTracker struct {
 }
 
+// Returns the CurrentVariablesTracker name
 func (b *CurrentVariablesTracker) String() string {
 	return "CurrentVariablesTracker"
 }
 
 //Exec implementation for tracker
 func (b *CurrentVariablesTracker) Exec(ctx context.Context) error {
+
 	//cast client using type assertion since context holds generic interface{}
 	DB := ctx.Value(zapCommon.DBContextKey).(db.DB)
+
 	//get the single config instance
 	cfg := config.GetConfig()
 
@@ -38,6 +41,7 @@ func (b *CurrentVariablesTracker) Exec(ctx context.Context) error {
 	fromAddress := common.HexToAddress(_fromAddress)
 
 	instance := ctx.Value(zapCommon.MasterContractContextKey).(*contracts.ZapMaster)
+
 	currentChallenge, requestID, difficulty, queryString, granularity, totalTip, err := instance.GetCurrentVariables(nil)
 	if err != nil {
 		fmt.Println("Current Variables Retrieval Error")
@@ -55,6 +59,7 @@ func (b *CurrentVariablesTracker) Exec(ctx context.Context) error {
 		bitSetVar = []byte{1}
 	}
 	currentVarsLog.Info("Retrieved variables. challengeHash: %x", currentChallenge)
+	fmt.Println("VARS", currentVarsLog)
 
 	array := [32]byte{}
 	data := []byte("timeOfLastNewValue")
