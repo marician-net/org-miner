@@ -30,19 +30,28 @@ func TestGetLatest(t *testing.T) {
 	execEthUsdPsrs(ctx, t, ethIndexes)
 
 	// Gets thprice/volumes for ETH/USD
-	getLatest, test := getLatest(ethIndexes, clck.Now())
+	getLatest, value := getLatest(ethIndexes, clck.Now())
 
+	// Length of getLatest
 	latestLen := len(getLatest)
 
+	// Length of ethIndexes
 	ethIndexesLen := len(ethIndexes)
 
-	fmt.Println(test)
+	fmt.Println("Value", value)
 
 	// Asserts dbErr has no value
 	assert.Nil(t, dbErr)
 
 	// Asserts the array length equal the amount of ETH/USD query strings
 	assert.Equal(t, latestLen, ethIndexesLen)
+
+	// Asserts all latest price/volume are positive
+	for i := 0; i < len(ethIndexes); i++ {
+
+		assert.Positive(t, getLatest[i].Price)
+
+	}
 }
 
 func TestMeanAt(t *testing.T) {
