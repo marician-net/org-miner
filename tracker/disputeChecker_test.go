@@ -2,7 +2,6 @@ package tracker
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -14,28 +13,27 @@ import (
 	"github.com/zapproject/zap-miner/config"
 	"github.com/zapproject/zap-miner/db"
 	"github.com/zapproject/zap-miner/rpc"
-	"github.com/zapproject/zap-miner/util"
 )
 
-func setup() {
-	err := config.ParseConfig("../config.json")
-	if err != nil {
-		fmt.Errorf("Can't parse config for test.")
-	}
-	path := "../testConfig.json"
-	err = util.ParseLoggingConfig(path)
-	if err != nil {
-		fmt.Errorf("Can't parse logging config for test.")
-	}
-}
+// func setup() {
+// 	err := config.ParseConfig("../config.json")
+// 	if err != nil {
+// 		fmt.Errorf("Can't parse config for test.")
+// 	}
+// 	path := "../testConfig.json"
+// 	err = util.ParseLoggingConfig(path)
+// 	if err != nil {
+// 		fmt.Errorf("Can't parse logging config for test.")
+// 	}
+// }
 
 func TestDisputeCheckerInRange(t *testing.T) {
-	setup()
+
+	// setup()
+
 	opts := &rpc.MockOptions{ETHBalance: big.NewInt(300000), Nonce: 1, GasPrice: big.NewInt(7000000000),
 		TokenBalance: big.NewInt(0), Top50Requests: []*big.Int{}}
 	disputeChecker := &disputeChecker{lastCheckedBlock: 500}
-
-	fmt.Println("TESTING", disputeChecker)
 
 	DB, err := db.Open(filepath.Join(os.TempDir(), "disputeChecker_test"))
 

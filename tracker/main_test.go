@@ -15,7 +15,7 @@ import (
 var configJSON = `{
 	"publicAddress":"0000000000000000000000000000000000000000",
 	"privateKey":"1111111111111111111111111111111111111111111111111111111111111111",
-	"contractAddress":"0x724D1B69a7Ba352F11D73fDBdEB7fF869cB22E19",
+	"contractAddress":"0xCD8a1C3ba11CF5ECfa6267617243239504a98d90",
 	"trackers": ["indexers", "balance", "currentVariables", "disputeStatus", "gas", "disputeChecker"],
 	"IndexFolder": "..",
 	"disputeThreshold": 1.0, 
