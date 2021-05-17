@@ -161,6 +161,9 @@ func MeanAt(apis []*IndexTracker, at time.Time) (apiOracle.PriceInfo, float64) {
 	if confidence == 0 {
 		return apiOracle.PriceInfo{}, 0
 	}
+	fmt.Println(apiOracle.PriceInfo{})
+
+	fmt.Println(Mean(values))
 	return Mean(values), confidence
 }
 
