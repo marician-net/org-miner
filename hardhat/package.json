@@ -10,7 +10,6 @@
     "test": "npx hardhat test",
     "coverage": "npm run build && npx hardhat coverage --temp artifacts --network coverage",
     "prettier-format": "prettier --config .prettierrc 'test/*.ts'  --write"
-  
   },
   "repository": {
     "type": "git",

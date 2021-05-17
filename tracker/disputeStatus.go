@@ -22,13 +22,16 @@ type DisputeTracker struct {
 }
 
 func (b *DisputeTracker) String() string {
+
 	return "DisputeTracker"
 }
 
 //Exec - Places the Dispute Status in the database
 func (b *DisputeTracker) Exec(ctx context.Context) error {
+
 	//cast client using type assertion since context holds generic interface{}
 	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
+
 	DB := ctx.Value(zapCommon.DBContextKey).(db.DB)
 
 	//get the single config instance
@@ -46,6 +49,7 @@ func (b *DisputeTracker) Exec(ctx context.Context) error {
 	contractAddress := common.HexToAddress(_conAddress)
 
 	instance, err := zap.NewZapMaster(contractAddress, client)
+
 	if err != nil {
 		fmt.Println("instance Error, disputeStatus")
 		return err
@@ -53,17 +57,31 @@ func (b *DisputeTracker) Exec(ctx context.Context) error {
 
 	status, _, err := instance.GetStakerInfo(nil, fromAddress)
 
+	fmt.Println(status)
+
 	if err != nil {
 		fmt.Println("instance Error, disputeStatus")
 		return err
 	}
+
 	enc := hexutil.EncodeBig(status)
-	log.Printf("Staker Status: %v", enc)
+
+	stakerStatus, stakerStatusErr := hexutil.DecodeBig(enc)
+
+	if stakerStatusErr != nil {
+
+		return stakerStatusErr
+	}
+
+	log.Printf("Staker Status: %v", stakerStatus)
+
 	err = DB.Put(db.DisputeStatusKey, []byte(enc))
+
 	if err != nil {
 		fmt.Printf("Problem storing dispute info: %v\n", err)
 		return err
 	}
+
 	//Issue #50, bail out of not able to mine
 	// if status.Cmp(big.NewInt(1)) != 0 {
 	// 	log.Fatalf("Miner is not able to mine with status %v. Stopping all mining immediately", status)
