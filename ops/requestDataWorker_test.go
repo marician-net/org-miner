@@ -19,6 +19,7 @@ import (
 	"github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/contracts2"
 	"github.com/zapproject/zap-miner/db"
+	"github.com/zapproject/zap-miner/rest"
 	"github.com/zapproject/zap-miner/rpc"
 )
 
@@ -108,6 +109,13 @@ func TestRequestDataOps(t *testing.T) {
 	ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
 	reqData := CreateDataRequester(exitCh, submitter, 2, proxy)
 
+	server, err := rest.Create(ctx, cfg.ServerHost, cfg.ServerPort)
+	if err != nil {
+		t.Fatal(err)
+
+	}
+	server.Start()
+
 	//it should not request data if not configured to do it
 	cfg.RequestData = 0
 	reqData.Start(ctx)
@@ -142,4 +150,5 @@ func TestRequestDataOps(t *testing.T) {
 	if reqData.submittingRequests {
 		t.Fatal("Should not be submitting requests after exit sig")
 	}
+	server.Stop()
 }
