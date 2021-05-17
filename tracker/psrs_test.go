@@ -28,11 +28,21 @@ func TestMeanAt(t *testing.T) {
 	// Tracks and validates each query string stored in ethIndexes
 	execEthUsdPsrs(ctx, t, ethIndexes)
 
-	// Gets the average price of ETH/USD the time the function is invoked
-	MeanAt(ethIndexes, clck.Now())
+	// Gets the average price & average volume of ETH/USD the time the function is invoked
+	getMeanAt, confidence := MeanAt(ethIndexes, clck.Now())
 
 	// Assert dbErr is not nil
 	assert.Nil(t, dbErr)
+
+	// Asserts the mean price is positive
+	assert.Positive(t, getMeanAt.Price)
+
+	// Asserts the mean volume is negative
+	assert.Positive(t, getMeanAt.Volume)
+
+	// Assert confidence is not 0
+	// 0 = No Value
+	assert.NotEqual(t, confidence, 0, "Confidence:", 0, "has no value")
 
 	db.Close()
 }

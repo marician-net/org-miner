@@ -99,30 +99,39 @@ func VolumeWeightedAPIs(processor IndexProcessor) IndexProcessor {
 func getLatest(apis []*IndexTracker, at time.Time) ([]apiOracle.PriceInfo, float64) {
 	var values []apiOracle.PriceInfo
 	totalConf := 0.0
+
 	for _, api := range apis {
+
 		b, _ := apiOracle.GetNearestTwoRequestValue(api.Identifier, at)
+
 		if b != nil {
 			//penalize values more than 5 minutes old
 			totalConf += math.Min(5/at.Sub(b.Created).Minutes(), 1.0)
 			values = append(values, b.PriceInfo)
 		}
 	}
+
 	return values, totalConf / float64(len(apis))
 }
 
 func MedianAt(apis []*IndexTracker, at time.Time) (apiOracle.PriceInfo, float64) {
 	values, confidence := getLatest(apis, at)
+
 	if confidence == 0 {
 		return apiOracle.PriceInfo{}, 0
 	}
+
 	return Median(values), confidence
 }
 
 func ManualEntry(apis []*IndexTracker, at time.Time) (apiOracle.PriceInfo, float64) {
+
 	vals, confidence := getLatest(apis, at)
+
 	if confidence == 0 {
 		return apiOracle.PriceInfo{}, 0
 	}
+
 	for _, val := range vals {
 		// fmt.Println(int64(val.Volume),time.Now().Unix())
 		if int64(val.Volume) < clck.Now().Unix() {
@@ -157,13 +166,13 @@ func Median(values []apiOracle.PriceInfo) apiOracle.PriceInfo {
 }
 
 func MeanAt(apis []*IndexTracker, at time.Time) (apiOracle.PriceInfo, float64) {
+
 	values, confidence := getLatest(apis, at)
+
 	if confidence == 0 {
 		return apiOracle.PriceInfo{}, 0
 	}
-	fmt.Println(apiOracle.PriceInfo{})
 
-	fmt.Println(Mean(values))
 	return Mean(values), confidence
 }
 
