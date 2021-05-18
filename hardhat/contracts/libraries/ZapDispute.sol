@@ -227,18 +227,18 @@ library ZapDispute {
 
     /**
     * @dev this function allows the dispute fee to fluctuate based on the number of miners on the system.
-    * The floor for the fee is 15e18.
+    * The floor for the fee is 15.
     */
     function updateDisputeFee(ZapStorage.ZapStorageStruct storage self) public {
             //if the number of staked miners divided by the target count of staked miners is less than 1
             if(self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")] < 1000){
                 //Set the dispute fee at stakeAmt * (1- stakerCount/targetMiners)
-                //or at the its minimum of 15e18 
-                self.uintVars[keccak256("disputeFee")] = SafeMathM.max(15e18,self.uintVars[keccak256("stakeAmount")].mul(1000 - self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")])/1000);
+                //or at the its minimum of 15 
+                self.uintVars[keccak256("disputeFee")] = SafeMathM.max(15,self.uintVars[keccak256("stakeAmount")].mul(1000 - self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")])/1000);
             }
             else{
-                //otherwise set the dispute fee at 15e18 (the floor/minimum fee allowed)
-                self.uintVars[keccak256("disputeFee")] = 15e18;
+                //otherwise set the dispute fee at 15 (the floor/minimum fee allowed)
+                self.uintVars[keccak256("disputeFee")] = 15;
             }
     }
 }
