@@ -15,7 +15,7 @@ import (
 func TestGetLatest(t *testing.T) {
 
 	// Creates the test db for test_MeanAt
-	db, dbErr := db.Open(filepath.Join(os.TempDir(), "test_MeanAt"))
+	db, dbErr := db.Open(filepath.Join(os.TempDir(), "test_GetLatest"))
 
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, common.DBContextKey, db)
@@ -29,7 +29,7 @@ func TestGetLatest(t *testing.T) {
 	// Tracks and validates each query string stored in ethIndexes
 	execEthUsdPsrs(ctx, t, ethIndexes)
 
-	// Gets thprice/volumes for ETH/USD
+	// Gets the latest price/volumes for ETH/USD
 	getLatest, value := getLatest(ethIndexes, clck.Now())
 
 	// Length of getLatest
@@ -52,6 +52,43 @@ func TestGetLatest(t *testing.T) {
 		assert.Positive(t, getLatest[i].Price)
 
 	}
+
+	db.Close()
+}
+
+func TestGetMedianAt(t *testing.T) {
+
+	// Creates the test db for test_MeanAt
+	db, dbErr := db.Open(filepath.Join(os.TempDir(), "test_MedianAt"))
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, common.DBContextKey, db)
+
+	// BuildIndexTrackers creates and initializes a new tracker instance
+	BuildIndexTrackers()
+
+	// Gets all the query strings related to ETH/USD pairs
+	ethIndexes := indexes["ETH/USD"]
+
+	// Tracks and validates each query string stored in ethIndexes
+	execEthUsdPsrs(ctx, t, ethIndexes)
+
+	// Gets thprice/volumes for ETH/USD
+	getMedianAt, confidence := MedianAt(ethIndexes, clck.Now())
+
+	// Assert dbErr has no value
+	assert.Nil(t, dbErr)
+
+	// Asserts the median price is positive
+	assert.Positive(t, getMedianAt.Price)
+
+	// Asserts the median volume is positive
+	assert.Positive(t, getMedianAt.Volume)
+
+	// Assert confidence is not 0
+	// 0 = No Value
+	assert.NotEqual(t, confidence, 0, "Confidence:", confidence, "has no value")
+
 }
 
 func TestMeanAt(t *testing.T) {

@@ -111,7 +111,6 @@ func getLatest(apis []*IndexTracker, at time.Time) ([]apiOracle.PriceInfo, float
 		}
 	}
 
-	fmt.Println("CHECKING", totalConf/float64(len(apis)))
 	return values, totalConf / float64(len(apis))
 }
 
