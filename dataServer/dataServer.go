@@ -96,7 +96,7 @@ func (ds *DataServer) stop(ctx context.Context) error {
 
 	//stop REST erver
 	ds.server.Stop()
-	ds.server.Shutdown(ctx)
+	// ds.server.Shutdown(ctx)
 
 	//stop the DB
 	ds.DB.Close()

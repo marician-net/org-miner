@@ -60,7 +60,7 @@ node_modules
 
 ./GPUMiner2
 
-ZapMiner
+zap-miner
 OpenCL.def
 saved.json
 */saved.json

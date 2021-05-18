@@ -25,7 +25,7 @@ library ZapStake {
     function init(ZapStorage.ZapStorageStruct storage self) public{
         require(self.uintVars[keccak256("decimals")] == 0);
         //Give this contract 6000 Zap Token so that it can stake the initial 6 miners
-        ZapTransfer.updateBalanceAtNow(self.balances[address(this)], 2**256-1 - 6000e18);
+        ZapTransfer.updateBalanceAtNow(self.balances[address(this)], 6000);
 
         // //the initial 5 miner addresses are specfied below
         // //changed payable[5] to 6
@@ -39,19 +39,19 @@ library ZapStake {
         ];
         //Stake each of the 5 miners specified above
         for(uint i=0;i<6;i++){//6th miner to allow for dispute
-            //Miner balance is set at 1000e18 at the block that this function is ran
-            ZapTransfer.updateBalanceAtNow(self.balances[_initalMiners[i]],1000e18);
+            //Miner balance is set at 1000 at the block that this function is ran
+            ZapTransfer.updateBalanceAtNow(self.balances[_initalMiners[i]],1000);
 
             newStake(self, _initalMiners[i]);
         }
 
         //update the total suppply
-        self.uintVars[keccak256("total_supply")] += 6000e18;//6th miner to allow for dispute
+        self.uintVars[keccak256("total_supply")] += 6000;//6th miner to allow for dispute
         //set Constants
         self.uintVars[keccak256("decimals")] = 18;
         self.uintVars[keccak256("targetMiners")] = 200;
-        self.uintVars[keccak256("stakeAmount")] = 1000e18;
-        self.uintVars[keccak256("disputeFee")] = 970e18;
+        self.uintVars[keccak256("stakeAmount")] = 1000;
+        self.uintVars[keccak256("disputeFee")] = 970;
         self.uintVars[keccak256("timeTarget")]= 600;
         self.uintVars[keccak256("timeOfLastNewValue")] = now - now  % self.uintVars[keccak256("timeTarget")];
         self.uintVars[keccak256("difficulty")] = 1;
