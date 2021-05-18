@@ -145,8 +145,13 @@ func ManualEntry(apis []*IndexTracker, at time.Time) (apiOracle.PriceInfo, float
 
 func MedianAtEOD(apis []*IndexTracker, at time.Time) (apiOracle.PriceInfo, float64) {
 	now := clck.Now().UTC()
+
+	fmt.Println(now)
 	d := 24 * time.Hour
 	eod := now.Truncate(d)
+
+	fmt.Println(MedianAt(apis, eod))
+
 	return MedianAt(apis, eod)
 }
 

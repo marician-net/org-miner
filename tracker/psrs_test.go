@@ -2,7 +2,6 @@ package tracker
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -30,7 +29,7 @@ func TestGetLatest(t *testing.T) {
 	execEthUsdPsrs(ctx, t, ethIndexes)
 
 	// Gets the latest price/volumes for ETH/USD
-	getLatest, value := getLatest(ethIndexes, clck.Now())
+	getLatest, confidence := getLatest(ethIndexes, clck.Now())
 
 	// Length of getLatest
 	latestLen := len(getLatest)
@@ -38,20 +37,22 @@ func TestGetLatest(t *testing.T) {
 	// Length of ethIndexes
 	ethIndexesLen := len(ethIndexes)
 
-	fmt.Println("Value", value)
-
 	// Asserts dbErr has no value
 	assert.Nil(t, dbErr)
 
 	// Asserts the array length equal the amount of ETH/USD query strings
 	assert.Equal(t, latestLen, ethIndexesLen)
 
-	// Asserts all latest price/volume are positive
+	// Asserts all latest prices are positive
 	for i := 0; i < len(ethIndexes); i++ {
 
 		assert.Positive(t, getLatest[i].Price)
 
 	}
+
+	// Assert confidence is not 0
+	// 0 = No Value
+	assert.NotEqual(t, confidence, 0, "Confidence:", confidence, "has no value")
 
 	db.Close()
 }
@@ -88,6 +89,8 @@ func TestGetMedianAt(t *testing.T) {
 	// Assert confidence is not 0
 	// 0 = No Value
 	assert.NotEqual(t, confidence, 0, "Confidence:", confidence, "has no value")
+
+	db.Close()
 
 }
 
