@@ -5,7 +5,7 @@
 1) Install go-lang https://golang.org/doc/install
 2) Run "npm i" in hardhat/ directory
     a) To install npm, linux: sudo apt install nodejs | wsl: https://stackoverflow.com/questions/49919063/installing-npm-node-on-bash-on-ubuntu-on-windows-wsl-what-architecture-does-u
-
+ 
 ## Testing
 You have a few options when you want to test zap-miner
 ### Test Scripts
