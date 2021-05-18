@@ -2,7 +2,6 @@ package tracker
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -34,9 +33,7 @@ func TestCurrentVarableString(t *testing.T) {
 	assert.NotNil(t, currentVariablesStr, "Should return 'CurrentVariablesTracker' string")
 
 	// Asserts currentVariablesStr is equal to "CurrentVariablesTracker"
-	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker",
-
-		"Should return 'CurrentVariablesTracker' string")
+	assert.Equal(t, currentVariablesStr, "CurrentVariablesTracker", "Should return 'CurrentVariablesTracker' string")
 
 }
 
@@ -85,18 +82,14 @@ func TestCurrentVariables(t *testing.T) {
 	client := rpc.NewMockClientWithValues(opts)
 
 	DB, err := db.Open(filepath.Join(os.TempDir(), "test_currentVariables"))
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	cfg := config.GetConfig()
-
 	tracker := &CurrentVariablesTracker{}
 
 	ctx := context.WithValue(context.Background(), zapCommon.ClientContextKey, client)
-
 	ctx = context.WithValue(ctx, zapCommon.DBContextKey, DB)
+	assert.Equal(t, DB, ctx.Value(zapCommon.DBContextKey))
 
 	masterInstance := ctx.Value(zapCommon.MasterContractContextKey)
 
@@ -106,52 +99,27 @@ func TestCurrentVariables(t *testing.T) {
 
 		// TODO create error state flag for mock client
 		masterInstance, err = zap.NewZapMaster(contractAddress, client)
-
-		if err != nil {
-			runnerLog.Error("Problem creating zap master instance: %v\n", err)
-			return
-		}
+		assert.Nil(t, err, "Problem creating Zap Master instance")
 
 		ctx = context.WithValue(ctx, zapCommon.MasterContractContextKey, masterInstance)
 	}
 
-	fmt.Println("Working to Line 41")
-
 	err = tracker.Exec(ctx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	// Gets the request ID as a bytes array
 	v, err := DB.Get(db.RequestIdKey)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	fmt.Println("Working to Line 51", v)
+	assert.Nil(t, err)
 
 	b, err := hexutil.DecodeBig(string(v))
-
-	if err != nil {
-		t.Fatal(err)
-	}
-	if b.Cmp(big.NewInt(1)) != 0 {
-		t.Fatalf("Current Request ID from client did not match what should have been stored in DB. %s != %s", b, string(rune(1)))
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, big.NewInt(1), b, "Current Request ID from client did not match what should have been stored in DB.")
 
 	// Gets the QueryStringKey from the DB as a bytes array
 	v, err = DB.Get(db.QueryStringKey)
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	// Converts the QueryStringKey from a bytes array to a string
 	// Checks if the QueryStringKey returned from the DB is equivalent to the queryStr
-	if string(v) != queryStr {
-		t.Fatalf("Expected query string to match test input: %s != %s\n", string(v), queryStr)
-	}
-
+	assert.Equalf(t, queryStr, string(v), "Expected query string to match test input: %s != %s\n", string(v), queryStr)
 }
