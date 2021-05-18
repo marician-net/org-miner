@@ -1,30 +1,22 @@
 package test
 
 import (
-	"fmt"
-	"math"
 	"math/big"
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 	zapCommon "github.com/zapproject/zap-miner/common"
-	"github.com/zapproject/zap-miner/config"
-	"github.com/zapproject/zap-miner/contracts"
 	zap "github.com/zapproject/zap-miner/contracts"
 	zap1 "github.com/zapproject/zap-miner/contracts1"
 	"github.com/zapproject/zap-miner/ops"
 	"github.com/zapproject/zap-miner/rpc"
 	token "github.com/zapproject/zap-miner/token"
-	"github.com/zapproject/zap-miner/tracker"
-	"github.com/zapproject/zap-miner/util"
 )
 
 func TestDispute(t *testing.T) {
@@ -32,27 +24,34 @@ func TestDispute(t *testing.T) {
 	setup()
 
 	// [show] check if there are existing disputes - should be 0
-	tokenAbi, _ := abi.JSON(strings.NewReader(zap1.ZapDisputeABI))
-	contractAddress := ctx.Value(zapCommon.ContractAddress).(common.Address)
-	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
-	header, _ := client.HeaderByNumber(ctx, nil)
-	startBlock := big.NewInt(54) //big.NewInt(10e3 * 14)
-	startBlock.Sub(header.Number, startBlock)
-	newDisputeID := tokenAbi.Events["NewDispute"].ID()
-	query := ethereum.FilterQuery{
-		FromBlock: startBlock,
-		ToBlock:   nil,
-		Addresses: []common.Address{contractAddress},
-		Topics:    [][]common.Hash{{newDisputeID}},
-	}
-	logs, _ := client.FilterLogs(ctx, query)
-	assert.Equal(t, 0, len(logs), "There should be 0 disputes")
+	logs := Show()
+	assert.Equal(t, 0, logs, "There should be 0 disputes")
 
 	// start miners
 	timestamp := StartMiners(t)
+	assert.Greater(t, timestamp.Int64(), big.NewInt(1).Int64(), "Timestamp is invalid")
 
 	// [new] dispute last miner as first miner
 	MakeNew(t, timestamp)
+
+	// check updated logs - should be 1
+	logs = Show()
+	assert.Equal(t, 1, logs, "There should be 1 dispute")
+
+	// vote true as miner 2
+	Vote(t)
+}
+
+func Vote(t *testing.T) {
+	instance2 := minerCtx[1].Value(zapCommon.TransactorContractContextKey).(*zap1.ZapTransactor)
+	auth, _ := ops.PrepareEthTransaction(minerCtx[1])
+	instance2.Vote(auth, big.NewInt(1), true)
+
+	// check if vote passed
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
+	addr := minerCtx[1].Value(zapCommon.PublicAddress).(common.Address)
+	did, _ := instance.DidVote(nil, big.NewInt(1), addr)
+	assert.Equal(t, true, did, "Vote did not go through")
 }
 
 func MakeNew(t *testing.T, timestamp *big.Int) {
@@ -63,35 +62,38 @@ func MakeNew(t *testing.T, timestamp *big.Int) {
 	amt1 := big.NewInt(10000)
 	instance := ctx.Value(zapCommon.TokenTransactorContractContextKey).(*token.ZapTokenTransactor)
 	instance.Approve(auth, addr1, amt1)
+	// check approval of ZapMaster
+	master := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
+	owner := ctx.Value(zapCommon.PublicAddress).(common.Address)
+	approval1, _ := master.Allowance(nil, owner, addr1)
+	assert.Equal(t, amt1, approval1, "Incorrect approved amount")
+
 	auth, _ = ops.PrepareEthTransaction(ctx)
 	instance.Approve(auth, addr2, amt1)
+	// check approval of Zap
+	approval2, _ := master.Allowance(nil, owner, addr1)
+	assert.Equal(t, amt1, approval2, "Incorrect approved amount")
 
+	auth, _ = ops.PrepareEthTransaction(ctx)
+	// dispute miner 5 as miner 1
+	instance2.BeginDispute(auth, big.NewInt(1), timestamp, big.NewInt(4))
+
+	// check if miner 5 is in dispute
 	array := [32]byte{}
-	data := []byte("disputeFee")
+	data := []byte("requestId")
 	data = crypto.Keccak256(data)
 	for i := 0; i < 32; i++ {
 		array[i] = data[i]
 	}
-	master := ctx.Value(zapCommon.MasterContractContextKey).(*contracts.ZapMaster)
-	blocknum, _ := master.GetUintVar(nil, array)
-	fmt.Println("Dispute Fee: ", blocknum)
-
-	auth, _ = ops.PrepareEthTransaction(ctx)
-	instance2.BeginDispute(auth, big.NewInt(1), timestamp, big.NewInt(4))
-	// fmt.Printf("dispute started with txn: %s\n", tx)
+	instancem := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
+	RID, _ := instancem.GetDisputeUintVars(nil, big.NewInt(1), array)
+	assert.Equal(t, big.NewInt(1), RID)
 }
 
-func Show(t *testing.T) {
-
-	cfg := config.GetConfig()
-
+func Show() int {
 	tokenAbi, _ := abi.JSON(strings.NewReader(zap1.ZapDisputeABI))
 	contractAddress := ctx.Value(zapCommon.ContractAddress).(common.Address)
 	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
-
-	////just use nil for most of the variables, only using this object to call UnpackLog which only uses the abi
-	bar := bind.NewBoundContract(contractAddress, tokenAbi, nil, nil, nil)
-
 	header, _ := client.HeaderByNumber(ctx, nil)
 	startBlock := big.NewInt(54) //big.NewInt(10e3 * 14)
 	startBlock.Sub(header.Number, startBlock)
@@ -104,105 +106,7 @@ func Show(t *testing.T) {
 	}
 
 	logs, _ := client.FilterLogs(ctx, query)
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
-	assert.Equal(t, 0, len(logs), "There should be 0 disputes")
-
-	fmt.Printf("There are currently %d open disputes\n", len(logs))
-	fmt.Printf("-------------------------------------\n")
-	for _, rawDispute := range logs {
-		dispute := zap1.ZapDisputeNewDispute{}
-		bar.UnpackLog(&dispute, "NewDispute", rawDispute)
-		_, executed, votePassed, _, reportedAddr, reportingMiner, _, uintVars, currTally, _ := instance.GetAllDisputeVars(nil, dispute.DisputeId)
-
-		votingEnds := time.Unix(uintVars[3].Int64(), 0)
-		createdTime := votingEnds.Add(-7 * 24 * time.Hour)
-
-		var descString string
-		if executed {
-			descString = "complete, "
-			if votePassed {
-				descString += "successful"
-			} else {
-				descString += "rejected"
-			}
-		} else {
-			descString = "in progress"
-		}
-
-		fmt.Printf("Dispute %s (%s):\n", dispute.DisputeId.String(), descString)
-		fmt.Printf("    Accused Party: %s\n", reportedAddr.Hex())
-		fmt.Printf("    Disputed by: %s\n", reportingMiner.Hex())
-		fmt.Printf("    Created on:  %s\n", createdTime.Format("3:04 PM January 02, 2006 MST"))
-		fmt.Printf("    Fee: %s ZAP\n", util.FormatERC20Balance(uintVars[8]))
-		fmt.Printf("    \n")
-		fmt.Printf("    Value disputed for requestID %d:\n", dispute.RequestId.Uint64())
-
-		allSubmitted, _ := getNonceSubmissions(ctx, uintVars[5], &dispute)
-		disputedValTime := allSubmitted[uintVars[6].Uint64()].Created
-
-		for i := len(allSubmitted) - 1; i >= 0; i-- {
-			sub := allSubmitted[i]
-			valStr := fmt.Sprintf("%f\n", sub.Price)
-			var pointerStr string
-			if i == int(uintVars[6].Uint64()) {
-				pointerStr = " <--disputed"
-			}
-
-			fmt.Printf("      %s @ %s%s\n", valStr, sub.Created.Format("3:04:05 PM"), pointerStr)
-		}
-		fmt.Printf("    \n")
-
-		tmp := new(big.Float)
-		tmp.SetInt(currTally)
-		currTallyFloat, _ := tmp.Float64()
-		tmp.SetInt(uintVars[7])
-		currQuorum, _ := tmp.Float64()
-		currTallyFloat += currQuorum
-		currTallyRatio := currTallyFloat / 2 * currQuorum
-		fmt.Printf("    Currently %.0f%% of %s ZAP support this dispute (%s votes)\n", currTallyRatio*100, util.FormatERC20Balance(uintVars[7]), uintVars[4])
-
-		result := tracker.CheckValueAtTime(dispute.RequestId.Uint64(), uintVars[2], disputedValTime)
-		if result == nil || len(result.Datapoints) < 0 {
-			fmt.Printf("      No data available for recommendation\n")
-			continue
-		}
-		fmt.Printf("      Recommendation:\n")
-		fmt.Printf("      Vote %t\n", !result.WithinRange)
-		fmt.Printf("      Submitted value %s, expected range %.0f to %0.f\n", uintVars[2].String(), result.Low, result.High)
-		numToShow := 3
-		if numToShow > len(result.Datapoints) {
-			numToShow = len(result.Datapoints)
-		}
-		fmt.Printf("      Based on %d locally saved datapoints within %.0f minutes (showing closest %d)\n",
-			len(result.Datapoints), cfg.DisputeTimeDelta.Duration.Minutes(), numToShow)
-		minTotalDelta := time.Duration(math.MaxInt64)
-		index := 0
-		for i := 0; i < len(result.Datapoints)-numToShow; i++ {
-			totalDelta := time.Duration(0)
-			for j := 0; j < numToShow; j++ {
-				delta := result.Times[i+j].Sub(disputedValTime)
-				if delta < 0 {
-					delta = -delta
-				}
-				totalDelta += delta
-			}
-			if totalDelta < minTotalDelta {
-				minTotalDelta = totalDelta
-				index = i
-			}
-		}
-		for i := 0; i < numToShow; i++ {
-			dp := result.Datapoints[index+i]
-			t := result.Times[index+i]
-			fmt.Printf("        %f, ", dp)
-			delta := disputedValTime.Sub(t)
-			if delta > 0 {
-				fmt.Printf("%.0fs before\n", delta.Seconds())
-			} else {
-				fmt.Printf("%.0fs after\n", (-delta).Seconds())
-			}
-		}
-	}
+	return len(logs)
 }
 
 func StartMiners(t *testing.T) *big.Int {
@@ -212,6 +116,16 @@ func StartMiners(t *testing.T) *big.Int {
 	instance1.RequestData(auth,
 		"json(https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval=1d&limit=1).0.4", "BTC/USD",
 		new(big.Int).SetInt64(10000), new(big.Int).SetInt64(0))
+	instance := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
+
+	// check challenge
+	challenge, requestID, difficulty, queryString, granularity, totalTip, _ := instance.GetCurrentVariables(nil)
+	assert.NotNil(t, challenge, "Challenge should not be nil")
+	assert.Equal(t, big.NewInt(1), requestID, "RequestID should be 1")
+	assert.GreaterOrEqual(t, difficulty.Int64(), big.NewInt(0).Int64(), "Difficulty should be at least 0")
+	assert.Equal(t, "json(https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval=1d&limit=1).0.4", queryString, "Query string does not match")
+	assert.Equal(t, big.NewInt(10000).Int64(), granularity.Int64(), "Granularity is incorrect")
+	assert.Equal(t, big.NewInt(0).Int64(), totalTip.Int64(), "Tips should be 0")
 
 	// submit solution for 5 miners
 	for i := 0; i < 5; i++ {
@@ -228,7 +142,6 @@ func StartMiners(t *testing.T) *big.Int {
 		array[i] = data[i]
 	}
 
-	instance := ctx.Value(zapCommon.MasterContractContextKey).(*contracts.ZapMaster)
 	uvar, _ := instance.GetUintVar(nil, array)
 	return uvar
 }
