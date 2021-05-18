@@ -28,7 +28,10 @@ func TestRunner(t *testing.T) {
 	}
 
 	top50 := make([]*big.Int, 51)
-	mockQueryParams := &rpc.MockQueryMeta{QueryString: "json(https://api.binance.com/api/v1/klines?symbol=ETHBTC&interval=1d&limit=1).0.4", Granularity: 1000}
+	mockQueryParams := &rpc.MockQueryMeta{
+		QueryString: "json(https://api.binance.com/api/v1/klines?symbol=ETHBTC&interval=1d&limit=1).0.4",
+		Granularity: 1000,
+	}
 	paramsMap := make(map[uint]*rpc.MockQueryMeta)
 	for i := range top50 {
 		top50[i] = big.NewInt(int64(i + 51))
@@ -36,11 +39,25 @@ func TestRunner(t *testing.T) {
 	}
 
 	queryStr := "json(https://coinbase.com)"
-	chal := &rpc.CurrentChallenge{ChallengeHash: b32, RequestID: big.NewInt(1),
-		Difficulty: big.NewInt(500), QueryString: queryStr,
-		Granularity: big.NewInt(1000), Tip: big.NewInt(0)}
-	opts := &rpc.MockOptions{ETHBalance: startBal, Nonce: 1, GasPrice: big.NewInt(700000000),
-		TokenBalance: big.NewInt(0), MiningStatus: true, Top50Requests: top50, CurrentChallenge: chal, DisputeStatus: big.NewInt(1), QueryMetadata: paramsMap}
+	chal := &rpc.CurrentChallenge{
+		ChallengeHash: b32,
+		RequestID:     big.NewInt(1),
+		Difficulty:    big.NewInt(500),
+		QueryString:   queryStr,
+		Granularity:   big.NewInt(1000),
+		Tip:           big.NewInt(0),
+	}
+	opts := &rpc.MockOptions{
+		ETHBalance:       startBal,
+		Nonce:            1,
+		GasPrice:         big.NewInt(700000000),
+		TokenBalance:     big.NewInt(0),
+		MiningStatus:     true,
+		Top50Requests:    top50,
+		CurrentChallenge: chal,
+		DisputeStatus:    big.NewInt(1),
+		QueryMetadata:    paramsMap,
+	}
 	client := rpc.NewMockClientWithValues(opts)
 
 	db, err := db.Open(filepath.Join(os.TempDir(), "test_leveldb"))
