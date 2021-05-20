@@ -144,10 +144,10 @@ func ParseConfigBytes(data []byte) error {
 
 	if config.NodeURL == "" {
 		// load the env
-		err = godotenv.Load()
-		if err != nil {
-			return fmt.Errorf("error reading .env file: %v", err)
-		}
+// 		err = godotenv.Load()
+// 		if err != nil {
+// 			return fmt.Errorf("error reading .env file: %v", err)
+// 		}
 
 		config.NodeURL = os.Getenv(NodeURLEnvName)
 		if config.NodeURL == "" {
