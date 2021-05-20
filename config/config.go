@@ -110,6 +110,7 @@ const DefaultMaxCheckTimeDelta = 5 * time.Minute
 const DefaultDisputeThreshold = 0.01
 
 const PrivateKeyEnvName = "ETH_PRIVATE_KEY"
+const NodeURLEnvName = "NODE_URL"
 
 //ParseConfig and set a shared config entry
 func ParseConfig(path string) error {
@@ -129,7 +130,7 @@ func ParseConfigBytes(data []byte) error {
 
 	//check if the env is already set, only try loading .env if its not there
 	if config.PrivateKey == "" {
-		//load the env
+		// load the env
 		err = godotenv.Load()
 		if err != nil {
 			return fmt.Errorf("error reading .env file: %v", err)
@@ -138,6 +139,19 @@ func ParseConfigBytes(data []byte) error {
 		config.PrivateKey = os.Getenv(PrivateKeyEnvName)
 		if config.PrivateKey == "" {
 			return fmt.Errorf("missing ethereum wallet private key environment variable '%s'", PrivateKeyEnvName)
+		}
+	}
+
+	if config.NodeURL == "" {
+		// load the env
+// 		err = godotenv.Load()
+// 		if err != nil {
+// 			return fmt.Errorf("error reading .env file: %v", err)
+// 		}
+
+		config.NodeURL = os.Getenv(NodeURLEnvName)
+		if config.NodeURL == "" {
+			return fmt.Errorf("missing node URL environment variable '%s'", NodeURLEnvName)
 		}
 	}
 

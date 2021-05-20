@@ -39,6 +39,7 @@ lerna-debug.log*
 bin
 pkg/darwin_amd64
 */vendor
+zap-miner
 
 # Test binary, build with `go test -c`
 *.test
@@ -60,7 +61,6 @@ node_modules
 
 ./GPUMiner2
 
-zap-miner
 OpenCL.def
 saved.json
 */saved.json
@@ -82,3 +82,4 @@ cache/
 # hardhat
 /hardhat/typechain/
 /hardhat/artifacts/
+

@@ -1,7 +1,7 @@
 {
     "zapTokenAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
     "contractAddress": "0xCD8a1C3ba11CF5ECfa6267617243239504a98d90",
-    "nodeURL": "http://127.0.0.1:8545/",
+    "nodeURL": "",
     "publicAddress": "f39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     "privateKey": "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
     "serverHost": "localhost",
