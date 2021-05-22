@@ -10,7 +10,7 @@ import "./ZapTransfer.sol";
 
 
 library ZapDispute {
-    using SafeMath for uint256;
+    using SafeMathM for uint256;
 
     event NewDispute(uint indexed _disputeId, uint indexed _requestId, uint _timestamp, address _miner);//emitted when a new dispute is initialized
     event Voted(uint indexed _disputeID, bool _position, address indexed _voter);//emitted when a new vote happens
@@ -234,7 +234,7 @@ library ZapDispute {
             if(self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")] < 1000){
                 //Set the dispute fee at stakeAmt * (1- stakerCount/targetMiners)
                 //or at the its minimum of 15e18 
-                self.uintVars[keccak256("disputeFee")] = SafeMath.max(15e18,self.uintVars[keccak256("stakeAmount")].mul(1000 - self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")])/1000);
+                self.uintVars[keccak256("disputeFee")] = SafeMathM.max(15e18,self.uintVars[keccak256("stakeAmount")].mul(1000 - self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")])/1000);
             }
             else{
                 //otherwise set the dispute fee at 15e18 (the floor/minimum fee allowed)

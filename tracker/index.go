@@ -39,7 +39,11 @@ func BuildIndexTrackers() ([]Tracker, error) {
 	indexPath := filepath.Join(cfg.IndexFolder, "indexes.json")
 	byteValue, err := ioutil.ReadFile(indexPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read index file @ %s: %v", indexPath, err)
+		//testing purposes
+		byteValue, err = ioutil.ReadFile(filepath.Join("..", indexPath))
+		if err != nil {
+			return nil, fmt.Errorf("failed to read index file @ %s: %v", indexPath, err)
+		}
 	}
 	var baseIndexes map[string][]string
 	err = json.Unmarshal(byteValue, &baseIndexes)

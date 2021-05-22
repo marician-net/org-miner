@@ -26,6 +26,7 @@ func GetNearestTwoRequestValue(id string, at time.Time) (before, after *PriceSta
 	valueHistoryMutex.RLock()
 	defer valueHistoryMutex.RUnlock()
 	w, ok := valueHistory[id]
+	// fmt.Println("Value History: ", valueHistory)
 	if !ok {
 		return nil, nil
 	}

@@ -13,6 +13,9 @@ import (
 	"github.com/zapproject/zap-miner/util"
 )
 
+// This package starts the rest server, db and runner for handling
+// requests sent to the miner
+
 //DataServer holds refs to primary stack of utilities for data retrieval and serving
 type DataServer struct {
 	server       *rest.Server
@@ -37,6 +40,10 @@ func CreateServer(ctx context.Context) (*DataServer, error) {
 		log.Fatal(err)
 	}
 	srv, err := rest.Create(ctx, cfg.ServerHost, cfg.ServerPort)
+
+	if err != nil {
+		log.Fatalf("Error in creating remote proxy: %s", err)
+	}
 
 	//make sure channel buffer size 1 since there is no guarantee that anyone
 	//would be listening to the channel
@@ -70,7 +77,10 @@ func (ds *DataServer) Start(ctx context.Context, exitCh chan int) error {
 		ds.log.Info("DataServer ready for use")
 		<-ds.exitCh
 		ds.log.Info("DataServer received signal to stop")
-		ds.stop()
+		err = ds.stop(ctx)
+		if err != nil {
+			ds.log.Error("Data server can't be stopped")
+		}
 	}()
 	return nil
 }
@@ -80,12 +90,13 @@ func (ds *DataServer) Ready() chan bool {
 	return ds.readyChannel
 }
 
-func (ds *DataServer) stop() error {
+func (ds *DataServer) stop(ctx context.Context) error {
 	//stop tracker run loop
 	ds.runnerExitCh <- 1
 
 	//stop REST erver
 	ds.server.Stop()
+	// ds.server.Shutdown(ctx)
 
 	//stop the DB
 	ds.DB.Close()

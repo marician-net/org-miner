@@ -42,13 +42,14 @@ type ValueCheckResult struct {
 func CheckValueAtTime(reqID uint64, val *big.Int, at time.Time) *ValueCheckResult {
 	cfg := config.GetConfig()
 	//
-
+	BuildIndexTrackers()
 	//check the value in 5 places, spread over cfg.DisputeTimeDelta.Duration
 	var datapoints []float64
 	var times []time.Time
 	for i := 0; i < 5; i++ {
 		t := at.Add((time.Duration(i) - 2) * cfg.DisputeTimeDelta.Duration / 5)
 		fval, confidence := PSRValueForTime(int(reqID), t)
+		// fmt.Println("FVAL: ", fval, " - Confidence: ", confidence)
 		if confidence > 0.8 {
 			datapoints = append(datapoints, fval)
 			times = append(times, t)
@@ -78,7 +79,6 @@ func CheckValueAtTime(reqID uint64, val *big.Int, at time.Time) *ValueCheckResul
 	floatVal, _ := bigF.Float64()
 
 	withinRange := (floatVal > min) && (floatVal < max)
-
 	return &ValueCheckResult{
 		Low:         min,
 		High:        max,

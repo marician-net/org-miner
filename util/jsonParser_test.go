@@ -13,19 +13,19 @@ func TestJSONParser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if res > 0 {
-		t.Logf("Parsed json properly: %d", res)
+	if len(res) > 0 {
+		t.Logf("Parsed json properly, size: %d", len(res))
 
 	} else {
 		t.Fatalf("Json not parsed properly: %v", res)
 	}
 }
 
-func testFetch(_granularity uint, queryString string) (int, error) {
+func testFetch(_granularity uint, queryString string) ([]float64, error) {
 
 	url, args := ParseQueryString(queryString)
 	resp, _ := http.Get(url)
 
 	input, _ := ioutil.ReadAll(resp.Body)
-	return ParsePayload(input, 1000, args)
+	return ParsePayload(input, args)
 }

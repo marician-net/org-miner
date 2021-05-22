@@ -39,12 +39,16 @@ lerna-debug.log*
 bin
 pkg/darwin_amd64
 */vendor
+zap-miner
 
 # Test binary, build with `go test -c`
 *.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Generated txt files pertaining to possible dispute warning logs
+*possible-dispute-*
 
 /myconfig.json
 */myconfig.json
@@ -57,7 +61,6 @@ node_modules
 
 ./GPUMiner2
 
-ZapMiner
 OpenCL.def
 saved.json
 */saved.json
@@ -74,3 +77,9 @@ logs/
 *.test
 
 cache/
+.DS_Store
+
+# hardhat
+/hardhat/typechain/
+/hardhat/artifacts/
+

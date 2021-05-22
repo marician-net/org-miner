@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./SafeMath.sol";
+import "./SafeMathM.sol";
 import "./Utilities.sol";
 import "./ZapStorage.sol";
 import "./ZapTransfer.sol";
@@ -15,7 +15,7 @@ import "./ZapGettersLibrary.sol";
  * along with the value and smart contracts can requestData and tip miners.
  */
 library ZapLibrary{
-    using SafeMath for uint256;
+    using SafeMathM for uint256;
     
     event TipAdded(address indexed _sender,uint indexed _requestId, uint _tip, uint _totalTips);
     event DataRequested(address indexed _sender, string _query,string _querySymbol,uint _granularity, uint indexed _requestId, uint _totalTips);//Emits upon someone adding value to a pool; msg.sender, amount added, and timestamp incentivized to be mined
@@ -54,57 +54,6 @@ library ZapLibrary{
         emit TipAdded(msg.sender,_requestId,_tip,self.requestDetails[_requestId].apiUintVars[keccak256("totalTip")]);
     }
 
-    /**
-    * @dev Request to retreive value from oracle based on timestamp. The tip is not required to be 
-    * greater than 0 because there are no tokens in circulation for the initial(genesis) request 
-    * @param _c_sapi string API being requested be mined
-    * @param _c_symbol is the short string symbol for the api request
-    * @param _granularity is the number of decimals miners should include on the submitted value
-    * @param _tip amount the requester is willing to pay to be get on queue. Miners
-    * mine the onDeckQueryHash, or the api with the highest payout pool
-    */
-    function requestData(ZapStorage.ZapStorageStruct storage self,string memory _c_sapi,string memory _c_symbol,uint _granularity, uint _tip) public {
-        //Require at least one decimal place
-        require(_granularity > 0);
-        
-        //But no more than 18 decimal places
-        require(_granularity <= 1e18);
-        
-        //If it has been requested before then add the tip to it otherwise create the queryHash for it
-        string memory _sapi = _c_sapi;
-        string memory _symbol = _c_symbol;
-        require(bytes(_sapi).length > 0);
-        require(bytes(_symbol).length < 64);
-        bytes32 _queryHash = keccak256(abi.encodePacked(_sapi,_granularity));
-        
-        //If this is the first time the API and granularity combination has been requested then create the API and granularity hash 
-        //otherwise the tip will be added to the requestId submitted
-        if(self.requestIdByQueryHash[_queryHash] == 0){
-            self.uintVars[keccak256("requestCount")]++;
-            uint _requestId=self.uintVars[keccak256("requestCount")];
-            self.requestDetails[_requestId] = ZapStorage.Request({
-                queryString : _sapi, 
-                dataSymbol: _symbol,
-                queryHash: _queryHash,
-                requestTimestamps: new uint[](0)
-                });
-            self.requestDetails[_requestId].apiUintVars[keccak256("granularity")] = _granularity;
-            self.requestDetails[_requestId].apiUintVars[keccak256("requestQPosition")] = 0;
-            self.requestDetails[_requestId].apiUintVars[keccak256("totalTip")] = 0;
-            self.requestIdByQueryHash[_queryHash] = _requestId;
-            
-            //If the tip > 0 it tranfers the tip to this contract
-            if(_tip > 0){
-                ZapTransfer.doTransfer(self, msg.sender,address(this),_tip);
-            }
-            updateOnDeck(self,_requestId,_tip);
-            emit DataRequested(msg.sender,self.requestDetails[_requestId].queryString,self.requestDetails[_requestId].dataSymbol,_granularity,_requestId,_tip);
-        }
-        //Add tip to existing request id since this is not the first time the api and granularity have been requested 
-        else{
-            addTip(self,self.requestIdByQueryHash[_queryHash],_tip);
-        }
-    }
 
     /**
     * @dev This fucntion is called by submitMiningSolution and adjusts the difficulty, sorts and stores the first 
@@ -149,15 +98,15 @@ library ZapLibrary{
             
             //Pay the miners
             for (i = 0;i <5;i++){
-                ZapTransfer.doTransfer(self,address(this),a[i].miner,5e18 + self.uintVars[keccak256("currentTotalTips")]/5);
+                ZapTransfer.doTransfer(self,address(this),a[i].miner,5 + self.uintVars[keccak256("currentTotalTips")]/5);
             }
             emit NewValue(_requestId,self.uintVars[keccak256("timeOfLastNewValue")],a[2].value,self.uintVars[keccak256("currentTotalTips")] - self.uintVars[keccak256("currentTotalTips")] % 5,self.currentChallenge);
             
             //update the total supply
-            self.uintVars[keccak256("total_supply")] += 275e17;
+            self.uintVars[keccak256("total_supply")] += 275;
             
             //pay the dev-share
-            ZapTransfer.doTransfer(self, address(this),self.addressVars[keccak256("_owner")],25e17);//The ten there is the devshare
+            ZapTransfer.doTransfer(self, address(this),self.addressVars[keccak256("_owner")],25);//The ten there is the devshare
             //Save the official(finalValue), timestamp of it, 5 miners and their submitted values for it, and its block number
             _request.finalValues[self.uintVars[keccak256("timeOfLastNewValue")]] = a[2].value;
             _request.requestTimestamps.push(self.uintVars[keccak256("timeOfLastNewValue")]);
@@ -248,11 +197,11 @@ library ZapLibrary{
     * @dev Allows the current owner to transfer control of the contract to a newOwner.
     * @param _newOwner The address to transfer ownership to.
     */
-    function transferOwnership(ZapStorage.ZapStorageStruct storage self,address payable _newOwner) internal {
-            require(msg.sender == self.addressVars[keccak256("_owner")]);
-            emit OwnershipTransferred(self.addressVars[keccak256("_owner")], _newOwner);
-            self.addressVars[keccak256("_owner")] = _newOwner;
-    }
+    // function transferOwnership(ZapStorage.ZapStorageStruct storage self,address payable _newOwner) internal {
+    //         require(msg.sender == self.addressVars[keccak256("_owner")]);
+    //         emit OwnershipTransferred(self.addressVars[keccak256("_owner")], _newOwner);
+    //         self.addressVars[keccak256("_owner")] = _newOwner;
+    // }
 
 
     /**

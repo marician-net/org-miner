@@ -4,11 +4,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/joho/godotenv"
 	"io/ioutil"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 //unfortunate hack to enable json parsing of human readable time strings
@@ -52,6 +53,7 @@ type GPUConfig struct {
 
 //Config holds global config info derived from config.json
 type Config struct {
+	TokenAddress                 string                `json:"zapTokenAddress"`
 	ContractAddress              string                `json:"contractAddress"`
 	NodeURL                      string                `json:"nodeURL"`
 	DatabaseURL                  string                `json:"databaseURL"`
@@ -64,7 +66,7 @@ type Config struct {
 	ServerPort                   uint                  `json:"serverPort"`
 	FetchTimeout                 Duration              `json:"fetchTimeout"`
 	RequestData                  uint                  `json:"requestData"`
-	MinConfidence                float64                 `json:"minConfidence"`
+	MinConfidence                float64               `json:"minConfidence"`
 	RequestDataInterval          Duration              `json:"requestDataInterval"`
 	RequestTips                  int64                 `json:"requestTips"`
 	MiningInterruptCheckInterval Duration              `json:"miningInterruptCheckInterval"`
@@ -78,12 +80,13 @@ type Config struct {
 	Worker                       string                `json:"worker"`
 	Password                     string                `json:"password"`
 	PoolURL                      string                `json:"poolURL"`
-	IndexFolder                  string               `json:"indexFolder"`
+	IndexFolder                  string                `json:"indexFolder"`
 	DisputeTimeDelta             Duration              `json:"disputeTimeDelta"` //ignore data further than this away from the value we are checking
 	DisputeThreshold             float64               `json:"disputeThreshold"` //maximum allowed relative difference between observed and submitted value
+	UseGPU                       bool                  `json:"useGPU"`
 
 	//config parameters excluded from the json config file
-	PrivateKey                   string 			   `json:"privateKey"`
+	PrivateKey string `json:"privateKey"`
 }
 
 const defaultTimeout = 30 * time.Second //30 second fetch timeout
@@ -92,7 +95,7 @@ const defaultRequestInterval = 30 * time.Second //30 seconds between data reques
 const defaultMiningInterrupt = 15 * time.Second //every 15 seconds, check for new challenges that could interrupt current mining
 const defaultCores = 2
 
-const defaultHeartbeat = 15 * time.Second       //check miner speed every 10 ^ 8 cycles
+const defaultHeartbeat = 15 * time.Second //check miner speed every 10 ^ 8 cycles
 var (
 	config *Config
 )
@@ -107,6 +110,7 @@ const DefaultMaxCheckTimeDelta = 5 * time.Minute
 const DefaultDisputeThreshold = 0.01
 
 const PrivateKeyEnvName = "ETH_PRIVATE_KEY"
+const NodeURLEnvName = "NODE_URL"
 
 //ParseConfig and set a shared config entry
 func ParseConfig(path string) error {
@@ -126,7 +130,7 @@ func ParseConfigBytes(data []byte) error {
 
 	//check if the env is already set, only try loading .env if its not there
 	if config.PrivateKey == "" {
-		//load the env
+		// load the env
 		err = godotenv.Load()
 		if err != nil {
 			return fmt.Errorf("error reading .env file: %v", err)
@@ -135,6 +139,19 @@ func ParseConfigBytes(data []byte) error {
 		config.PrivateKey = os.Getenv(PrivateKeyEnvName)
 		if config.PrivateKey == "" {
 			return fmt.Errorf("missing ethereum wallet private key environment variable '%s'", PrivateKeyEnvName)
+		}
+	}
+
+	if config.NodeURL == "" {
+		// load the env
+// 		err = godotenv.Load()
+// 		if err != nil {
+// 			return fmt.Errorf("error reading .env file: %v", err)
+// 		}
+
+		config.NodeURL = os.Getenv(NodeURLEnvName)
+		if config.NodeURL == "" {
+			return fmt.Errorf("missing node URL environment variable '%s'", NodeURLEnvName)
 		}
 	}
 
@@ -192,7 +209,7 @@ func validateConfig(cfg *Config) error {
 	if err != nil || len(b) != 20 {
 		return fmt.Errorf("expecting 40 hex character public address, got \"%s\"", cfg.PublicAddress)
 	}
-	if cfg.EnablePoolWorker  {
+	if cfg.EnablePoolWorker {
 		if len(cfg.Worker) == 0 {
 			return fmt.Errorf("worker name required for pool")
 		}

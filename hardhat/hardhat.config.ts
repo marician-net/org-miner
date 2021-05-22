@@ -2,6 +2,20 @@ import { HardhatUserConfig } from "hardhat/types";
 import "hardhat-typechain";
 import "hardhat-deploy";
 import "@nomiclabs/hardhat-ethers";
+import './tasks/faucet';
+import './tasks/checkbalance';
+import './tasks/checkbalances';
+import './tasks/buyzap';
+import './tasks/initProvider';
+import './tasks/initProviderCurve';
+import './tasks/setEndpointParams';
+import './tasks/bond';
+import './tasks/dispatch';
+import './tasks/dispatchCoinGecko';
+import './tasks/dispatchCGPriceClient';
+import './tasks/dispatchBittrex';
+import './tasks/checkClient';
+import './tasks/dispatchFun';
 
 
 const config: HardhatUserConfig = {

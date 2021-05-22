@@ -15,14 +15,14 @@ import (
 	"github.com/zapproject/zap-miner/rpc"
 )
 
-type TributeTracker struct {
+type TokenTracker struct {
 }
 
-func (b *TributeTracker) String() string {
-	return "TributeTracker"
+func (b *TokenTracker) String() string {
+	return "TokenTracker"
 }
 
-func (b *TributeTracker) Exec(ctx context.Context) error {
+func (b *TokenTracker) Exec(ctx context.Context) error {
 	//cast client using type assertion since context holds generic interface{}
 	client := ctx.Value(zapCommon.ClientContextKey).(rpc.ETHClient)
 	DB := ctx.Value(zapCommon.DBContextKey).(db.DB)
@@ -43,34 +43,34 @@ func (b *TributeTracker) Exec(ctx context.Context) error {
 
 	instance, err := zap.NewZapMaster(contractAddress, client)
 	if err != nil {
-		fmt.Println("Instance error - TributeBalance")
+		fmt.Println("Instance error - TokenBalance")
 		return err
 	}
 
 	balance, err := instance.BalanceOf(nil, fromAddress)
-	balanceInTributes, _ := big.NewFloat(1).SetString(balance.String())
+	balanceInTokens, _ := big.NewFloat(1).SetString(balance.String())
 	// this _should_ be unreachable given that there is an erro flag for
 	// the balanceOf call
 	//if !ok {
-	//	fmt.Println("Problem converting tributes.")
-	//	balanceInTributes = big.NewFloat(0)
+	//	fmt.Println("Problem converting tokens.")
+	//	balanceInTokens = big.NewFloat(0)
 	//}
 	decimals, _ := big.NewFloat(1).SetString("1000000000000000000")
 	// This is unreachable since it's hardcoded
 	//if !ok {
-	//	fmt.Println("Could not create tribute float for computing tributes")
-	//	balanceInTributes = big.NewFloat(0)
+	//	fmt.Println("Could not create token float for computing tokens")
+	//	balanceInTokens = big.NewFloat(0)
 	//}
 	if decimals != nil {
-		balanceInTributes = balanceInTributes.Quo(balanceInTributes, decimals)
+		balanceInTokens = balanceInTokens.Quo(balanceInTokens, decimals)
 	}
 
-	//numTributes, _ := balanceInTributes.Float64()
-	log.Printf("Tribute Balance: %v (%v tributes)\n", balance, balanceInTributes)
+	//numTokens, _ := balanceInTokens.Float64()
+	log.Printf("Token Balance: %v (%v tokens)\n", balance, balanceInTokens)
 	if err != nil {
-		fmt.Println("Balance Retrieval Error - Tribute Balance")
+		fmt.Println("Balance Retrieval Error - Token Balance")
 		return err
 	}
 	enc := hexutil.EncodeBig(balance)
-	return DB.Put(db.TributeBalanceKey, []byte(enc))
+	return DB.Put(db.TokenBalanceKey, []byte(enc))
 }

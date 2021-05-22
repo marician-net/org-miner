@@ -33,14 +33,10 @@ func TestAmpl(t *testing.T) {
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, common.DBContextKey, db)
 	BuildIndexTrackers()
-	amplTrackers := indexes["AMPL/USD"]
 	btcTrackers := indexes["BTC/USD"]
-	amplBtcTrackers := indexes["AMPL/BTC"]
 
 	indexers := []*IndexTracker{}
-	indexers = append(indexers, amplTrackers...)
 	indexers = append(indexers, btcTrackers...)
-	indexers = append(indexers, amplBtcTrackers...)
 	for i := 0; i < 288; i++ {
 		for _, indexer := range indexers {
 			indexer.Exec(ctx)

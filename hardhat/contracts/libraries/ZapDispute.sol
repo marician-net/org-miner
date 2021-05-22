@@ -10,7 +10,7 @@ import "./ZapTransfer.sol";
 
 
 library ZapDispute {
-    using SafeMath for uint256;
+    using SafeMathM for uint256;
 
     event NewDispute(uint indexed _disputeId, uint indexed _requestId, uint _timestamp, address _miner);//emitted when a new dispute is initialized
     event Voted(uint indexed _disputeID, bool _position, address indexed _voter);//emitted when a new vote happens
@@ -18,71 +18,6 @@ library ZapDispute {
     event NewZapAddress(address _newZap); //emmited when a proposed fork is voted true
 
     /*Functions*/
-    
-    /**
-    * @dev Helps initialize a dispute by assigning it a disputeId
-    * when a miner returns a false on the validate array(in Zap.ProofOfWork) it sends the
-    * invalidated value information to POS voting
-    * @param _requestId being disputed
-    * @param _timestamp being disputed
-    * @param _minerIndex the index of the miner that submitted the value being disputed. Since each official value
-    * requires 5 miners to submit a value.
-    */
-    function beginDispute(ZapStorage.ZapStorageStruct storage self,uint _requestId, uint _timestamp,uint _minerIndex) public {
-        ZapStorage.Request storage _request = self.requestDetails[_requestId];
-        //require that no more than a day( (24 hours * 60 minutes)/10minutes=144 blocks) has gone by since the value was "mined"
-        require(block.number- _request.minedBlockNum[_timestamp]<= 144);
-        require(_request.minedBlockNum[_timestamp] > 0);
-        require(_minerIndex < 5);
-        
-        //_miner is the miner being disputed. For every mined value 5 miners are saved in an array and the _minerIndex
-        //provided by the party initiating the dispute
-        address _miner = _request.minersByValue[_timestamp][_minerIndex];
-        bytes32 _hash = keccak256(abi.encodePacked(_miner,_requestId,_timestamp));
-        
-        //Ensures that a dispute is not already open for the that miner, requestId and timestamp
-        require(self.disputeIdByDisputeHash[_hash] == 0);
-        ZapTransfer.doTransfer(self, msg.sender,address(this), self.uintVars[keccak256("disputeFee")]);
-        
-        //Increase the dispute count by 1
-        self.uintVars[keccak256("disputeCount")] =  self.uintVars[keccak256("disputeCount")] + 1;
-        
-        //Sets the new disputeCount as the disputeId
-        uint disputeId = self.uintVars[keccak256("disputeCount")];
-        
-        //maps the dispute hash to the disputeId
-        self.disputeIdByDisputeHash[_hash] = disputeId;
-        //maps the dispute to the Dispute struct
-        self.disputesById[disputeId] = ZapStorage.Dispute({
-            hash:_hash,
-            isPropFork: false,
-            reportedMiner: _miner,
-            reportingParty: msg.sender,
-            proposedForkAddress:address(0),
-            executed: false,
-            disputeVotePassed: false,
-            tally: 0
-            });
-        
-        //Saves all the dispute variables for the disputeId
-        self.disputesById[disputeId].disputeUintVars[keccak256("requestId")] = _requestId;
-        self.disputesById[disputeId].disputeUintVars[keccak256("timestamp")] = _timestamp;
-        self.disputesById[disputeId].disputeUintVars[keccak256("value")] = _request.valuesByTimestamp[_timestamp][_minerIndex];
-        self.disputesById[disputeId].disputeUintVars[keccak256("minExecutionDate")] = now + 7 days;
-        self.disputesById[disputeId].disputeUintVars[keccak256("blockNumber")] = block.number;
-        self.disputesById[disputeId].disputeUintVars[keccak256("minerSlot")] = _minerIndex;
-        self.disputesById[disputeId].disputeUintVars[keccak256("fee")]  = self.uintVars[keccak256("disputeFee")];
-        
-        //Values are sorted as they come in and the official value is the median of the first five
-        //So the "official value" miner is always minerIndex==2. If the official value is being 
-        //disputed, it sets its status to inDispute(currentStatus = 3) so that users are made aware it is under dispute
-        if(_minerIndex == 2){
-            self.requestDetails[_requestId].inDispute[_timestamp] = true;
-        }
-        self.stakerDetails[_miner].currentStatus = 3;
-        emit NewDispute(disputeId,_requestId,_timestamp,_miner);
-    }
-
 
     /**
     * @dev Allows token holders to vote
@@ -227,18 +162,18 @@ library ZapDispute {
 
     /**
     * @dev this function allows the dispute fee to fluctuate based on the number of miners on the system.
-    * The floor for the fee is 15e18.
+    * The floor for the fee is 15.
     */
     function updateDisputeFee(ZapStorage.ZapStorageStruct storage self) public {
             //if the number of staked miners divided by the target count of staked miners is less than 1
             if(self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")] < 1000){
                 //Set the dispute fee at stakeAmt * (1- stakerCount/targetMiners)
-                //or at the its minimum of 15e18 
-                self.uintVars[keccak256("disputeFee")] = SafeMath.max(15e18,self.uintVars[keccak256("stakeAmount")].mul(1000 - self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")])/1000);
+                //or at the its minimum of 15 
+                self.uintVars[keccak256("disputeFee")] = SafeMathM.max(15,self.uintVars[keccak256("stakeAmount")].mul(1000 - self.uintVars[keccak256("stakerCount")]*1000/self.uintVars[keccak256("targetMiners")])/1000);
             }
             else{
-                //otherwise set the dispute fee at 15e18 (the floor/minimum fee allowed)
-                self.uintVars[keccak256("disputeFee")] = 15e18;
+                //otherwise set the dispute fee at 15 (the floor/minimum fee allowed)
+                self.uintVars[keccak256("disputeFee")] = 15;
             }
     }
 }

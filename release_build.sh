@@ -1,5 +1,6 @@
-#!/bin/bash
-LDFLAGS="-X main.GitHash=$(git rev-parse --short HEAD) -s -w"
+#!/bin/sh
+LDFLAGS="-X main.GitHash=$(git rev-parse --short HEAD)"
+# LDFLAGS="-X main.GitHash=$(git rev-parse --short HEAD) -s -w"
 
 
 #linux

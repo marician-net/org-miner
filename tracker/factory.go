@@ -24,14 +24,14 @@ func createTracker(name string) ([]Tracker, error) {
 	case "gas":
 		{
 			return []Tracker{&GasTracker{}}, nil
-		}	
+		}
 	case "newCurrentVariables":
-			{
-				return []Tracker{&NewCurrentVariablesTracker{}}, nil
-			}
-	case "tributeBalance":
 		{
-			return []Tracker{&TributeTracker{}}, nil
+			return []Tracker{&NewCurrentVariablesTracker{}}, nil
+		}
+	case "tokenBalance":
+		{
+			return []Tracker{&TokenTracker{}}, nil
 		}
 	case "indexers":
 		{
