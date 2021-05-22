@@ -37,15 +37,6 @@ func CreateDataServerOps(ctx context.Context, exitCh chan os.Signal) (*DataServe
 
 //Start the data server
 func (ops *DataServerOps) Start(ctx context.Context) {
-	// auth, _ := PrepareEthTransaction(ctx)
-	// instance := ctx.Value(zapcommon.TransactorContractContextKey).(*zap1.ZapTransactor)
-	// instance.RequestData(auth,
-	// 	"json(https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval=1d&limit=1).0.4", "BTC/USD",
-	// 	new(big.Int).SetInt64(10000), new(big.Int).SetInt64(0))
-
-	// master := ctx.Value(zapCommon.MasterContractContextKey).(*zap.ZapMaster)
-	// fmt.Println(master.GetRequestQ(nil))
-
 	ops.server.Start(ctx, ops.done)
 	ops.Running = true
 	go func() {

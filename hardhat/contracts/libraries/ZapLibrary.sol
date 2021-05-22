@@ -98,15 +98,15 @@ library ZapLibrary{
             
             //Pay the miners
             for (i = 0;i <5;i++){
-                ZapTransfer.doTransfer(self,address(this),a[i].miner,5e18 + self.uintVars[keccak256("currentTotalTips")]/5);
+                ZapTransfer.doTransfer(self,address(this),a[i].miner,5 + self.uintVars[keccak256("currentTotalTips")]/5);
             }
             emit NewValue(_requestId,self.uintVars[keccak256("timeOfLastNewValue")],a[2].value,self.uintVars[keccak256("currentTotalTips")] - self.uintVars[keccak256("currentTotalTips")] % 5,self.currentChallenge);
             
             //update the total supply
-            self.uintVars[keccak256("total_supply")] += 275e17;
+            self.uintVars[keccak256("total_supply")] += 275;
             
             //pay the dev-share
-            ZapTransfer.doTransfer(self, address(this),self.addressVars[keccak256("_owner")],25e17);//The ten there is the devshare
+            ZapTransfer.doTransfer(self, address(this),self.addressVars[keccak256("_owner")],25);//The ten there is the devshare
             //Save the official(finalValue), timestamp of it, 5 miners and their submitted values for it, and its block number
             _request.finalValues[self.uintVars[keccak256("timeOfLastNewValue")]] = a[2].value;
             _request.requestTimestamps.push(self.uintVars[keccak256("timeOfLastNewValue")]);
