@@ -1,5 +1,18 @@
 # zap-miner
 
+## BSC Testnet Contract Addresses
+```
+BSC TESTNET MINER CONTRACTS
+ZapGettersLibary Address: 0x57b23103867b11F64dB2Ade885B7c3655F6be3c8
+ZapTransfer Address: 0xAd6f4151ef0c7D49fb40CDd6e7d3Ed8977543080
+ZapDispute Address: 0xF23937335c0794ea9920aC06c0f7947407919718
+ZapStake Address: 0x00cf02aB915A9026C2328B07E9E45A854CCb28fd
+ZapLibrary Address: 0x5896c4024de2DA768433123d442d8Ff2C1Ec694B
+Zap Address: 0x4646939E9336139b16213B06EaCbA0a53b999f94
+ZapMaster Address: 0xe623305CC15792f4e3E4Cd8880B5B9D665976df5
+Vault Address: 0xc91fE0A6546f599b2887F342F5074E33D4fA37eE
+```
+
 ## Installation
 
 1) Install go-lang https://golang.org/doc/install
